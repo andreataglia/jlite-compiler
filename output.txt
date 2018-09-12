@@ -1,8 +1,0 @@
-
-class Test { Void main (Class1 a, Class2 b, Bool x) { readln ( test_id ) }
------------------------
-Error in line 3, column 74 : Syntax error
-instead expected token classes are [LPAREN, DOT]
-
------------------------
-Error in line 3, column 74 : Couldn't repair and continue parse
