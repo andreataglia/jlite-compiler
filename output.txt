@@ -1,15 +1,8 @@
-class Ciao{
-    Void main(){
-       return;
-       }
-   } 
-class Mbare{
-    Int sum(){
-       a = 5;
-       b = 8;
-       return a + b;
-       }
-    Int a;
-   }
+
+class Test { Void main (Class1 a, Class2 b, Bool x) { readln ( test_id ) }
 -----------------------
-Error : cannot accept VarDecl after MdDecl
+Error in line 3, column 74 : Syntax error
+instead expected token classes are [LPAREN, DOT]
+
+-----------------------
+Error in line 3, column 74 : Couldn't repair and continue parse
