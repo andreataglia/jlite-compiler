@@ -1,23 +1,3 @@
-/*
-  This example comes from a short article series in the Linux 
-  Gazette by Richard A. Sevenich and Christopher Lopes, titled
-  "Compiler Construction Tools". The article series starts at
-
-  http://www.linuxgazette.com/issue39/sevenich.html
-
-  Small changes and updates to newest JFlex+Cup versions 
-  by Gerwin Klein
-*/
-
-/*
-  Commented By: Christopher Lopes
-  File Name: lcalc.flex
-  To Create: > jflex lcalc.flex
-
-  and then after the parser is created
-  > javac Lexer.java
-*/
-   
 /* --------------------------Usercode Section------------------------ */
    
 import java_cup.runtime.*;
@@ -88,7 +68,7 @@ digit = [0-9]
 eol = \r | \n | \r\n
 not_eol = [^\r\n]
 space = [ \t\f] | [ \t]
-white = {eol} | {space} /* White space is a line terminator, space, tab, or line feed. */
+blank_line = ({eol}{space}*{eol})({eol}{space}*{eol})*
 
 start_comment = "/*"
 comment_content = ([^*]|\*[^/])
@@ -118,13 +98,13 @@ end_comment = "*/"
     /* control flow */
     "if" {System.out.print(yytext()); return symbol(sym.IF); }
     "else" {System.out.print(yytext()); return symbol(sym.ELSE); }
-    "while" { System.out.print("while"); return symbol(sym.WHILE); }
-    "return" { System.out.print("return"); return symbol(sym.RETURN); }
+    "while" { System.out.print(yytext()); return symbol(sym.WHILE); }
+    "return" { System.out.print(yytext()); return symbol(sym.RETURN); }
     
     /* declarations */
-    "class" { System.out.print("CLASS"); return symbol(sym.CLASS); }
-    "Void" { System.out.print("VOID"); return symbol(sym.VOID); }
-    "main" { System.out.print("MAIN"); return symbol(sym.MAIN); }
+    "class" { System.out.print(yytext()); return symbol(sym.CLASS); }
+    "Void" { System.out.print(yytext()); return symbol(sym.VOID); }
+    "main" { System.out.print(yytext()); return symbol(sym.MAIN); }
     "this" { System.out.print(yytext()); return symbol(sym.THIS); }
     "new" { System.out.print(yytext()); return symbol(sym.NEW); }
 
@@ -134,11 +114,16 @@ end_comment = "*/"
     "*" { System.out.print(yytext()); return symbol(sym.TIMES); }
     "&&" { System.out.print(yytext()); return symbol(sym.AND); }
     "||" { System.out.print(yytext()); return symbol(sym.OR); }
+    "==" { System.out.print(yytext()); return symbol(sym.DEQUAL); }
     "<" { System.out.print(yytext()); return symbol(sym.LT); }
+    ">" { System.out.print(yytext()); return symbol(sym.GT); }
+    "<=" { System.out.print(yytext()); return symbol(sym.LET); }
+    ">=" { System.out.print(yytext()); return symbol(sym.GET); }
     "!" { System.out.print(yytext()); return symbol(sym.NOT); }
     "." { System.out.print(yytext()); return symbol(sym.DOT); }
     "," { System.out.print(yytext()); return symbol(sym.COMMA); }
     "=" { System.out.print(yytext()); return symbol(sym.EQUAL); }
+    "!=" { System.out.print(yytext()); return symbol(sym.DIFF); }
 
     /* delimiters */
     "(" { System.out.print(yytext()); return symbol(sym.LPAREN); }
@@ -152,11 +137,12 @@ end_comment = "*/"
     {uc_letter}({letter}|{digit}|_)*    { System.out.print(yytext()); s = new String(yytext()); s.toLowerCase(); return symbol(sym.CNAME, s);}
 
     /* pretty printing utils*/
-    {space}   {  System.out.print(" "); }
+    {space}({space})*   {  System.out.print(" "); }
+    {blank_line} { System.out.print("\n" + getIndentSpaces()); }
     {eol}   {  System.out.print("\n" + getIndentSpaces()); }
 }
 
-/* lexical errors (put last so other matches take precedence) */
+
 /* No token was found for the input so through an error.  Print out an
    Illegal character message with the illegal character that was found. */
 [^] {

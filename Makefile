@@ -1,31 +1,25 @@
 JAVA=java
 JAVAC=javac -cp .:java-cup-11b.jar
-JFLEX=jflex
+JFLEX=jflex-1.6.1/bin/jflex
 CUP=$(JAVA) -cp .:java-cup-11b.jar java_cup.Main <
 
-all: output.txt
-
-# test: output.txt
-# 	@(diff output.txt output.good && echo "Test OK!") || echo "Test failed!"
-
-output.txt: Main.class test.txt
-	echo "-------- running main... ------------"
-	$(JAVA) -cp .:java-cup-11b-runtime.jar Main test.txt > output.txt
+all: Main.class
 
 Main.class: Main.java Lexer.java parser.java
 
 %.class: %.java
 	$(JAVAC) $^
 
-Lexer.java: lcalc.flex
-	$(JFLEX) lcalc.flex
+Lexer.java: lexspec.flex
+	$(JFLEX) lexspec.flex
 
-parser.java: ycalc.cup
-	$(CUP) ycalc.cup
+parser.java: cupsepc.cup
+	$(CUP) cupsepc.cup
 
-run: Main.class test.txt
-	echo "-------- running main... ------------"
-	$(JAVA) -cp .:java-cup-11b-runtime.jar Main test.txt > output.txt
+run: Main.class
+	@echo "-------- Parsing file: $(in) ------------"
+	@$(JAVA) -cp .:java-cup-11b-runtime.jar Main $(in) > output.txt
+	@echo "Successfully parse! Look at output.txt for the outcome"
 
 clean:
 	rm -f parser.java Lexer.java sym.java output.txt *.class *~

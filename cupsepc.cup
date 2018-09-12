@@ -1,52 +1,24 @@
 /* ----------------------Preliminary Declarations Section--------------------*/
    
 import java_cup.runtime.*;
-   
-/* Parser code to change the way the parser reports errors (include
-   line and column number of the error). */
 
 parser code {:
     
     public void report_error(String message, Object info) {
-   
         StringBuilder m = new StringBuilder("Error");
-   
-        /* Check if the information passed to the method is the same
-           type as the type java_cup.runtime.Symbol. */
-
         if (info instanceof java_cup.runtime.Symbol) {
-
-            /* Declare a java_cup.runtime.Symbol object 's' with the
-               information in the object info that is being typecasted
-               as a java_cup.runtime.Symbol object. */
             java_cup.runtime.Symbol s = ((java_cup.runtime.Symbol) info);
-   
-            /* Check if the line number in the input is greater or
-               equal to zero. */
             if (s.left >= 0) {                
-                /* Add to the end of the StringBuilder error message
-                   the line number of the error in the input. */
                 m.append(" in line "+(s.left+1));   
-                /* Check if the column number in the input is greater
-                   or equal to zero. */
                 if (s.right >= 0)                    
-                    /* Add to the end of the StringBuilder error message
-                       the column number of the error in the input. */
                     m.append(", column "+(s.right+1));
             }
         }
    
         m.append(" : "+message);
-        System.err.println(m);
         System.out.println("\n-----------------------");
         System.out.println(m);
     }
-   
-    /* Change the method report_fatal_error so when it reports a fatal
-       error it will display the line and column number of where the
-       fatal error occurred in the input as well as the reason for the
-       fatal error which is passed into the method in the object
-       'message' and then exit.*/
 
     public void report_fatal_error(String message, Object info) {
         report_error(message, info);
@@ -59,37 +31,15 @@ parser code {:
 
    
 /* ------------Declaration of Terminals and Non Terminals Section----------- */
-   
-/* Terminals (tokens returned by the scanner).  
-
-   Terminals that have no value are listed first and then terminals
-   that do have an value, in this case an integer value, are listed on
-   the next line down. */
 
 terminal           SEMICOLON, PLUS, MINUS, TIMES, DIVIDE, LPAREN, RPAREN, LBRACE, RBRACE, VOID, MAIN, CLASS, CNAME, ID, COMMA, INT, BOOL, STRING, IF, ELSE, WHILE, READLN, PRINTLN, DOT, EQUAL, RETURN, OR, AND, LT, GT, LET, GET, DEQUAL, DIFF, NOT, TRUE, FALSE, INTEGER_LITERAL, STRING_LITERAL, THIS, NEW, NULL;
-   
-/* Non terminals used in the grammar section.  
-
-   Non terminals that have an object value are listed first and then
-   non terminals that have an integer value are listed.  An object
-   value means that it can be any type, it isn't set to a specific
-   type.  So it could be an Integer or a String or whatever. */
 
 non terminal Object     program, mainClass, classDecl, classDeclBody, varDecl, fmlList, fmlRest, type, mdBody, stmt, exp, bExp, conj, rExp, bOp, bGrd, aExp, aOp, ftr, sExp, atom, expList, expRest, expRestList, varDeclList, stmtList, classDeclList, fmlRestList;
    
 
 /* -------------Precedence and Associatively of Terminals Section----------- */
    
-/*
-  Precedence of non terminals could be defined here.  If you do define
-  precedence here you won't need to worry about precedence in the
-  Grammar Section, i.e. that TIMES should have a higher precedence
-  than PLUS.
-  
-  The precedence defined here would look something like this where the
-  lower line always will have higher precedence than the line before it.
-   */
-  
+/* The lower line always will have higher precedence than the line before it.*/
   precedence left PLUS, MINUS; 
   precedence left TIMES, DIVIDE;
 
@@ -153,28 +103,28 @@ non terminal Object     program, mainClass, classDecl, classDeclBody, varDecl, f
   exp ::= bExp | aExp | sExp
       ;
 
-  bExp ::= bExp OR conj | conj /*binary expression. conj AND conj | conj OR conj */
+  bExp ::= bExp OR conj | conj | bExp OR atom | atom OR atom | atom OR conj /*binary expression*/
         ;
 
-  conj ::= conj AND rExp | rExp
+  conj ::= conj AND rExp | rExp | conj AND atom | atom AND atom | atom AND rExp
         ;
 
-  rExp ::= aExp bOp aExp | bGrd /*relational expression*/
+  rExp ::= aExp bOp aExp | bGrd | NOT atom /*relational expression*/
         ;
 
   bOp ::= LT | GT | LET | GET | DEQUAL | DIFF
       ;
 
-  bGrd ::= NOT bGrd | TRUE | FALSE | atom /*binary ground*/
+  bGrd ::= NOT bGrd | TRUE | FALSE /*binary grd*/
         ;
 
-  aExp ::= aExp aOp ftr | ftr /*arithmetic expression. ftr (aOp aExp)?  */
+  aExp ::= aExp aOp ftr | ftr /*arithmetic expression*/
         ;
 
   aOp ::= PLUS | MINUS | TIMES | DIVIDE
   	   ;
 
-  ftr ::= INTEGER_LITERAL | MINUS ftr /*arithmetic factor*/
+  ftr ::= INTEGER_LITERAL | MINUS ftr | atom /*arithmetic factor*/
       ;
 
   sExp ::= STRING_LITERAL /*string expression*/
