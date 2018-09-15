@@ -1,6 +1,7 @@
 /* ----------------------Preliminary Declarations Section--------------------*/
    
 import java_cup.runtime.*;
+import jnodes.*;
 
 parser code {:
     
@@ -32,10 +33,43 @@ parser code {:
    
 /* ------------Declaration of Terminals and Non Terminals Section----------- */
 
-terminal           SEMICOLON, PLUS, MINUS, TIMES, DIVIDE, LPAREN, RPAREN, LBRACE, RBRACE, VOID, MAIN, CLASS, CNAME, ID, COMMA, INT, BOOL, STRING, IF, ELSE, WHILE, READLN, PRINTLN, DOT, EQUAL, RETURN, OR, AND, LT, GT, LET, GET, DEQUAL, DIFF, NOT, TRUE, FALSE, INTEGER_LITERAL, STRING_LITERAL, THIS, NEW, NULL;
+terminal String SEMICOLON, PLUS, MINUS, TIMES, DIVIDE, LPAREN, RPAREN, LBRACE, RBRACE, VOID, MAIN, CLASS, COMMA, BOOL, STRING, IF, INT, ELSE, WHILE, READLN, PRINTLN, DOT, EQUAL, RETURN, OR, AND, LT, GT, LET, GET, DEQUAL, DIFF, NOT, TRUE, FALSE, THIS, NEW, NULL;
+terminal String ID, STRING_LITERAL, CNAME;
+terminal Integer INTEGER_LITERAL;
 
-non terminal Object     program, mainClass, classDecl, classDeclBody, varDecl, fmlList, fmlRest, type, mdBody, stmt, exp, bExp, conj, rExp, bOp, bGrd, aExp, aOp, ftr, sExp, atom, expList, expRest, expRestList, varDeclList, stmtList, classDeclList, fmlRestList;
-   
+
+non terminal String aOp;
+non terminal String bOp;
+
+non terminal JProgram program;
+non terminal JId ident;
+non terminal JClassDecl classDecl;
+non terminal JClassDeclBody classDeclBody;
+non terminal JClassDeclList classDeclList;
+non terminal JExpList expList;
+non terminal JExpRest expRest;
+non terminal JExpRestList expRestList;
+non terminal JMainClass mainClass;
+non terminal JFmlList fmlList;
+non terminal JFmlRest fmlRest;
+non terminal JType type;
+non terminal JStmt stmt;
+non terminal JBExp bExp;
+non terminal JExp exp;
+non terminal JConj conj;
+non terminal JRExp rExp;
+non terminal JBGrd bGrd;
+non terminal JAExp aExp;
+non terminal JAtom atom;
+non terminal JFtr ftr;
+non terminal JSExp sExp;
+non terminal JVarDecl varDecl;
+non terminal JVarDeclList varDeclList;
+non terminal JStmtList stmtList;
+non terminal JFmlRestList fmlRestList;
+non terminal JMdBody mdBody;
+non terminal JCname cname;
+
 
 /* -------------Precedence and Associatively of Terminals Section----------- */
    
@@ -45,103 +79,139 @@ non terminal Object     program, mainClass, classDecl, classDeclBody, varDecl, f
 
 /* ----------------------------Grammar Section-------------------- */
 
-  program ::= mainClass classDeclList
+  program ::= mainClass:a classDeclList:b {: RESULT = new JProgram(a, b); :}
           ;
 
-  mainClass ::= CLASS CNAME LBRACE VOID MAIN LPAREN fmlList RPAREN mdBody RBRACE
+  mainClass ::= CLASS cname:c LBRACE VOID MAIN LPAREN fmlList:f RPAREN mdBody:m RBRACE {: RESULT = new JMainClass(c, f, m); :}
             ;
 
-  classDeclList ::= 
-                | classDecl classDeclList
+  classDeclList ::= {: RESULT = new JClassDeclList(); :}
+                | classDecl:a classDeclList:b {: RESULT = new JClassDeclList(a,b); :}
                 ;
 
-  classDecl ::= CLASS CNAME LBRACE classDeclBody RBRACE {: reducedVarDecl = false; :}
+  classDecl ::= CLASS cname:a LBRACE classDeclBody:b RBRACE {: reducedVarDecl = false; RESULT = new JClassDecl(a,b); :}
             ;
 
-  varDeclList ::=
-              | varDecl varDeclList 
+  varDeclList ::= {: RESULT = new JVarDeclList(); :}
+              | varDecl:a varDeclList:b {: RESULT = new JVarDeclList(a,b); :}
               ;
 
-  varDecl ::= type ID SEMICOLON
+  varDecl ::= type:a ident:b SEMICOLON {: RESULT = new JVarDecl(a,b); :}
            ;
 
-  classDeclBody ::=
-                | type ID SEMICOLON classDeclBody {: reducedVarDecl = true; :}
-                | type ID LPAREN fmlList RPAREN mdBody classDeclBody {: if(reducedVarDecl){ report_fatal_error("cannot accept VarDecl after MdDecl", ""); } :}
+  classDeclBody ::= {: RESULT = new JClassDeclBody();:}
+                | type:a ident:b SEMICOLON classDeclBody:c {: reducedVarDecl = true; RESULT = new JClassDeclBody(a,b,c); :}
+                | type:a ident:b LPAREN fmlList:c RPAREN mdBody:d classDeclBody:e {: if(reducedVarDecl){ report_fatal_error("cannot accept VarDecl after MdDecl", "");} RESULT = new JClassDeclBody(a,b,c,d,e); :}
                 ;
 
-  fmlList ::=
-          | type ID fmlRestList
+  fmlList ::= {: RESULT = new JFmlList(); :}
+          | type:t ident:i fmlRestList:f {: RESULT = new JFmlList(t,i,f); :}
           ;
 
-  fmlRestList ::= 
-              | fmlRest fmlRestList
+  fmlRestList ::= {: RESULT = new JFmlRestList(); :}
+              | fmlRest:a fmlRestList:b {: RESULT = new JFmlRestList(a,b); :}
               ;
 
-  fmlRest ::= COMMA type ID
+  fmlRest ::= COMMA type:t ident:i {: RESULT = new JFmlRest(t,i); :}
           ;
 
-  type ::= INT | BOOL | STRING | VOID | CNAME
+  type ::= INT:s {: RESULT = new JType(String.valueOf(s)); :}
+        | BOOL:s {: RESULT = new JType(String.valueOf(s)); :}
+        | STRING:s {: RESULT = new JType(String.valueOf(s)); :}
+        | VOID:s {: RESULT = new JType(String.valueOf(s)); :}
+        | cname:s {: RESULT = s; :}
         ;
 
-  mdBody ::= LBRACE varDeclList stmt stmtList RBRACE
+  mdBody ::= LBRACE varDeclList:a stmt:b stmtList:c RBRACE {: RESULT = new JMdBody(a,b,c); :}
           ;
 
-  stmtList ::=
-           | stmt stmtList
+  stmtList ::= {: RESULT = new JStmtList(); :}
+           | stmt:a stmtList:b {: RESULT = new JStmtList(a,b); :}
            ;
 
-  stmt ::= IF LPAREN exp RPAREN LBRACE stmt stmtList RBRACE ELSE LBRACE stmt stmtList RBRACE
-       | WHILE LPAREN exp RPAREN LBRACE stmt stmtList RBRACE
-       | READLN LPAREN ID RPAREN SEMICOLON
-       | PRINTLN LPAREN exp RPAREN SEMICOLON
-       | ID EQUAL exp SEMICOLON | atom DOT ID EQUAL exp SEMICOLON
-       | atom LPAREN expList RPAREN SEMICOLON
-       | RETURN exp SEMICOLON | RETURN SEMICOLON
+  stmt ::= IF LPAREN exp:e RPAREN LBRACE stmt:s stmtList:sl RBRACE ELSE LBRACE stmt:s2 stmtList:sl2 RBRACE {: RESULT = new JIfStmt(e,s,sl,s2,sl2); :}
+       | WHILE LPAREN exp:e RPAREN LBRACE stmt:s stmtList:sl RBRACE {: RESULT = new JWhileStmt(e,s,sl); :}
+       | READLN:o LPAREN ident:i RPAREN SEMICOLON {: RESULT = new JIoStmt(o,i); :}
+       | PRINTLN:o LPAREN exp:e RPAREN SEMICOLON {: RESULT = new JIoStmt(o,e); :}
+       | ident:i EQUAL exp:e SEMICOLON {: RESULT = new JAssignStmt(i, e); :}
+       | atom:a DOT ident:i EQUAL exp:e SEMICOLON {: RESULT = new JAtomStmt(a,i,e); :}
+       | atom:a LPAREN expList:e RPAREN SEMICOLON {: RESULT = new JAtomExpStmt(a, e); :}
+       | RETURN exp:e SEMICOLON {: RESULT = new JReturnStmt(e); :}
+       | RETURN SEMICOLON {: RESULT = new JReturnStmt(); :}
        ; 
 
-  exp ::= bExp | aExp | sExp
+  exp ::= bExp:e  {: RESULT = e; :}
+        | aExp:e  {: RESULT = e; :}
+        | sExp:e  {: RESULT = e; :}
       ;
 
-  bExp ::= bExp OR conj | conj | bExp OR atom | atom OR atom | atom OR conj /*binary expression*/
+  bExp ::= bExp:b OR conj:c {: RESULT = new JBExp(b,c); :}
+        | conj:c {: RESULT = new JBExp(c); :}
+        | bExp:b OR atom:a {: RESULT = new JBExp(b,a); :}
+        | atom:a1 OR atom:a2 {: RESULT = new JBExp(a1,a2); :}
+        | atom:a OR conj:c {: RESULT = new JBExp(a,c); :}
+        ; /*binary expression*/
+
+
+  conj ::= conj:a AND rExp:b {: RESULT = new JConj(a,b); :}
+        | rExp:a {: RESULT = new JConj(a); :}
+        | conj:a AND atom:b {: RESULT = new JConj(a,b); :}
+        | atom:a AND atom:b {: RESULT = new JConj(a,b); :}
+        | atom:a AND rExp:b {: RESULT = new JConj(a,b); :}
         ;
 
-  conj ::= conj AND rExp | rExp | conj AND atom | atom AND atom | atom AND rExp
+  rExp ::= aExp:a bOp:b aExp:c {: RESULT = new JRExp(a, b, c); :}
+        | bGrd:a {: RESULT = new JRExp(a); :}
+        | NOT atom:a {: RESULT = new JRExp(a); :}
+        /*relational expression*/
         ;
 
-  rExp ::= aExp bOp aExp | bGrd | NOT atom /*relational expression*/
-        ;
-
-  bOp ::= LT | GT | LET | GET | DEQUAL | DIFF
+  bOp ::= LT:b {: RESULT=b; :} | GT:b {: RESULT=b; :} | LET:b {: RESULT=b; :} | GET:b {: RESULT=b; :} | DEQUAL:b {: RESULT=b; :} | DIFF:b {: RESULT=b; :}
       ;
 
-  bGrd ::= NOT bGrd | TRUE | FALSE /*binary grd*/
+  bGrd ::= NOT bGrd:a {: RESULT = new JBGrd(a); :}
+        | TRUE:a {: RESULT = new JBGrd(String.valueOf(a)); :}
+        | FALSE:a {: RESULT = new JBGrd(String.valueOf(a)); :}
+        ;  /*binary grd*/
+
+  aExp ::= aExp:a aOp:b ftr:c  {: RESULT = new JAExp(a,b,c); :}
+        | ftr:a {: RESULT = new JAExp(a); :} /*arithmetic expression*/
         ;
 
-  aExp ::= aExp aOp ftr | ftr /*arithmetic expression*/
-        ;
-
-  aOp ::= PLUS | MINUS | TIMES | DIVIDE
+  aOp ::= PLUS:b {: RESULT= b; :} | MINUS:b {: RESULT=b; :} | TIMES:b {: RESULT=b; :} | DIVIDE:b {: RESULT=b; :}
   	   ;
 
-  ftr ::= INTEGER_LITERAL | MINUS ftr | atom /*arithmetic factor*/
-      ;
+  ftr ::= INTEGER_LITERAL:n {: RESULT = new JFtr(n); :}
+        | MINUS ftr:n {: RESULT = new JFtr(n); :}
+        | atom:n {: RESULT = new JFtr(n); :}
+      ; /*arithmetic factor*/
 
-  sExp ::= STRING_LITERAL /*string expression*/
+  sExp ::= STRING_LITERAL:n {: RESULT = new JSExp(n); :} /*string expression*/
         ;
 
-  atom ::= atom DOT ID | atom LPAREN expList RPAREN
-       | THIS | ID | NEW CNAME LPAREN RPAREN
-       | LPAREN exp RPAREN | NULL
+  atom ::= atom:a DOT ident:b {: RESULT = new JAtom(a,b); :}
+       | atom:a LPAREN expList:b RPAREN {: RESULT = new JAtom(a,b); :}
+       | THIS:a {: RESULT = new JAtom(String.valueOf(a)); :}
+       | ident:id {: RESULT = new JAtom(id); :}
+       | NEW cname:a LPAREN RPAREN {: RESULT = new JAtom(a); :}
+       | LPAREN exp:a RPAREN {: RESULT = new JAtom(a); :}
+       | NULL:a {: RESULT = new JAtom(String.valueOf(a)); :}
        ;
 
-  expList ::= exp expRestList | 
+  ident ::= ID:id {: RESULT = new JId(String.valueOf(id)); :}
+        ;
+
+  cname ::= CNAME:c {: RESULT = new JCname(String.valueOf(c)); :}
+        ;
+
+  expList ::= exp:a expRestList:b  {: RESULT = new JExpList(a, b); :}
+            |  {: RESULT = new JExpList(); :}
           ;
 
-  expRestList ::=
-              | expRest expRestList
+  expRestList ::=  {: RESULT = new JExpRestList(); :}
+              | expRest:a expRestList:b {: RESULT = new JExpRestList(a, b); :}
               ;
 
-  expRest ::= COMMA exp
+  expRest ::= COMMA exp:e {: RESULT = new JExpRest(e); :}
           ; 
 

@@ -9,6 +9,7 @@ class Prova {
 	} else {
 		return this;
 	}
-} }
+}
+}
 //
 
