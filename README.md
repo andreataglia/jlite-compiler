@@ -1,8 +1,13 @@
 # jlite-parser
 
 This is a Java parser for jLite programs. The grammar of jlite can be found in the pdf file `assignment_text.pdf`.
-The project consists of two main parts: the Lexer and the Parser. The Lexer has been created using the jflex tool which creates java classes starting from a .lex specification file. The Parsers has been produced using Java Cup, which produces java classes out of a .cup specification file.
-The Main class starts the parsing process using the generated classes as described above taking an input file name from command line argument.  
+
+The project consists of two main parts: the Lexer and the Parser. The Lexer has been created using the jflex tool which creates java classes starting from a .lex specification file. The Parsers has been produced using Java Cup, which produces java classes out of a .cup specification file. The Main class starts the parsing process using the generated classes as described above taking an input file name from command line argument.  
+
+Other than just parsing, the parser builds the whole AST. Although the AST is not of great use so far, it will be necessary for further compiler expansion. The AST nodes can be found at path `jnodes/` and the root node is `JProgram.java`. Every node has a unique toString() function which is forced to implement being the class extending the abstract JNode. The root toString() will just call in chain all the nodes toString() function to end up with a printed version of the AST. However, it has been preferred to just print out the parsed program from the lexer. The AST will be used later on as mentioned above.
+
+
+The reference JLite grammar was not well formatted and threw a lot of shift/reduce and reduce/reduce conflicts at first. All of them have been resolved by rearranging the grammar so as to avoid ambiguity. One exception has been seen on the production involving `ClassDecl` where java code has been inserted in the parser to force correct behaviour after have loosened the grammar rules.
 
 ## Prerequisites
 
