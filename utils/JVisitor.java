@@ -3,8 +3,7 @@ package utils;
 import jnodes.*;
 
 public interface JVisitor {
-    void visit(JNode node);
-    void visit(JProgram program);
-    void visit(JMainClass mainClass);
-    DataType visit(JAtom atom, SymbolTable symbolTable);
+    Object visit(JNode node);
+    Object visit(JProgram program);
+    Object visit(JMainClass mainClass);
 }

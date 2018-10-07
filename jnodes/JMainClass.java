@@ -1,7 +1,8 @@
 package jnodes;
 
 
-import utils.ClassNameType;
+import concrete_nodes.MainClass;
+import utils.JVisitor;
 
 // CLASS OBJECT LBRACE VOID MAIN LPAREN fmlList RPAREN mdBody RBRACE
 public class JMainClass extends JNode {
@@ -18,5 +19,9 @@ public class JMainClass extends JNode {
     @Override
     public String toString() {
         return "class " + cname + "{\n    Void main(" + fmlList + ")" + mdBody + "\n}\n";
+    }
+
+    MainClass genConcreteNode(){
+        return new MainClass();
     }
 }

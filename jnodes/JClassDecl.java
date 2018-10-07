@@ -1,5 +1,7 @@
 package jnodes;
 
+import concrete_nodes.ClassDecl;
+
 //classDecl ::= CLASS cname LBRACE classDeclBody RBRACE
 public class JClassDecl extends JNode{
     public JClassNameType cname;
@@ -13,5 +15,9 @@ public class JClassDecl extends JNode{
     @Override
     public String toString() {
         return "class " + cname + "{\n" + classDeclBody + "\n}";
+    }
+
+    ClassDecl genConcreteClass(){
+        return new ClassDecl();
     }
 }

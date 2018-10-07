@@ -1,5 +1,6 @@
 package jnodes;
-import utils.JVisitor;
+
+import concrete_nodes.Program;
 
 public class JProgram extends JNode {
     public JMainClass mainClass;
@@ -13,18 +14,15 @@ public class JProgram extends JNode {
     @Override
     public String toString() {
         String temp = "";
-        try{
+        try {
             temp = "\n------------------------\n--JLite Parsed program----\n" + mainClass + classDeclList;
-        }catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             System.out.println("Something went wrong while printing: " + e);
         }
         return temp;
     }
 
-    @Override
-    public void accept(JVisitor visitor){
-        visitor.visit(this);
+    public Program genConcreteTree() {
+        return new Program(mainClass.genConcreteNode(), classDeclList.getClassList());
     }
-
-
 }

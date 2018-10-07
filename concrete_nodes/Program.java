@@ -1,0 +1,13 @@
+package concrete_nodes;
+
+import java.util.List;
+
+public class Program extends Node {
+    public MainClass mainClass;
+    public List<ClassDecl> classDeclList;
+
+    public Program(MainClass mainClass, List<ClassDecl> classDeclList) {
+        this.mainClass = mainClass;
+        this.classDeclList = classDeclList;
+    }
+}
