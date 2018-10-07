@@ -8,7 +8,6 @@ public class JVarDecl extends JNode{
     public JVarDecl(JBasicType type, JId id) {
         this.type = type;
         this.id = id;
-        System.out.println(type + " " + id + " declared");
     }
 
     @Override

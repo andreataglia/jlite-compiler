@@ -1,13 +1,11 @@
 package jnodes;
 import utils.JVisitor;
 
-import java.util.ArrayList;
-
 public class JProgram extends JNode {
     public JMainClass mainClass;
-    public ArrayList<JClassDecl> classDeclList;
+    public JClassDeclList classDeclList;
 
-    public JProgram(JMainClass mainClass, ArrayList<JClassDecl> classDeclList) {
+    public JProgram(JMainClass mainClass, JClassDeclList classDeclList) {
         this.mainClass = mainClass;
         this.classDeclList = classDeclList;
     }

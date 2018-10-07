@@ -48,7 +48,7 @@ non terminal JProgram program;
 non terminal JId ident;
 non terminal JClassDecl classDecl;
 non terminal JClassDeclBody classDeclBody;
-non terminal ArrayList<JClassDecl> classDeclList;
+non terminal JClassDeclList classDeclList;
 non terminal JExpList expList;
 non terminal JExpRest expRest;
 non terminal JExpRestList expRestList;
@@ -67,9 +67,9 @@ non terminal JAtom atom;
 non terminal JFtr ftr;
 non terminal JSExp sExp;
 non terminal JVarDecl varDecl;
-non terminal ArrayList<JVarDecl> varDeclList;
+non terminal JVarDeclList varDeclList;
 non terminal JStmtList stmtList;
-non terminal ArrayList<JFmlRest> fmlRestList;
+non terminal JFmlRestList fmlRestList;
 non terminal JMdBody mdBody;
 non terminal JClassNameType cname;
 
@@ -87,31 +87,31 @@ non terminal JClassNameType cname;
   mainClass ::= CLASS cname:c LBRACE VOID MAIN LPAREN fmlList:f RPAREN mdBody:m RBRACE {: RESULT = new JMainClass(c, f, m); :}
             ;
 
-  classDeclList ::= {: RESULT = new ArrayList<JClassDecl>(); :}
-                | classDecl:a classDeclList:b {: b.add(a); :}
-                ;
+  classDeclList ::= {: RESULT = new JClassDeclList(); :}
+                  | classDecl:a classDeclList:b {: RESULT = new JClassDeclList(a,b); :}
+                  ;
 
   classDecl ::= CLASS cname:a LBRACE classDeclBody:b RBRACE {: reducedVarDecl = false; RESULT = new JClassDecl(a,b); :}
-            ;
-
-  varDeclList ::= {: RESULT = new ArrayList<JVarDecl>(); :}
-              | varDecl:a varDeclList:b {: b.add(a); :}
               ;
 
+  varDeclList ::= {: RESULT = new JVarDeclList(); :}
+               | varDecl:a varDeclList:b {: RESULT = new JVarDeclList(a,b); :}
+               ;
+
   varDecl ::= type:a ident:b SEMICOLON {: RESULT = new JVarDecl(a,b); :}
-           ;
+            ;
 
   classDeclBody ::= {: RESULT = new JClassDeclBody();:}
                 | type:a ident:b SEMICOLON classDeclBody:c {: reducedVarDecl = true; RESULT = new JClassDeclBody(a,b,c); :}
                 | type:a ident:b LPAREN fmlList:c RPAREN mdBody:d classDeclBody:e {: if(reducedVarDecl){ report_fatal_error("cannot accept VarDecl after MdDecl", "");} RESULT = new JClassDeclBody(a,b,c,d,e); :}
                 ;
 
-  fmlList ::= {: RESULT = new JFmlList(); System.out.println("jfmlList created "); :}
-          | type:t ident:i fmlRestList:f {: System.out.println("\n " + t + " - " + i + " - " + f); RESULT = new JFmlList(t,i,f); :}
+  fmlList ::= {: RESULT = new JFmlList(); :}
+          | type:t ident:i fmlRestList:f {: RESULT = new JFmlList(t,i,f); :}
           ;
 
-  fmlRestList ::= {: ArrayList<JFmlRest> mbare= new ArrayList<JFmlRest>(); System.out.println(mbare);  RESULT = mbare; :}
-              | fmlRest:a fmlRestList:b {: b.add(a); :}
+  fmlRestList ::= {: RESULT = new JFmlRestList(); :}
+              | fmlRest:a fmlRestList:b {: RESULT = new JFmlRestList(a,b); :}
               ;
 
   fmlRest ::= COMMA type:t ident:i {: RESULT = new JFmlRest(t,i); :}

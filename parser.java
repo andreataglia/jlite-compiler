@@ -473,7 +473,7 @@ class CUP$parser$actions {
 		JMainClass a = (JMainClass)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		int bleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int bright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
-		ArrayList<JClassDecl> b = (ArrayList<JClassDecl>)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+		JClassDeclList b = (JClassDeclList)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		 RESULT = new JProgram(a, b); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("program",2, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -514,8 +514,8 @@ class CUP$parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 3: // classDeclList ::= 
             {
-              ArrayList<JClassDecl> RESULT =null;
-		 RESULT = new ArrayList<JClassDecl>(); 
+              JClassDeclList RESULT =null;
+		 RESULT = new JClassDeclList(); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("classDeclList",6, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -523,14 +523,14 @@ class CUP$parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 4: // classDeclList ::= classDecl classDeclList 
             {
-              ArrayList<JClassDecl> RESULT =null;
+              JClassDeclList RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
 		int aright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		JClassDecl a = (JClassDecl)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		int bleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int bright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
-		ArrayList<JClassDecl> b = (ArrayList<JClassDecl>)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 b.add(a); 
+		JClassDeclList b = (JClassDeclList)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+		 RESULT = new JClassDeclList(a,b); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("classDeclList",6, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -553,8 +553,8 @@ class CUP$parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 6: // varDeclList ::= 
             {
-              ArrayList<JVarDecl> RESULT =null;
-		 RESULT = new ArrayList<JVarDecl>(); 
+              JVarDeclList RESULT =null;
+		 RESULT = new JVarDeclList(); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("varDeclList",25, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -562,14 +562,14 @@ class CUP$parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 7: // varDeclList ::= varDecl varDeclList 
             {
-              ArrayList<JVarDecl> RESULT =null;
+              JVarDeclList RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
 		int aright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		JVarDecl a = (JVarDecl)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		int bleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int bright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
-		ArrayList<JVarDecl> b = (ArrayList<JVarDecl>)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 b.add(a); 
+		JVarDeclList b = (JVarDeclList)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+		 RESULT = new JVarDeclList(a,b); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("varDeclList",25, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -644,7 +644,7 @@ class CUP$parser$actions {
           case 12: // fmlList ::= 
             {
               JFmlList RESULT =null;
-		 RESULT = new JFmlList(); System.out.println("jfmlList created "); 
+		 RESULT = new JFmlList(); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("fmlList",11, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -661,8 +661,8 @@ class CUP$parser$actions {
 		JId i = (JId)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		int fleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int fright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
-		ArrayList<JFmlRest> f = (ArrayList<JFmlRest>)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 System.out.println("\n " + t + " - " + i + " - " + f); RESULT = new JFmlList(t,i,f); 
+		JFmlRestList f = (JFmlRestList)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+		 RESULT = new JFmlList(t,i,f); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("fmlList",11, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -670,8 +670,8 @@ class CUP$parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 14: // fmlRestList ::= 
             {
-              ArrayList<JFmlRest> RESULT =null;
-		 ArrayList<JFmlRest> mbare= new ArrayList<JFmlRest>(); System.out.println(mbare);  RESULT = mbare; 
+              JFmlRestList RESULT =null;
+		 RESULT = new JFmlRestList(); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("fmlRestList",27, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -679,14 +679,14 @@ class CUP$parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 15: // fmlRestList ::= fmlRest fmlRestList 
             {
-              ArrayList<JFmlRest> RESULT =null;
+              JFmlRestList RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
 		int aright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		JFmlRest a = (JFmlRest)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		int bleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int bright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
-		ArrayList<JFmlRest> b = (ArrayList<JFmlRest>)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 b.add(a); 
+		JFmlRestList b = (JFmlRestList)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+		 RESULT = new JFmlRestList(a,b); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("fmlRestList",27, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -772,7 +772,7 @@ class CUP$parser$actions {
               JMdBody RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)).left;
 		int aright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)).right;
-		ArrayList<JVarDecl> a = (ArrayList<JVarDecl>)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-3)).value;
+		JVarDeclList a = (JVarDeclList)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-3)).value;
 		int bleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
 		int bright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
 		JStmt b = (JStmt)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
