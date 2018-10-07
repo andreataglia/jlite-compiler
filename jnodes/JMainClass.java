@@ -1,13 +1,15 @@
 package jnodes;
 
 
-// CLASS CNAME LBRACE VOID MAIN LPAREN fmlList RPAREN mdBody RBRACE
+import utils.ClassNameType;
+
+// CLASS OBJECT LBRACE VOID MAIN LPAREN fmlList RPAREN mdBody RBRACE
 public class JMainClass extends JNode {
-    public JCname cname;
+    public JClassNameType cname;
     public JFmlList fmlList;
     public JMdBody mdBody;
 
-    public JMainClass(JCname cname, JFmlList fmlList, JMdBody mdBody) {
+    public JMainClass(JClassNameType cname, JFmlList fmlList, JMdBody mdBody) {
         this.cname = cname;
         this.fmlList = fmlList;
         this.mdBody = mdBody;

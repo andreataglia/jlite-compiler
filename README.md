@@ -1,6 +1,9 @@
-# jlite-parser
+# jlite front end compiler 
 
-This is a Java parser for jLite programs. The grammar of jlite can be found in the pdf file `assignment_text.pdf`.
+
+This is a Java front end compiler for jLite programs. The grammar of jlite can be found in the pdf file `assignment_text.pdf`.
+
+The compiler aims at isolating in the best possible the way all the programming language details so as to isolate from the backend compiler work. This allows any backend compilers to be used as it can just take care of the machine code details.
 
 The project consists of two main parts: the Lexer and the Parser. The Lexer has been created using the jflex tool which creates java classes starting from a .lex specification file. The Parsers has been produced using Java Cup, which produces java classes out of a .cup specification file. The Main class starts the parsing process using the generated classes as described above taking an input file name from command line argument.  
 

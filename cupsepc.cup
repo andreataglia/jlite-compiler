@@ -2,6 +2,9 @@
    
 import java_cup.runtime.*;
 import jnodes.*;
+import utils.*;
+import java.util.ArrayList;
+
 
 parser code {:
     
@@ -45,14 +48,14 @@ non terminal JProgram program;
 non terminal JId ident;
 non terminal JClassDecl classDecl;
 non terminal JClassDeclBody classDeclBody;
-non terminal JClassDeclList classDeclList;
+non terminal ArrayList<JClassDecl> classDeclList;
 non terminal JExpList expList;
 non terminal JExpRest expRest;
 non terminal JExpRestList expRestList;
 non terminal JMainClass mainClass;
 non terminal JFmlList fmlList;
 non terminal JFmlRest fmlRest;
-non terminal JType type;
+non terminal JBasicType type;
 non terminal JStmt stmt;
 non terminal JBExp bExp;
 non terminal JExp exp;
@@ -64,17 +67,16 @@ non terminal JAtom atom;
 non terminal JFtr ftr;
 non terminal JSExp sExp;
 non terminal JVarDecl varDecl;
-non terminal JVarDeclList varDeclList;
+non terminal ArrayList<JVarDecl> varDeclList;
 non terminal JStmtList stmtList;
-non terminal JFmlRestList fmlRestList;
+non terminal ArrayList<JFmlRest> fmlRestList;
 non terminal JMdBody mdBody;
-non terminal JCname cname;
-
+non terminal JClassNameType cname;
 
 /* -------------Precedence and Associatively of Terminals Section----------- */
-   
+
 /* The lower line always will have higher precedence than the line before it.*/
-  precedence left PLUS, MINUS; 
+  precedence left PLUS, MINUS;
   precedence left TIMES, DIVIDE;
 
 /* ----------------------------Grammar Section-------------------- */
@@ -85,15 +87,15 @@ non terminal JCname cname;
   mainClass ::= CLASS cname:c LBRACE VOID MAIN LPAREN fmlList:f RPAREN mdBody:m RBRACE {: RESULT = new JMainClass(c, f, m); :}
             ;
 
-  classDeclList ::= {: RESULT = new JClassDeclList(); :}
-                | classDecl:a classDeclList:b {: RESULT = new JClassDeclList(a,b); :}
+  classDeclList ::= {: RESULT = new ArrayList<JClassDecl>(); :}
+                | classDecl:a classDeclList:b {: b.add(a); :}
                 ;
 
   classDecl ::= CLASS cname:a LBRACE classDeclBody:b RBRACE {: reducedVarDecl = false; RESULT = new JClassDecl(a,b); :}
             ;
 
-  varDeclList ::= {: RESULT = new JVarDeclList(); :}
-              | varDecl:a varDeclList:b {: RESULT = new JVarDeclList(a,b); :}
+  varDeclList ::= {: RESULT = new ArrayList<JVarDecl>(); :}
+              | varDecl:a varDeclList:b {: b.add(a); :}
               ;
 
   varDecl ::= type:a ident:b SEMICOLON {: RESULT = new JVarDecl(a,b); :}
@@ -104,21 +106,21 @@ non terminal JCname cname;
                 | type:a ident:b LPAREN fmlList:c RPAREN mdBody:d classDeclBody:e {: if(reducedVarDecl){ report_fatal_error("cannot accept VarDecl after MdDecl", "");} RESULT = new JClassDeclBody(a,b,c,d,e); :}
                 ;
 
-  fmlList ::= {: RESULT = new JFmlList(); :}
-          | type:t ident:i fmlRestList:f {: RESULT = new JFmlList(t,i,f); :}
+  fmlList ::= {: RESULT = new JFmlList(); System.out.println("jfmlList created "); :}
+          | type:t ident:i fmlRestList:f {: System.out.println("\n " + t + " - " + i + " - " + f); RESULT = new JFmlList(t,i,f); :}
           ;
 
-  fmlRestList ::= {: RESULT = new JFmlRestList(); :}
-              | fmlRest:a fmlRestList:b {: RESULT = new JFmlRestList(a,b); :}
+  fmlRestList ::= {: ArrayList<JFmlRest> mbare= new ArrayList<JFmlRest>(); System.out.println(mbare);  RESULT = mbare; :}
+              | fmlRest:a fmlRestList:b {: b.add(a); :}
               ;
 
   fmlRest ::= COMMA type:t ident:i {: RESULT = new JFmlRest(t,i); :}
           ;
 
-  type ::= INT:s {: RESULT = new JType(String.valueOf(s)); :}
-        | BOOL:s {: RESULT = new JType(String.valueOf(s)); :}
-        | STRING:s {: RESULT = new JType(String.valueOf(s)); :}
-        | VOID:s {: RESULT = new JType(String.valueOf(s)); :}
+  type ::= INT:s {: RESULT = new JBasicType(new BasicType(BasicType.DataType.INT)); :}
+        | BOOL:s {: RESULT = new JBasicType(new BasicType(BasicType.DataType.INT)); :}
+        | STRING:s {: RESULT = new JBasicType(new BasicType(BasicType.DataType.INT)); :}
+        | VOID:s {: RESULT = new JBasicType(new BasicType(BasicType.DataType.INT)); :}
         | cname:s {: RESULT = s; :}
         ;
 
@@ -201,7 +203,7 @@ non terminal JCname cname;
   ident ::= ID:id {: RESULT = new JId(String.valueOf(id)); :}
         ;
 
-  cname ::= CNAME:c {: RESULT = new JCname(String.valueOf(c)); :}
+  cname ::= CNAME:c {: RESULT = new JClassNameType(new ClassNameType(String.valueOf(c))); :}
         ;
 
   expList ::= exp:a expRestList:b  {: RESULT = new JExpList(a, b); :}

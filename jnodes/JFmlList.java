@@ -1,13 +1,19 @@
 package jnodes;
 
+import java.util.ArrayList;
+import java.util.List;
+
 //fmlList ::=
 //          | type ident fmlRestList
 public class JFmlList extends JNode {
-    public JType type;
+    //first param
+    public JBasicType type;
     public JId id;
-    public JFmlRestList jfmlRestList;
 
-    public JFmlList(JType type, JId id, JFmlRestList jfmlRestList) {
+    //rest of params
+    public List<JFmlRest> jfmlRestList;
+
+    public JFmlList(JBasicType type, JId id, ArrayList<JFmlRest> jfmlRestList) {
         this.type = type;
         this.id = id;
         this.jfmlRestList = jfmlRestList;

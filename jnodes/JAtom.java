@@ -4,7 +4,7 @@ package jnodes;
 //       | atom LPAREN expList RPAREN
 //       | THIS
 //       | ident
-//       | NEW CNAME LPAREN RPAREN
+//       | NEW OBJECT LPAREN RPAREN
 //       | LPAREN exp RPAREN
 //       | NULL
 
@@ -14,11 +14,11 @@ public class JAtom extends JNode {
     public JExpList expList;
     public JExp exp;
     public String s;
-    public JCname cname;
+    public JClassNameType cname;
 
     String print;
 
-    public JAtom(JCname cname) {
+    public JAtom(JClassNameType cname) {
         this.cname = cname;
         print = "new " + cname + "()";
     }

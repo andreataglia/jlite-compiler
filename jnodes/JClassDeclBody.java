@@ -1,11 +1,13 @@
 package jnodes;
 
+import utils.DataType;
+
 //classDeclBody ::=
 //                | type ident SEMICOLON classDeclBody
 //                | type ident LPAREN fmlList RPAREN mdBody classDeclBody
 //                ;
 public class JClassDeclBody extends JNode{
-    public JType type;
+    public JBasicType type;
     public JId id;
     public JClassDeclBody classDeclBody;
 
@@ -14,14 +16,14 @@ public class JClassDeclBody extends JNode{
 
     String print;
 
-    public JClassDeclBody(JType type, JId id, JClassDeclBody classDeclBody) {
+    public JClassDeclBody(JBasicType type, JId id, JClassDeclBody classDeclBody) {
         this.type = type;
         this.id = id;
         this.classDeclBody = classDeclBody;
         print = type + " " + id +";\n" + classDeclBody;
     }
 
-    public JClassDeclBody(JType type, JId id, JFmlList fmlList, JMdBody mdBody, JClassDeclBody classDeclBody) {
+    public JClassDeclBody(JBasicType type, JId id, JFmlList fmlList, JMdBody mdBody, JClassDeclBody classDeclBody) {
         this.type = type;
         this.id = id;
         this.fmlList = fmlList;

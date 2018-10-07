@@ -1,12 +1,11 @@
 package jnodes;
 
-
 //classDecl ::= CLASS cname LBRACE classDeclBody RBRACE
 public class JClassDecl extends JNode{
-    public JCname cname;
+    public JClassNameType cname;
     public JClassDeclBody classDeclBody;
 
-    public JClassDecl(JCname cname, JClassDeclBody classDeclBody) {
+    public JClassDecl(JClassNameType cname, JClassDeclBody classDeclBody) {
         this.cname = cname;
         this.classDeclBody = classDeclBody;
     }
