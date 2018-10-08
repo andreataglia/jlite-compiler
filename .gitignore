@@ -24,3 +24,6 @@ hs_err_pid*
 
 #project specific
 output.txt
+parser.java
+sym.java
+Lexer.java
