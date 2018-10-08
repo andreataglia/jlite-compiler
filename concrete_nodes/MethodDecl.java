@@ -4,7 +4,6 @@ import utils.BasicType;
 import utils.FunctionType;
 import utils.Visitor;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,8 +20,16 @@ public class MethodDecl extends Node {
         this.name = name;
         this.params = params;
         this.returnType = returnType;
-        this.varDeclList = varDeclList;
-        this.stmtList = stmtList;
+        if (varDeclList == null) {
+            this.varDeclList = new HashMap<>();
+        } else {
+            this.varDeclList = varDeclList;
+        }
+        if (stmtList == null) {
+            this.stmtList = new ArrayList<>();
+        } else {
+            this.stmtList = stmtList;
+        }
     }
 
     @Override
@@ -30,7 +37,7 @@ public class MethodDecl extends Node {
         return visitor.visit(this);
     }
 
-    FunctionType getMethodSignature(){
+    FunctionType getMethodSignature() {
         ArrayList<BasicType> par = new ArrayList<>();
         for (Map.Entry<String, BasicType> entry : params.entrySet()) {
             par.add(entry.getValue());

@@ -12,4 +12,6 @@ public interface Visitor {
     Object visit(ClassDecl classDecl);
 
     Object visit(MethodDecl methodDecl);
+
+    Object visit(IfStmt ifStmt);
 }

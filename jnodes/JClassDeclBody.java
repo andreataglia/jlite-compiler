@@ -60,12 +60,14 @@ public class JClassDeclBody extends JNode {
         ArrayList<MethodDecl> methodDecls = new ArrayList<>();
         if (mdBody != null) {
             methodDecls.add(getMethodDecl());
+        }
+        if (classDeclBody != null){
             methodDecls.addAll(classDeclBody.getMethodDeclList());
         }
         return methodDecls;
     }
 
     MethodDecl getMethodDecl() {
-        return new MethodDecl(id.s, fmlList.getParamsList(), type.basicType, null, null);
+        return new MethodDecl(id.s, fmlList.getParamsList(), type.basicType, mdBody.getVarDeclList(), mdBody.getStmts());
     }
 }

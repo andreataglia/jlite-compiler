@@ -1,4 +1,5 @@
 package concrete_nodes;
 
-public abstract class Stmt {
+public abstract class Stmt extends Node{
+
 }

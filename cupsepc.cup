@@ -132,7 +132,7 @@ non terminal JClassNameType cname;
            ;
 
   stmt ::= IF LPAREN exp:e RPAREN LBRACE stmt:s stmtList:sl RBRACE ELSE LBRACE stmt:s2 stmtList:sl2 RBRACE {: RESULT = new JIfStmt(e,s,sl,s2,sl2); :}
-       | WHILE LPAREN exp:e RPAREN LBRACE stmt:s stmtList:sl RBRACE {: RESULT = new JWhileStmt(e,s,sl); :}
+       | WHILE LPAREN exp:e RPAREN LBRACE stmtList:sl RBRACE {: RESULT = new JWhileStmt(e,sl); :}
        | READLN:o LPAREN ident:i RPAREN SEMICOLON {: RESULT = new JIoStmt(o,i); :}
        | PRINTLN:o LPAREN exp:e RPAREN SEMICOLON {: RESULT = new JIoStmt(o,e); :}
        | ident:i EQUAL exp:e SEMICOLON {: RESULT = new JAssignStmt(i, e); :}
@@ -145,7 +145,7 @@ non terminal JClassNameType cname;
   exp ::= bExp:e  {: RESULT = e; :}
         | aExp:e  {: RESULT = e; :}
         | sExp:e  {: RESULT = e; :}
-      ;
+        ;
 
   bExp ::= bExp:b OR conj:c {: RESULT = new JBExp(b,c); :}
         | conj:c {: RESULT = new JBExp(c); :}

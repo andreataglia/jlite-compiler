@@ -34,6 +34,6 @@ public class JMainClass extends JNode {
     }
 
     private MethodDecl getMethodDecl(){
-        return new MethodDecl("main", fmlList.getParamsList(), new BasicType(BasicType.DataType.VOID), null, null);
+        return new MethodDecl("main", fmlList.getParamsList(), new BasicType(BasicType.DataType.VOID), mdBody.getVarDeclList(), mdBody.getStmts());
     }
 }
