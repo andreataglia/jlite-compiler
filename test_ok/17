@@ -2,6 +2,6 @@
 class Main {
     // Fails type checking
     Void main() {
-        a = 13 || 12;
+        a = 12 || 13;
     }
 }

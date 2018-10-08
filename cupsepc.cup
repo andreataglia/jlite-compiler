@@ -183,7 +183,7 @@ non terminal JCname cname;
   aOp ::= PLUS:b {: RESULT= b; :} | MINUS:b {: RESULT=b; :} | TIMES:b {: RESULT=b; :} | DIVIDE:b {: RESULT=b; :}
   	   ;
 
-  ftr ::= INTEGER_LITERAL:n {: RESULT = new JFtr(n); :}
+  ftr ::= INTEGER_LITERAL:n {: RESULT = new JFtr(n); System.out.print(">>>>>int lit>>>>"); :}
         | MINUS ftr:n {: RESULT = new JFtr(n); :}
         | atom:n {: RESULT = new JFtr(n); :}
       ; /*arithmetic factor*/
