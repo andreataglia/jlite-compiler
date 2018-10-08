@@ -1,6 +1,11 @@
 package jnodes;
 
 
+import concrete_nodes.expressions.ArithExpr;
+import concrete_nodes.expressions.OneFactorArithExpr;
+import concrete_nodes.expressions.TwoFactorsArithExpr;
+import utils.ArithOperand;
+
 //aExp ::= aExp aOp ftr | ftr
 public class JAExp extends JExp {
     public JAExp aexp;
@@ -25,5 +30,16 @@ public class JAExp extends JExp {
     @Override
     public String toString() {
         return print;
+    }
+
+    @Override
+    ArithExpr getConcreteExpr() {
+        ArithExpr arithExpr = null;
+        if (aOp != null){
+            arithExpr = new TwoFactorsArithExpr(ArithOperand.fromString(aOp), aexp.getConcreteExpr(), ftr.getConcreteNode());
+        }else{
+            arithExpr = ftr.getConcreteNode();
+        }
+        return arithExpr;
     }
 }

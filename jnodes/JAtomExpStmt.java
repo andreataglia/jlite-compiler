@@ -1,5 +1,7 @@
 package jnodes;
 
+import concrete_nodes.Stmt;
+
 // atom LPAREN expList RPAREN SEMICOLON
 public class JAtomExpStmt extends JStmt {
     public JAtom atom;
@@ -13,5 +15,10 @@ public class JAtomExpStmt extends JStmt {
     @Override
     public String toString() {
         return atom + "(" + expList + ");\n";
+    }
+
+    @Override
+    Stmt getConcreteStmt() {
+        return null; //TODO impl
     }
 }

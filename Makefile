@@ -5,10 +5,10 @@ CUP=$(JAVA) -cp .:java-cup-11b.jar java_cup.Main <
 
 all: Main.class
 
-Main.class: Main.java Lexer.java parser.java jnodes/*.java utils/*.java concrete_nodes/*.java
+Main.class: Main.java Lexer.java parser.java jnodes/*.java utils/*.java concrete_nodes/*.java concrete_nodes/expressions/*.java
 
 %.class: %.java
-	$(JAVAC) $^
+	@$(JAVAC) $^
 
 Lexer.java: lexspec.flex
 	$(JFLEX) lexspec.flex

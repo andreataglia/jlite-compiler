@@ -34,7 +34,10 @@ public class JMdBody extends JNode{
     }
 
     ArrayList<Stmt> getStmts(){
-        return null;
+        ArrayList<Stmt> list = new ArrayList<>();
+        list.add(stmt.getConcreteStmt());
+        list.addAll(stmtList.getStmtList());
+        return list;
     }
 
 }

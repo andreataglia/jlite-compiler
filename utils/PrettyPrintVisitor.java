@@ -1,6 +1,10 @@
 package utils;
 
 import concrete_nodes.*;
+import concrete_nodes.expressions.ArithExpr;
+import concrete_nodes.expressions.Expr;
+import concrete_nodes.expressions.OneFactorArithExpr;
+import concrete_nodes.expressions.TwoFactorsArithExpr;
 
 import java.util.Map;
 
@@ -19,19 +23,20 @@ public class PrettyPrintVisitor implements Visitor {
 
     @Override
     public Object visit(Program program) {
-        System.out.println(getIndentation() + "Program");
+        System.out.print("\n" + getIndentation() + "Program");
         symbolTable.indentLevel++;
         program.mainClass.accept(this);
         for (ClassDecl c : program.classDeclList) {
             c.accept(this);
         }
+        System.out.println("\n");
         symbolTable.indentLevel--;
         return null;
     }
 
     @Override
     public Object visit(MainClass mainClass) {
-        System.out.println(getIndentation() + "MainClass-" + mainClass.className.name);
+        System.out.print("\n" + getIndentation() + "MainClass-" + mainClass.className.name);
         symbolTable.indentLevel++;
         printClass(mainClass, getIndentation());
         symbolTable.indentLevel--;
@@ -40,7 +45,7 @@ public class PrettyPrintVisitor implements Visitor {
 
     @Override
     public Object visit(ClassDecl classDecl) {
-        System.out.println(getIndentation() + "ClassDecl-" + classDecl.className.name);
+        System.out.print("\n" + getIndentation() + "ClassDecl-" + classDecl.className.name);
         symbolTable.indentLevel++;
         printClass(classDecl, getIndentation());
         symbolTable.indentLevel--;
@@ -49,18 +54,63 @@ public class PrettyPrintVisitor implements Visitor {
 
     @Override
     public Object visit(MethodDecl methodDecl) {
-        System.out.println(getIndentation() + "MethodDecl-" + methodDecl.returnType + " " + methodDecl.name + " " + methodDecl.params.keySet().toString());
+        System.out.print("\n" + getIndentation() + "MethodDecl-" + methodDecl.returnType + " " + methodDecl.name + " " + methodDecl.params.keySet().toString());
         symbolTable.indentLevel++;
         printMethod(methodDecl, getIndentation());
         symbolTable.indentLevel--;
         return null;
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    //////////////////////// Stmts ///////////////////////////////////////////////
+
     @Override
-    public Object visit(IfStmt ifStmt) {
+    public Object visit(Stmt stmt) {
+        System.out.print("\n" + getIndentation() );
         return null;
     }
 
+    @Override
+    public Object visit(IfStmt stmt) {
+        return null;
+    }
+
+    @Override
+    public Object visit(ReturnStmt stmt) {
+        System.out.print("returnStmt ");
+        if (stmt.expr != null) stmt.expr.accept(this);
+        return null;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////// Expressions /////////////////////////////////
+
+    @Override
+    public Object visit(Expr expr) {
+        return null;
+    }
+
+    @Override
+    public Object visit(ArithExpr expr) {
+        System.out.print(" ");
+        return null;
+    }
+
+    @Override
+    public Object visit(TwoFactorsArithExpr expr) {
+        expr.leftSide.accept(this);
+        System.out.print(expr.operand);
+        expr.rightSide.accept(this);
+        return null;
+    }
+
+    @Override
+    public Object visit(OneFactorArithExpr expr) {
+        System.out.print(expr);
+        return null;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     //////////////////////// Helper Methods ///////////////////////////////////////
 
     private String getIndentation() {
@@ -71,27 +121,27 @@ public class PrettyPrintVisitor implements Visitor {
         return ret;
     }
 
-    private void printClass(ClassDecl classDecl, String spaces){
-        if (!classDecl.varDeclList.isEmpty()){
+    private void printClass(ClassDecl classDecl, String spaces) {
+        if (!classDecl.varDeclList.isEmpty()) {
             for (Map.Entry<String, BasicType> entry : classDecl.varDeclList.entrySet()) {
-                System.out.println(spaces + "FieldDecl-" + entry.getValue() + " " + entry.getKey());
+                System.out.print("\n" + spaces + "FieldDecl-" + entry.getValue() + " " + entry.getKey());
             }
         }
-        if (!classDecl.methodDeclList.isEmpty()){
+        if (!classDecl.methodDeclList.isEmpty()) {
             for (MethodDecl m : classDecl.methodDeclList) {
                 m.accept(this);
             }
         }
     }
 
-    private void printMethod(MethodDecl methodDecl, String spaces){
-        if (!methodDecl.varDeclList.isEmpty()){
+    private void printMethod(MethodDecl methodDecl, String spaces) {
+        if (!methodDecl.varDeclList.isEmpty()) {
             for (Map.Entry<String, BasicType> entry : methodDecl.varDeclList.entrySet()) {
-                System.out.println(spaces + "LocalVarDecl-" + entry.getValue() + " " + entry.getKey());
+                //TODO add types
+                System.out.print("\n" + spaces + "LocalVarDecl-" + entry.getValue() + " " + entry.getKey());
             }
         }
         if (!methodDecl.stmtList.isEmpty()) {
-            System.out.println("WARNING: should never have empty stmtList in methods");
             for (Stmt s : methodDecl.stmtList) {
                 s.accept(this);
             }

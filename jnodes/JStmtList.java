@@ -1,5 +1,9 @@
 package jnodes;
 
+import concrete_nodes.Stmt;
+
+import java.util.ArrayList;
+
 //stmtList ::=
 //           | stmt stmtList
 public class JStmtList extends JNode{
@@ -22,5 +26,14 @@ public class JStmtList extends JNode{
     @Override
     public String toString() {
         return print;
+    }
+
+    ArrayList<Stmt> getStmtList(){
+        ArrayList<Stmt> list = new ArrayList<>();
+        if (stmt != null){
+            list.add(stmt.getConcreteStmt());
+            list.addAll(stmtList.getStmtList());
+        }
+        return list;
     }
 }

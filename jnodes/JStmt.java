@@ -1,6 +1,8 @@
 package jnodes;
 
 
+import concrete_nodes.Stmt;
+
 //  stmt ::= IF LPAREN exp RPAREN LBRACE stmt stmtList RBRACE ELSE LBRACE stmt stmtList RBRACE
 //       | WHILE LPAREN exp RPAREN LBRACE stmt stmtList RBRACE
 //       | READLN LPAREN ident RPAREN SEMICOLON
@@ -11,5 +13,5 @@ package jnodes;
 //       | RETURN exp SEMICOLON
 //       | RETURN SEMICOLON
 abstract public class JStmt extends JNode{
-
+    abstract Stmt getConcreteStmt();
 }

@@ -1,5 +1,7 @@
 package jnodes;
 
+import concrete_nodes.Stmt;
+
 // atom DOT ident EQUAL exp SEMICOLON
 public class JAtomStmt extends JStmt {
     public JAtom atom;
@@ -15,5 +17,10 @@ public class JAtomStmt extends JStmt {
     @Override
     public String toString() {
         return atom + "." + id + "=" + exp + ";\n";
+    }
+
+    @Override
+    Stmt getConcreteStmt() {
+        return null; //TODO impl
     }
 }

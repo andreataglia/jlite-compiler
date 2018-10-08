@@ -8,6 +8,9 @@ package jnodes;
 //       | LPAREN exp RPAREN
 //       | NULL
 
+import concrete_nodes.expressions.Atom;
+import concrete_nodes.expressions.AtomIdentifier;
+
 public class JAtom extends JNode {
     public JAtom atom;
     public JId id;
@@ -16,7 +19,9 @@ public class JAtom extends JNode {
     public String s;
     public JClassNameType cname;
 
-    String print;
+    private Atom concreteAtom;  //TODO impl
+
+    private String print;
 
     public JAtom(JClassNameType cname) {
         this.cname = cname;
@@ -43,6 +48,7 @@ public class JAtom extends JNode {
     public JAtom(JId id) {
         this.id = id;
         print = id.toString();
+        concreteAtom = new AtomIdentifier(id.toString());
     }
 
     public JAtom(String s){
@@ -50,10 +56,12 @@ public class JAtom extends JNode {
         print = s;
     }
 
-
-
     @Override
     public String toString() {
         return print;
+    }
+
+    public Atom getConcreteNode(){
+        return concreteAtom;
     }
 }

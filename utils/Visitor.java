@@ -1,6 +1,10 @@
 package utils;
 
 import concrete_nodes.*;
+import concrete_nodes.expressions.ArithExpr;
+import concrete_nodes.expressions.Expr;
+import concrete_nodes.expressions.OneFactorArithExpr;
+import concrete_nodes.expressions.TwoFactorsArithExpr;
 
 public interface Visitor {
     Object visit(Node node);
@@ -13,5 +17,17 @@ public interface Visitor {
 
     Object visit(MethodDecl methodDecl);
 
-    Object visit(IfStmt ifStmt);
+    Object visit(Stmt stmt);
+
+    Object visit(IfStmt stmt);
+
+    Object visit(ReturnStmt stmt);
+
+    Object visit(Expr expr);
+
+    Object visit(ArithExpr expr);
+
+    Object visit(TwoFactorsArithExpr expr);
+
+    Object visit(OneFactorArithExpr expr);
 }

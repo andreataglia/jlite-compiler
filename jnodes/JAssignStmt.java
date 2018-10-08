@@ -1,5 +1,7 @@
 package jnodes;
 
+import concrete_nodes.Stmt;
+
 // ident EQUAL exp SEMICOLON
 // | atom DOT ident EQUAL exp SEMICOLON
 public class JAssignStmt extends JStmt {
@@ -21,5 +23,10 @@ public class JAssignStmt extends JStmt {
     @Override
     public String toString() {
         return (atom != null ? atom + "." : "") + id + "=" + exp + ";";
+    }
+
+    @Override
+    Stmt getConcreteStmt() {
+        return null; //TODO impl
     }
 }

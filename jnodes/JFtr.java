@@ -1,5 +1,7 @@
 package jnodes;
 
+import concrete_nodes.expressions.OneFactorArithExpr;
+
 // ftr ::= INTEGER_LITERAL
 //        | MINUS ftr
 //        | atom
@@ -31,5 +33,16 @@ public class JFtr extends JNode {
     @Override
     public String toString() {
         return print;
+    }
+
+    OneFactorArithExpr getConcreteNode(){
+        if (integer != null){
+            return new OneFactorArithExpr(integer);
+        }else if (ftr != null){
+            return new OneFactorArithExpr(ftr.getConcreteNode());
+        }else if (atom != null){
+            return new OneFactorArithExpr(atom.getConcreteNode());
+        }
+        return null;
     }
 }

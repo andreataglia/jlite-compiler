@@ -1,5 +1,7 @@
 package jnodes;
 
+import concrete_nodes.Stmt;
+
 //IF LPAREN exp RPAREN LBRACE stmt stmtList RBRACE ELSE LBRACE stmt stmtList RBRACE
 public class JIfStmt extends JStmt {
     public JExp exp;
@@ -19,5 +21,10 @@ public class JIfStmt extends JStmt {
     @Override
     public String toString() {
         return "if("+exp+"){\n"+stmt1+" "+stmtList1+"}else{\n"+stmt2+" "+stmtList2+"}";
+    }
+
+    @Override
+    Stmt getConcreteStmt() {
+        return null; //TODO impl
     }
 }

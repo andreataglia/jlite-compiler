@@ -1,5 +1,7 @@
 package jnodes;
 
+import concrete_nodes.expressions.Expr;
+
 //bExp ::= bExp OR conj
 //        | conj
 //        | bExp OR atom
@@ -49,5 +51,10 @@ public class JBExp extends JExp {
     @Override
     public String toString() {
         return print;
+    }
+
+    @Override
+    Expr getConcreteExpr() {
+        return null; //TODO impl
     }
 }

@@ -3,12 +3,12 @@ package concrete_nodes;
 import concrete_nodes.expressions.Expr;
 import utils.Visitor;
 
-import java.util.List;
+public class ReturnStmt extends Stmt {
+    public Expr expr;
 
-public class IfStmt extends Stmt {
-    public Expr condition;
-    public List<Stmt> trueBranch;
-    public List<Stmt> falseBranch;
+    public ReturnStmt(Expr expr) {
+        this.expr = expr;
+    }
 
     @Override
     public Object accept(Visitor visitor) {
