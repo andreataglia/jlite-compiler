@@ -1,0 +1,19 @@
+class Main {
+    Void main(Int a, Int b) {
+        a = a+b;
+        return;
+    }
+}
+
+class Test {
+    /*this is a test comment/////// */
+    /* test***********////////
+    Int a; //Comment///////////////
+
+
+    Int test(Int b, Int x) {
+        return b + x;
+    }
+}
+//Comment
+// Source: Kwon e3.j
