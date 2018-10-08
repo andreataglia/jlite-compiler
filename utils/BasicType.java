@@ -7,6 +7,15 @@ public class BasicType extends DataType {
         this.dataType = dataType;
     }
 
+    @Override
+    public String toString() {
+        String ret = dataType.name();
+        if (dataType == DataType.OBJECT){
+            ret = ((ClassNameType) this).name;
+        }
+        return ret;
+    }
+
     public enum DataType {
         INT,
         STRING,

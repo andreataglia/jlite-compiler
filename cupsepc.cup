@@ -118,9 +118,9 @@ non terminal JClassNameType cname;
           ;
 
   type ::= INT:s {: RESULT = new JBasicType(new BasicType(BasicType.DataType.INT)); :}
-        | BOOL:s {: RESULT = new JBasicType(new BasicType(BasicType.DataType.INT)); :}
-        | STRING:s {: RESULT = new JBasicType(new BasicType(BasicType.DataType.INT)); :}
-        | VOID:s {: RESULT = new JBasicType(new BasicType(BasicType.DataType.INT)); :}
+        | BOOL:s {: RESULT = new JBasicType(new BasicType(BasicType.DataType.BOOL)); :}
+        | STRING:s {: RESULT = new JBasicType(new BasicType(BasicType.DataType.STRING)); :}
+        | VOID:s {: RESULT = new JBasicType(new BasicType(BasicType.DataType.VOID)); :}
         | cname:s {: RESULT = s; :}
         ;
 

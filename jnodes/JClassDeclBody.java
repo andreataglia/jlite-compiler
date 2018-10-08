@@ -1,12 +1,18 @@
 package jnodes;
 
-import utils.DataType;
+import concrete_nodes.MethodDecl;
+import utils.BasicType;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 //classDeclBody ::=
 //                | type ident SEMICOLON classDeclBody
 //                | type ident LPAREN fmlList RPAREN mdBody classDeclBody
 //                ;
-public class JClassDeclBody extends JNode{
+public class JClassDeclBody extends JNode {
+
+    //either the method signature or the var decl
     public JBasicType type;
     public JId id;
     public JClassDeclBody classDeclBody;
@@ -14,13 +20,13 @@ public class JClassDeclBody extends JNode{
     public JFmlList fmlList;
     public JMdBody mdBody;
 
-    String print;
+    private String print;
 
     public JClassDeclBody(JBasicType type, JId id, JClassDeclBody classDeclBody) {
         this.type = type;
         this.id = id;
         this.classDeclBody = classDeclBody;
-        print = type + " " + id +";\n" + classDeclBody;
+        print = type + " " + id + ";\n" + classDeclBody;
     }
 
     public JClassDeclBody(JBasicType type, JId id, JFmlList fmlList, JMdBody mdBody, JClassDeclBody classDeclBody) {
@@ -39,5 +45,27 @@ public class JClassDeclBody extends JNode{
     @Override
     public String toString() {
         return print;
+    }
+
+    HashMap<String, BasicType> getVarDeclList() {
+        HashMap<String, BasicType> map = new HashMap<>();
+        if (mdBody == null) {
+            map.put(id.s, type.basicType);
+            map.putAll(classDeclBody.getVarDeclList());
+        }
+        return map;
+    }
+
+    ArrayList<MethodDecl> getMethodDeclList() {
+        ArrayList<MethodDecl> methodDecls = new ArrayList<>();
+        if (mdBody != null) {
+            methodDecls.add(getMethodDecl());
+            methodDecls.addAll(classDeclBody.getMethodDeclList());
+        }
+        return methodDecls;
+    }
+
+    MethodDecl getMethodDecl() {
+        return new MethodDecl(id.s, fmlList.getParamsList(), type.basicType, null, null);
     }
 }

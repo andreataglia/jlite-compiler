@@ -1,6 +1,10 @@
 package jnodes;
 
 import concrete_nodes.ClassDecl;
+import utils.BasicType;
+import utils.ClassNameType;
+
+import java.util.HashMap;
 
 //classDecl ::= CLASS cname LBRACE classDeclBody RBRACE
 public class JClassDecl extends JNode{
@@ -18,6 +22,7 @@ public class JClassDecl extends JNode{
     }
 
     ClassDecl genConcreteClass(){
-        return new ClassDecl();
+        HashMap<String, BasicType> varDeclList = classDeclBody.getVarDeclList();
+        return new ClassDecl((ClassNameType) cname.basicType, varDeclList, classDeclBody.getMethodDeclList());
     }
 }

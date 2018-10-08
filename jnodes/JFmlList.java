@@ -1,5 +1,9 @@
 package jnodes;
 
+import utils.BasicType;
+
+import java.util.HashMap;
+
 //fmlList ::=
 //          | type ident fmlRestList
 public class JFmlList extends JNode {
@@ -22,5 +26,14 @@ public class JFmlList extends JNode {
     @Override
     public String toString() {
         return jfmlRestList == null ? "" : type + " " + id + " " + jfmlRestList;
+    }
+
+    HashMap<String, BasicType> getParamsList(){
+        HashMap<String, BasicType> map = new HashMap<>();
+        if (id != null){
+            map.put(id.s, type.basicType);
+            jfmlRestList.getParamsList();
+        }
+        return map;
     }
 }
