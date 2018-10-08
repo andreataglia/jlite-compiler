@@ -1,7 +1,7 @@
 class Prova {
  Void main (Class1 a, Class2 b, Bool x) {
 	if (a || b && c && d) {
-		while ((x != 1) && (y || z) && (x || y) || !true) {
+		while (x && !NULL && (y || z) && (x || y) || !true) {
 			return myCustomClass.myCustomMethod.myCustomNestedMethod();
 			return x;
 		}

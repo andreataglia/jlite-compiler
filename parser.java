@@ -999,7 +999,7 @@ class CUP$parser$actions {
 		int cleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int cright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		JConj c = (JConj)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new JBExp(c); 
+		 RESULT = new JBExp(c); System.out.println(">>>>>>bExp-conj>>>>");
               CUP$parser$result = parser.getSymbolFactory().newSymbol("bExp",15, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1071,7 +1071,7 @@ class CUP$parser$actions {
 		int aleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int aright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		JRExp a = (JRExp)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new JConj(a); 
+		 RESULT = new JConj(a); System.out.println(">>>>>>conj-rExp>>>>"); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("conj",17, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;

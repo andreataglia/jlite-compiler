@@ -87,6 +87,7 @@ end_comment = "*/"
     "+" { System.out.print(yytext()); return symbol(sym.PLUS,yytext()); }
     "-" { System.out.print(yytext()); return symbol(sym.MINUS,yytext()); }
     "*" { System.out.print(yytext()); return symbol(sym.TIMES,yytext()); }
+    "/" { System.out.print(yytext()); return symbol(sym.DIVIDE,yytext()); }
     "&&" { System.out.print(yytext()); return symbol(sym.AND,yytext()); }
     "||" { System.out.print(yytext()); return symbol(sym.OR,yytext()); }
     "==" { System.out.print(yytext()); return symbol(sym.DEQUAL,yytext()); }

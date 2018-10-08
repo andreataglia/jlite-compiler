@@ -150,7 +150,7 @@ non terminal JCname cname;
         | bExp:b OR atom:a {: RESULT = new JBExp(b,a); :}
         | atom:a1 OR atom:a2 {: RESULT = new JBExp(a1,a2); :}
         | atom:a OR conj:c {: RESULT = new JBExp(a,c); :}
-        ; /*binary expression*/
+        ; /*boolean expression*/
 
 
   conj ::= conj:a AND rExp:b {: RESULT = new JConj(a,b); :}
@@ -166,13 +166,15 @@ non terminal JCname cname;
         /*relational expression*/
         ;
 
+    /*binary operator*/
   bOp ::= LT:b {: RESULT=b; :} | GT:b {: RESULT=b; :} | LET:b {: RESULT=b; :} | GET:b {: RESULT=b; :} | DEQUAL:b {: RESULT=b; :} | DIFF:b {: RESULT=b; :}
       ;
 
   bGrd ::= NOT bGrd:a {: RESULT = new JBGrd(a); :}
         | TRUE:a {: RESULT = new JBGrd(String.valueOf(a)); :}
         | FALSE:a {: RESULT = new JBGrd(String.valueOf(a)); :}
-        ;  /*binary grd*/
+        //| atom
+        ;  /*boolean ground term*/
 
   aExp ::= aExp:a aOp:b ftr:c  {: RESULT = new JAExp(a,b,c); :}
         | ftr:a {: RESULT = new JAExp(a); :} /*arithmetic expression*/
