@@ -36,12 +36,4 @@ public class MethodDecl extends Node {
     public Object accept(Visitor visitor) {
         return visitor.visit(this);
     }
-
-    FunctionType getMethodSignature() {
-        ArrayList<BasicType> par = new ArrayList<>();
-        for (Map.Entry<String, BasicType> entry : params.entrySet()) {
-            par.add(entry.getValue());
-        }
-        return new FunctionType(par, returnType);
-    }
 }

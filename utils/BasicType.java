@@ -3,14 +3,14 @@ package utils;
 public class BasicType extends DataType {
     public DataType dataType;
 
-    public BasicType(DataType dataType){
+    public BasicType(DataType dataType) {
         this.dataType = dataType;
     }
 
     @Override
     public String toString() {
-        String ret = dataType.name();
-        if (dataType == DataType.OBJECT){
+        String ret = dataType.name().toLowerCase();
+        if (dataType == DataType.OBJECT) {
             ret = ((ClassNameType) this).name;
         }
         return ret;
@@ -21,6 +21,11 @@ public class BasicType extends DataType {
         STRING,
         BOOL,
         VOID,
-        OBJECT
+        OBJECT,
+        NULL
+    }
+
+    public boolean equals(BasicType other) {
+        return this.toString().equalsIgnoreCase(other.toString());
     }
 }

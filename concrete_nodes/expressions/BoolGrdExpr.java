@@ -29,6 +29,18 @@ public class BoolGrdExpr extends BoolExpr {
         printString = atom.toString();
     }
 
+    public boolean isGround(){
+        return boolGrd != null;
+    }
+
+    public boolean isNegatedGround(){
+        return grdExpr != null;
+    }
+
+    public boolean isAtomGround(){
+        return atom != null;
+    }
+
     @Override
     public String toString() {
         return printString;
