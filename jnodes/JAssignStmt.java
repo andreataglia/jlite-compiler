@@ -18,7 +18,7 @@ public class JAssignStmt extends JStmt {
         stmt = new AssignmentStmt(id.s, exp.getConcreteExpr());
     }
 
-    public JAssignStmt(JId id, JExp exp, JAtom atom) {
+    public JAssignStmt(JAtom atom, JId id, JExp exp) {
         this.id = id;
         this.exp = exp;
         this.atom = atom;
