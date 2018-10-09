@@ -1,4 +1,10 @@
 package concrete_nodes;
 
-public class WhileStmt {
+import utils.Visitor;
+
+public class WhileStmt extends Stmt {
+    @Override
+    public Object accept(Visitor visitor) {
+        return visitor.visit(this);
+    }
 }
