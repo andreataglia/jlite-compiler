@@ -32,7 +32,7 @@ public class JFmlList extends JNode {
         HashMap<String, BasicType> map = new HashMap<>();
         if (id != null){
             map.put(id.s, type.basicType);
-            jfmlRestList.getParamsList();
+            map.putAll(jfmlRestList.getParamsList());
         }
         return map;
     }

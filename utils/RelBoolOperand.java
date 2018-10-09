@@ -25,4 +25,9 @@ public enum RelBoolOperand {
         }
         return null;
     }
+
+    @Override
+    public String toString() {
+        return symbol;
+    }
 }

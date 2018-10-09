@@ -82,11 +82,14 @@ end_comment = "*/"
     "main" { System.out.print(yytext()); return symbol(sym.MAIN, yytext()); }
     "this" { System.out.print(yytext()); return symbol(sym.THIS, yytext()); }
     "new" { System.out.print(yytext()); return symbol(sym.NEW, yytext()); }
+    "null" { System.out.print(yytext()); return symbol(sym.NULL, yytext()); }
+    "NULL" { System.out.print(yytext()); return symbol(sym.NULL, yytext()); }
 
     /* operators */
     "+" { System.out.print(yytext()); return symbol(sym.PLUS,yytext()); }
     "-" { System.out.print(yytext()); return symbol(sym.MINUS,yytext()); }
     "*" { System.out.print(yytext()); return symbol(sym.TIMES,yytext()); }
+    "/" { System.out.print(yytext()); return symbol(sym.DIVIDE,yytext()); }
     "&&" { System.out.print(yytext()); return symbol(sym.AND,yytext()); }
     "||" { System.out.print(yytext()); return symbol(sym.OR,yytext()); }
     "==" { System.out.print(yytext()); return symbol(sym.DEQUAL,yytext()); }

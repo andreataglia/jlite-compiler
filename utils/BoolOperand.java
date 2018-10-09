@@ -1,12 +1,17 @@
 package utils;
 
 public enum BoolOperand {
-        OR,
-        AND,
-        GT,
-        LT,
-        GET,
-        LET,
-        EQUAL,
-        NOT_EQUAL
+    OR("||"),
+    AND("&&");
+
+    String symbol;
+
+    BoolOperand(String symbol) {
+        this.symbol = symbol;
+    }
+
+    @Override
+    public String toString() {
+        return symbol;
+    }
 }

@@ -32,7 +32,7 @@ public class PrettyPrintVisitor implements Visitor {
         newLine();
         System.out.print("MainClass-" + mainClass.className.name);
         symbolTable.indentLevel++;
-        printClass(mainClass, getIndentation());
+        printClass(mainClass);
         symbolTable.indentLevel--;
         return null;
     }
@@ -42,7 +42,7 @@ public class PrettyPrintVisitor implements Visitor {
         newLine();
         System.out.print("ClassDecl-" + classDecl.className.name);
         symbolTable.indentLevel++;
-        printClass(classDecl, getIndentation());
+        printClass(classDecl);
         symbolTable.indentLevel--;
         return null;
     }
@@ -50,9 +50,16 @@ public class PrettyPrintVisitor implements Visitor {
     @Override
     public Object visit(MethodDecl methodDecl) {
         newLine();
-        System.out.print("MethodDecl-" + methodDecl.returnType + " " + methodDecl.name + " " + methodDecl.params.keySet().toString());
+        System.out.print("MethodDecl-" + methodDecl.returnType + " " + methodDecl.name +" [");
+        boolean fistParam = true;
+        for (Map.Entry<String, BasicType> entry : methodDecl.params.entrySet()) {
+            if (!fistParam) System.out.print(", ");
+            System.out.print(entry.getValue() + " " + entry.getKey());
+            fistParam = false;
+        }
+        System.out.print("]");
         symbolTable.indentLevel++;
-        printMethod(methodDecl, getIndentation());
+        printMethod(methodDecl);
         symbolTable.indentLevel--;
         return null;
     }
@@ -66,12 +73,14 @@ public class PrettyPrintVisitor implements Visitor {
         System.out.print("IfStmt ");
         stmt.condition.accept(this);
         symbolTable.indentLevel++;
-        for (Stmt s: stmt.trueBranch) {
+        for (Stmt s : stmt.trueBranch) {
             s.accept(this);
         }
+        symbolTable.indentLevel--;
         newLine();
         System.out.print("ElseBranch: ");
-        for (Stmt s: stmt.trueBranch) {
+        symbolTable.indentLevel++;
+        for (Stmt s : stmt.trueBranch) {
             s.accept(this);
         }
         symbolTable.indentLevel--;
@@ -84,7 +93,7 @@ public class PrettyPrintVisitor implements Visitor {
         System.out.print("WhileStmt ");
         stmt.condition.accept(this);
         symbolTable.indentLevel++;
-        for (Stmt s: stmt.body) {
+        for (Stmt s : stmt.body) {
             s.accept(this);
         }
         symbolTable.indentLevel--;
@@ -101,7 +110,7 @@ public class PrettyPrintVisitor implements Visitor {
     @Override
     public Object visit(PrintlnStmt stmt) {
         newLine();
-        System.out.print("returnStmt ");
+        System.out.print("PrintlnStmt ");
         if (stmt.expr != null) stmt.expr.accept(this);
         return null;
     }
@@ -124,8 +133,8 @@ public class PrettyPrintVisitor implements Visitor {
         newLine();
         System.out.print("FunctionCallStmt ");
         stmt.atom.accept(this);
-        if (!stmt.paramsList.isEmpty()){
-            for (Expr e: stmt.paramsList) {
+        if (!stmt.paramsList.isEmpty()) {
+            for (Expr e : stmt.paramsList) {
                 e.accept(this);
             }
         }
@@ -135,7 +144,7 @@ public class PrettyPrintVisitor implements Visitor {
     @Override
     public Object visit(ReturnStmt stmt) {
         newLine();
-        System.out.print("returnStmt ");
+        System.out.print("ReturnStmt ");
         if (stmt.expr != null) stmt.expr.accept(this);
         return null;
     }
@@ -234,10 +243,11 @@ public class PrettyPrintVisitor implements Visitor {
         return ret;
     }
 
-    private void printClass(ClassDecl classDecl, String spaces) {
+    private void printClass(ClassDecl classDecl) {
         if (!classDecl.varDeclList.isEmpty()) {
             for (Map.Entry<String, BasicType> entry : classDecl.varDeclList.entrySet()) {
-                System.out.print("\n" + spaces + "FieldDecl-" + entry.getValue() + " " + entry.getKey());
+                newLine();
+                System.out.print("FieldDecl-" + entry.getValue() + " " + entry.getKey());
             }
         }
         if (!classDecl.methodDeclList.isEmpty()) {
@@ -247,11 +257,11 @@ public class PrettyPrintVisitor implements Visitor {
         }
     }
 
-    private void printMethod(MethodDecl methodDecl, String spaces) {
+    private void printMethod(MethodDecl methodDecl) {
         if (!methodDecl.varDeclList.isEmpty()) {
             for (Map.Entry<String, BasicType> entry : methodDecl.varDeclList.entrySet()) {
-                //TODO add types
-                System.out.print("\n" + spaces + "LocalVarDecl-" + entry.getValue() + " " + entry.getKey());
+                newLine();
+                System.out.print("LocalVarDecl-" + entry.getValue() + " " + entry.getKey());
             }
         }
         if (!methodDecl.stmtList.isEmpty()) {

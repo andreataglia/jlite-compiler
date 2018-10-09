@@ -9,6 +9,8 @@ Void main(Int i, Int a, Int b,Int d){
 
  if ( a > b && new Mbare()){
        return null;
+       a = this;
+       com.t1 = aaaa + b;
  }else{
     return;
  }

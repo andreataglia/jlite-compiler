@@ -16,7 +16,7 @@ public class BoolGrdExpr extends BoolExpr {
 
     public BoolGrdExpr(BoolGrdExpr grdExpr) {
         this.grdExpr = grdExpr;
-        printString = grdExpr.toString();
+        printString = "!" + grdExpr;
     }
 
     public BoolGrdExpr(Boolean boolGrd) {
