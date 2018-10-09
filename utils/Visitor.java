@@ -1,13 +1,9 @@
 package utils;
 
 import concrete_nodes.*;
-import concrete_nodes.expressions.ArithExpr;
-import concrete_nodes.expressions.Expr;
-import concrete_nodes.expressions.ArithGrdExpr;
-import concrete_nodes.expressions.TwoFactorsArithExpr;
+import concrete_nodes.expressions.*;
 
 public interface Visitor {
-    Object visit(Node node);
 
     Object visit(Program program);
 
@@ -17,17 +13,39 @@ public interface Visitor {
 
     Object visit(MethodDecl methodDecl);
 
-    Object visit(Stmt stmt);
-
     Object visit(IfStmt stmt);
+
+    Object visit(WhileStmt stmt);
+
+    Object visit(ReadlnStmt stmt);
+
+    Object visit(PrintlnStmt stmt);
+
+    Object visit(AssignmentStmt stmt);
+
+    Object visit(FunctionCallStmt stmt);
 
     Object visit(ReturnStmt stmt);
 
-    Object visit(Expr expr);
-
-    Object visit(ArithExpr expr);
-
     Object visit(TwoFactorsArithExpr expr);
 
+    Object visit(TwoFactorsBoolExpr expr);
+
+    Object visit(TwoFactorsRelExpr expr);
+
     Object visit(ArithGrdExpr expr);
+
+    Object visit(StringExpr expr);
+
+    Object visit(BoolGrdExpr expr);
+
+    Object visit(AtomClassInstantiation atom);
+
+    Object visit(AtomFieldAccess atom);
+
+    Object visit(AtomFunctionCall atom);
+
+    Object visit(AtomGrd atom);
+
+    Object visit(AtomParenthesizedExpr atom);
 }

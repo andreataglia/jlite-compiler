@@ -10,9 +10,14 @@ public class IfStmt extends Stmt {
     public List<Stmt> trueBranch;
     public List<Stmt> falseBranch;
 
+    public IfStmt(Expr condition, List<Stmt> trueBranch, List<Stmt> falseBranch) {
+        this.condition = condition;
+        this.trueBranch = trueBranch;
+        this.falseBranch = falseBranch;
+    }
+
     @Override
     public Object accept(Visitor visitor) {
-        super.accept(visitor);
         return visitor.visit(this);
     }
 }

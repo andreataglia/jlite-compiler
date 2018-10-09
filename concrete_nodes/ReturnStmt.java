@@ -12,7 +12,6 @@ public class ReturnStmt extends Stmt {
 
     @Override
     public Object accept(Visitor visitor) {
-        super.accept(visitor);
         return visitor.visit(this);
     }
 }

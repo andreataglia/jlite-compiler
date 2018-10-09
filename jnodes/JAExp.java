@@ -34,9 +34,9 @@ public class JAExp extends JExp {
     @Override
     ArithExpr getConcreteExpr() {
         ArithExpr arithExpr = null;
-        if (aOp != null){
-            arithExpr = new TwoFactorsArithExpr(ArithOperand.fromString(aOp), aexp.getConcreteExpr(), ftr.getConcreteNode());
-        }else{
+        if (aOp != null) {
+            arithExpr = new TwoFactorsArithExpr(aexp.getConcreteExpr(), ArithOperand.fromString(aOp), ftr.getConcreteNode());
+        } else {
             arithExpr = ftr.getConcreteNode();
         }
         return arithExpr;

@@ -5,18 +5,18 @@ import utils.Visitor;
 
 public class TwoFactorsRelExpr extends BoolExpr {
     public ArithExpr leftSide;
-    public RelBoolOperand operand;
+    public RelBoolOperand operator;
     public ArithExpr rightSide;
 
-    public TwoFactorsRelExpr(ArithExpr leftSide, RelBoolOperand operand, ArithExpr rightSide) {
+    public TwoFactorsRelExpr(ArithExpr leftSide, RelBoolOperand operator, ArithExpr rightSide) {
         this.leftSide = leftSide;
-        this.operand = operand;
+        this.operator = operator;
         this.rightSide = rightSide;
     }
 
     @Override
     public String toString() {
-        return leftSide + " " + operand + " " + rightSide;
+        return leftSide + " " + operator + " " + rightSide;
     }
 
     @Override

@@ -1,4 +1,16 @@
 package concrete_nodes;
 
-public class ReadlnStmt {
+import utils.Visitor;
+
+public class ReadlnStmt extends Stmt{
+    public String id;
+
+    public ReadlnStmt(String id) {
+        this.id = id;
+    }
+
+    @Override
+    public Object accept(Visitor visitor) {
+        return visitor.visit(this);
+    }
 }

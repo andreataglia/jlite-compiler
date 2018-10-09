@@ -1,10 +1,7 @@
 package utils;
 
 import concrete_nodes.*;
-import concrete_nodes.expressions.ArithExpr;
-import concrete_nodes.expressions.Expr;
-import concrete_nodes.expressions.ArithGrdExpr;
-import concrete_nodes.expressions.TwoFactorsArithExpr;
+import concrete_nodes.expressions.*;
 
 import java.util.Map;
 
@@ -14,11 +11,6 @@ public class PrettyPrintVisitor implements Visitor {
 
     public PrettyPrintVisitor() {
         this.symbolTable = new SymbolTable();
-    }
-
-    @Override
-    public Object visit(Node node) {
-        return null;
     }
 
     @Override
@@ -69,18 +61,80 @@ public class PrettyPrintVisitor implements Visitor {
     //////////////////////// Stmts ///////////////////////////////////////////////
 
     @Override
-    public Object visit(Stmt stmt) {
-        System.out.print("\n" + getIndentation() );
+    public Object visit(IfStmt stmt) {
+        newLine();
+        System.out.print("IfStmt ");
+        stmt.condition.accept(this);
+        symbolTable.indentLevel++;
+        for (Stmt s: stmt.trueBranch) {
+            s.accept(this);
+        }
+        newLine();
+        System.out.print("ElseBranch: ");
+        for (Stmt s: stmt.trueBranch) {
+            s.accept(this);
+        }
+        symbolTable.indentLevel--;
         return null;
     }
 
     @Override
-    public Object visit(IfStmt stmt) {
+    public Object visit(WhileStmt stmt) {
+        newLine();
+        System.out.print("WhileStmt ");
+        stmt.condition.accept(this);
+        symbolTable.indentLevel++;
+        for (Stmt s: stmt.body) {
+            s.accept(this);
+        }
+        symbolTable.indentLevel--;
+        return null;
+    }
+
+    @Override
+    public Object visit(ReadlnStmt stmt) {
+        newLine();
+        System.out.print("ReadlnStmt " + stmt.id);
+        return null;
+    }
+
+    @Override
+    public Object visit(PrintlnStmt stmt) {
+        newLine();
+        System.out.print("returnStmt ");
+        if (stmt.expr != null) stmt.expr.accept(this);
+        return null;
+    }
+
+    @Override
+    public Object visit(AssignmentStmt stmt) {
+        newLine();
+        System.out.print("AssignmentStmt ");
+        if (stmt.leftSideAtom != null) {
+            stmt.leftSideAtom.accept(this);
+            System.out.print(".");
+        }
+        System.out.print(stmt.leftSideId + " = ");
+        stmt.rightSide.accept(this);
+        return null;
+    }
+
+    @Override
+    public Object visit(FunctionCallStmt stmt) {
+        newLine();
+        System.out.print("FunctionCallStmt ");
+        stmt.atom.accept(this);
+        if (!stmt.paramsList.isEmpty()){
+            for (Expr e: stmt.paramsList) {
+                e.accept(this);
+            }
+        }
         return null;
     }
 
     @Override
     public Object visit(ReturnStmt stmt) {
+        newLine();
         System.out.print("returnStmt ");
         if (stmt.expr != null) stmt.expr.accept(this);
         return null;
@@ -90,20 +144,25 @@ public class PrettyPrintVisitor implements Visitor {
     ////////////////////////////// Expressions /////////////////////////////////
 
     @Override
-    public Object visit(Expr expr) {
-        return null;
-    }
-
-    @Override
-    public Object visit(ArithExpr expr) {
-        System.out.print(" ");
-        return null;
-    }
-
-    @Override
     public Object visit(TwoFactorsArithExpr expr) {
         expr.leftSide.accept(this);
-        System.out.print(expr.operand);
+        System.out.print(" " + expr.operator + " ");
+        expr.rightSide.accept(this);
+        return null;
+    }
+
+    @Override
+    public Object visit(TwoFactorsBoolExpr expr) {
+        expr.leftSide.accept(this);
+        System.out.print(" " + expr.operator + " ");
+        expr.rightSide.accept(this);
+        return null;
+    }
+
+    @Override
+    public Object visit(TwoFactorsRelExpr expr) {
+        expr.leftSide.accept(this);
+        System.out.print(" " + expr.operator + " ");
         expr.rightSide.accept(this);
         return null;
     }
@@ -114,11 +173,57 @@ public class PrettyPrintVisitor implements Visitor {
         return null;
     }
 
+    @Override
+    public Object visit(StringExpr expr) {
+        System.out.print(expr);
+        return null;
+    }
+
+    @Override
+    public Object visit(BoolGrdExpr expr) {
+        System.out.print(expr);
+        return null;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    ////////////////////// Expressions - Atoms /////////////////////////////////
+
+    @Override
+    public Object visit(AtomClassInstantiation atom) {
+        System.out.print(atom);
+        return null;
+    }
+
+    @Override
+    public Object visit(AtomFieldAccess atom) {
+        System.out.print(atom);
+        return null;
+    }
+
+    @Override
+    public Object visit(AtomFunctionCall atom) {
+        System.out.print(atom);
+        return null;
+    }
+
+    @Override
+    public Object visit(AtomGrd atom) {
+        System.out.print(atom);
+        return null;
+    }
+
+    @Override
+    public Object visit(AtomParenthesizedExpr atom) {
+        System.out.print(atom);
+        return null;
+    }
+
+
     ///////////////////////////////////////////////////////////////////////////////
     //////////////////////// Helper Methods ///////////////////////////////////////
 
-    private void newLine(){
-        System.out.print("\n"+getIndentation());
+    private void newLine() {
+        System.out.print("\n" + getIndentation());
     }
 
     private String getIndentation() {
