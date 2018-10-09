@@ -3,7 +3,7 @@ package utils;
 import concrete_nodes.*;
 import concrete_nodes.expressions.ArithExpr;
 import concrete_nodes.expressions.Expr;
-import concrete_nodes.expressions.OneFactorArithExpr;
+import concrete_nodes.expressions.ArithGrdExpr;
 import concrete_nodes.expressions.TwoFactorsArithExpr;
 
 public interface Visitor {
@@ -29,5 +29,5 @@ public interface Visitor {
 
     Object visit(TwoFactorsArithExpr expr);
 
-    Object visit(OneFactorArithExpr expr);
+    Object visit(ArithGrdExpr expr);
 }

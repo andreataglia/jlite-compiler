@@ -2,20 +2,22 @@ package concrete_nodes.expressions;
 
 import utils.Visitor;
 
-public class AtomIdentifier extends Atom {
-    public String id;
+public class AtomFieldAccess extends Atom {
+    public Atom atom;
+    public String field;
 
-    public AtomIdentifier(String id) {
-        this.id = id;
+    public AtomFieldAccess(Atom atom, String field) {
+        this.atom = atom;
+        this.field = field;
+    }
+
+    @Override
+    public String toString() {
+        return atom + "." + field;
     }
 
     @Override
     public Object accept(Visitor visitor) {
         return visitor.visit(this);
-    }
-
-    @Override
-    public String toString() {
-        return id;
     }
 }

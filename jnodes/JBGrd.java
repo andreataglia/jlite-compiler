@@ -1,7 +1,6 @@
 package jnodes;
 
 
-import concrete_nodes.expressions.BoolExpr;
 import concrete_nodes.expressions.BoolGrdExpr;
 
 //bGrd ::= NOT bGrd | TRUE | FALSE

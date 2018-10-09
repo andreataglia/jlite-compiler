@@ -5,7 +5,13 @@ Void main(Int i, Int a, Int b,Int d){
  Int t2;
 
  Compute help;
-    return a + b;
+
+
+ if ( a > b && new Mbare()){
+       return null;
+ }else{
+    return;
+ }
 
 }
 
@@ -31,9 +37,9 @@ Bool i;
 
 Bool j;
 
+    return null(new Dummy());
 
-
-    //return this.getCompute().square(-3);
+    return true || this.getCompute().square(-3);
 
     return i + 3 + (a * 1);
 

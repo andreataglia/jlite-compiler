@@ -1,4 +1,16 @@
 package concrete_nodes.expressions;
 
-public class StringExpr {
+import utils.Visitor;
+
+public class StringExpr extends Expr {
+    String s;
+
+    public StringExpr(String s) {
+        this.s = s;
+    }
+
+    @Override
+    public Object accept(Visitor visitor) {
+        return visitor.visit(this);
+    }
 }

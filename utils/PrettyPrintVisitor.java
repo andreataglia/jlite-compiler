@@ -3,7 +3,7 @@ package utils;
 import concrete_nodes.*;
 import concrete_nodes.expressions.ArithExpr;
 import concrete_nodes.expressions.Expr;
-import concrete_nodes.expressions.OneFactorArithExpr;
+import concrete_nodes.expressions.ArithGrdExpr;
 import concrete_nodes.expressions.TwoFactorsArithExpr;
 
 import java.util.Map;
@@ -23,7 +23,8 @@ public class PrettyPrintVisitor implements Visitor {
 
     @Override
     public Object visit(Program program) {
-        System.out.print("\n" + getIndentation() + "Program");
+        newLine();
+        System.out.print("Program");
         symbolTable.indentLevel++;
         program.mainClass.accept(this);
         for (ClassDecl c : program.classDeclList) {
@@ -36,7 +37,8 @@ public class PrettyPrintVisitor implements Visitor {
 
     @Override
     public Object visit(MainClass mainClass) {
-        System.out.print("\n" + getIndentation() + "MainClass-" + mainClass.className.name);
+        newLine();
+        System.out.print("MainClass-" + mainClass.className.name);
         symbolTable.indentLevel++;
         printClass(mainClass, getIndentation());
         symbolTable.indentLevel--;
@@ -45,7 +47,8 @@ public class PrettyPrintVisitor implements Visitor {
 
     @Override
     public Object visit(ClassDecl classDecl) {
-        System.out.print("\n" + getIndentation() + "ClassDecl-" + classDecl.className.name);
+        newLine();
+        System.out.print("ClassDecl-" + classDecl.className.name);
         symbolTable.indentLevel++;
         printClass(classDecl, getIndentation());
         symbolTable.indentLevel--;
@@ -54,7 +57,8 @@ public class PrettyPrintVisitor implements Visitor {
 
     @Override
     public Object visit(MethodDecl methodDecl) {
-        System.out.print("\n" + getIndentation() + "MethodDecl-" + methodDecl.returnType + " " + methodDecl.name + " " + methodDecl.params.keySet().toString());
+        newLine();
+        System.out.print("MethodDecl-" + methodDecl.returnType + " " + methodDecl.name + " " + methodDecl.params.keySet().toString());
         symbolTable.indentLevel++;
         printMethod(methodDecl, getIndentation());
         symbolTable.indentLevel--;
@@ -105,13 +109,17 @@ public class PrettyPrintVisitor implements Visitor {
     }
 
     @Override
-    public Object visit(OneFactorArithExpr expr) {
+    public Object visit(ArithGrdExpr expr) {
         System.out.print(expr);
         return null;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
     //////////////////////// Helper Methods ///////////////////////////////////////
+
+    private void newLine(){
+        System.out.print("\n"+getIndentation());
+    }
 
     private String getIndentation() {
         String ret = "";

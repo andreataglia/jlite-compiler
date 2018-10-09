@@ -2,7 +2,7 @@ package concrete_nodes.expressions;
 
 import utils.Visitor;
 
-public class OneFactorArithExpr extends ArithExpr {
+public class ArithGrdExpr extends ArithExpr {
     //<INTEGER_LITERAL>
     public Integer intLiteral;
 
@@ -10,17 +10,17 @@ public class OneFactorArithExpr extends ArithExpr {
     public Atom atom;
 
     //-<Ftr>
-    public OneFactorArithExpr negateFactor;
+    public ArithGrdExpr negateFactor;
 
-    public OneFactorArithExpr(Integer intLiteral) {
+    public ArithGrdExpr(Integer intLiteral) {
         this.intLiteral = intLiteral;
     }
 
-    public OneFactorArithExpr(Atom atom) {
+    public ArithGrdExpr(Atom atom) {
         this.atom = atom;
     }
 
-    public OneFactorArithExpr(OneFactorArithExpr negateFactor) {
+    public ArithGrdExpr(ArithGrdExpr negateFactor) {
         this.negateFactor = negateFactor;
     }
 

@@ -5,7 +5,5 @@ import utils.Visitor;
 
 public abstract class Atom extends Node {
     @Override
-    public Object accept(Visitor visitor) {
-        return visitor.visit(this);
-    }
+    public abstract String toString();
 }

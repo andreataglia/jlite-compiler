@@ -1,4 +1,4 @@
 package concrete_nodes.expressions;
 
-public class BoolExpr {
+public abstract class BoolExpr extends Expr {
 }

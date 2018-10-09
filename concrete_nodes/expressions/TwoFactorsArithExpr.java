@@ -4,11 +4,11 @@ import utils.ArithOperand;
 import utils.Visitor;
 
 public class TwoFactorsArithExpr extends ArithExpr {
-    public ArithOperand operand;
     public ArithExpr leftSide;
+    public ArithOperand operand;
     public ArithExpr rightSide;
 
-    public TwoFactorsArithExpr(ArithOperand operand, ArithExpr leftSide, ArithExpr rightSide) {
+    public TwoFactorsArithExpr(ArithExpr leftSide, ArithOperand operand, ArithExpr rightSide) {
         this.operand = operand;
         this.leftSide = leftSide;
         this.rightSide = rightSide;
@@ -16,7 +16,6 @@ public class TwoFactorsArithExpr extends ArithExpr {
 
     @Override
     public Object accept(Visitor visitor) {
-        super.accept(visitor);
         return visitor.visit(this);
     }
 }

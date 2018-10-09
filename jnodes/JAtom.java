@@ -9,6 +9,7 @@ package jnodes;
 //       | NULL
 
 import concrete_nodes.expressions.*;
+import utils.ClassNameType;
 
 public class JAtom extends JNode {
     public JAtom atom;
@@ -25,7 +26,7 @@ public class JAtom extends JNode {
     public JAtom(JClassNameType cname) {
         this.cname = cname;
         print = "new " + cname + "()";
-        concreteAtom = new AtomClassInstantiation(cname.basicType.toString());
+        concreteAtom = new AtomClassInstantiation(new ClassNameType(cname.basicType.toString()));
     }
 
     public JAtom(JAtom atom, JId id) {
