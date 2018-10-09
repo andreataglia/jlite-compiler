@@ -50,7 +50,7 @@ public class PrettyPrintVisitor implements Visitor {
     @Override
     public Object visit(MethodDecl methodDecl) {
         newLine();
-        System.out.print("MethodDecl-" + methodDecl.returnType + " " + methodDecl.name +" [");
+        System.out.print("MethodDecl-" + methodDecl.returnType + " " + methodDecl.name + " [");
         boolean fistParam = true;
         for (Map.Entry<String, BasicType> entry : methodDecl.params.entrySet()) {
             if (!fistParam) System.out.print(", ");
@@ -80,7 +80,7 @@ public class PrettyPrintVisitor implements Visitor {
         newLine();
         System.out.print("ElseBranch: ");
         symbolTable.indentLevel++;
-        for (Stmt s : stmt.trueBranch) {
+        for (Stmt s : stmt.falseBranch) {
             s.accept(this);
         }
         symbolTable.indentLevel--;
@@ -133,11 +133,16 @@ public class PrettyPrintVisitor implements Visitor {
         newLine();
         System.out.print("FunctionCallStmt ");
         stmt.atom.accept(this);
+        System.out.print("(");
+        boolean firstParam = true;
         if (!stmt.paramsList.isEmpty()) {
             for (Expr e : stmt.paramsList) {
+                if (!firstParam) System.out.print(", ");
                 e.accept(this);
+                firstParam = false;
             }
         }
+        System.out.print(")");
         return null;
     }
 

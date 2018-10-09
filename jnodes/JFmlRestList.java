@@ -23,11 +23,11 @@ public class JFmlRestList extends JNode {
         return fmlRest == null ? "" : fmlRest + "" + fmlRestList;
     }
 
-    HashMap<String, BasicType> getParamsList(){
+    HashMap<String, BasicType> getParamsList() {
         HashMap<String, BasicType> map = new HashMap<>();
-        if (fmlRest != null){
+        if (fmlRest != null) {
             map.put(fmlRest.id.s, fmlRest.type.basicType);
-            fmlRestList.getParamsList();
+            map.putAll(fmlRestList.getParamsList());
         }
         return map;
     }
