@@ -1,6 +1,6 @@
 package jnodes;
 
-import concrete_nodes.expressions.OneFactorArithExpr;
+import concrete_nodes.expressions.ArithGrdExpr;
 
 // ftr ::= INTEGER_LITERAL
 //        | MINUS ftr
@@ -35,13 +35,13 @@ public class JFtr extends JNode {
         return print;
     }
 
-    OneFactorArithExpr getConcreteNode(){
+    ArithGrdExpr getConcreteNode(){
         if (integer != null){
-            return new OneFactorArithExpr(integer);
+            return new ArithGrdExpr(integer);
         }else if (ftr != null){
-            return new OneFactorArithExpr(ftr.getConcreteNode());
+            return new ArithGrdExpr(ftr.getConcreteNode());
         }else if (atom != null){
-            return new OneFactorArithExpr(atom.getConcreteNode());
+            return new ArithGrdExpr(atom.getConcreteNode());
         }
         return null;
     }

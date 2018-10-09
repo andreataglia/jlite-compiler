@@ -2,7 +2,6 @@ package jnodes;
 
 
 import concrete_nodes.expressions.ArithExpr;
-import concrete_nodes.expressions.OneFactorArithExpr;
 import concrete_nodes.expressions.TwoFactorsArithExpr;
 import utils.ArithOperand;
 

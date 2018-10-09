@@ -1,6 +1,7 @@
 package jnodes;
 
 import concrete_nodes.expressions.Expr;
+import concrete_nodes.expressions.StringExpr;
 
 public class JSExp extends JExp {
     public String s;
@@ -16,6 +17,6 @@ public class JSExp extends JExp {
 
     @Override
     Expr getConcreteExpr() {
-        return null; //TODO impl
+        return new StringExpr(s);
     }
 }

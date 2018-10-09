@@ -32,4 +32,4 @@ compile:
 
 
 clean:
-	rm -f parser.java Lexer.java sym.java output.txt *.class jnodes/*.class *~
+	rm -f parser.java Lexer.java sym.java output.txt *.class jnodes/*.class *~ utils/*.class concrete_nodes/*.class concrete_nodes/expressions/*.class

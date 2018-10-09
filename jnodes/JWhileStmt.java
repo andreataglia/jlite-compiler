@@ -1,6 +1,7 @@
 package jnodes;
 
 import concrete_nodes.Stmt;
+import concrete_nodes.WhileStmt;
 
 //WHILE LPAREN exp RPAREN LBRACE stmt stmtList RBRACE
 public class JWhileStmt extends JStmt {
@@ -19,6 +20,6 @@ public class JWhileStmt extends JStmt {
 
     @Override
     Stmt getConcreteStmt() {
-        return null; //TODO impl
+        return new WhileStmt(exp.getConcreteExpr(), stmtList.getStmtList());
     }
 }

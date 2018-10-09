@@ -1,5 +1,7 @@
 package jnodes;
 
+import concrete_nodes.PrintlnStmt;
+import concrete_nodes.ReadlnStmt;
 import concrete_nodes.Stmt;
 
 //      READLN LPAREN ident RPAREN SEMICOLON
@@ -9,14 +11,20 @@ public class JIoStmt extends JStmt {
     public JId id;
     public JExp exp;
 
+    Stmt stmt;
+
     public JIoStmt(String ioOperation, JId id) {
         this.ioOperation = ioOperation;
         this.id = id;
+
+        stmt = new ReadlnStmt(id.s);
     }
 
     public JIoStmt(String ioOperation, JExp exp) {
         this.ioOperation = ioOperation;
         this.exp = exp;
+
+        stmt = new PrintlnStmt(exp.getConcreteExpr());
     }
 
     @Override
@@ -26,6 +34,6 @@ public class JIoStmt extends JStmt {
 
     @Override
     Stmt getConcreteStmt() {
-        return null; //TODO impl
+        return stmt;
     }
 }
