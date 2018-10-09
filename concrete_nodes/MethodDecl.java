@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class MethodDecl extends Node {
     public String name;
-    public HashMap<String, BasicType> params;
+    public HashMap<String, BasicType> params; //TODO can't be a hashmap!!!
     public BasicType returnType;
     public HashMap<String, BasicType> varDeclList;
     public List<Stmt> stmtList;

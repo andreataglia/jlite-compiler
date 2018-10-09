@@ -2,34 +2,35 @@ package utils;
 
 import concrete_nodes.MethodDecl;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public class MethodSignature {
     String name;
     BasicType returnType;
-    List<VarDecl> params;
+    VarsList params;
 
-    public MethodSignature(String name, BasicType returnType, List<VarDecl> params) {
+    public MethodSignature(String name, BasicType returnType, VarsList params) {
         this.name = name;
         this.returnType = returnType;
         this.params = params;
     }
 
-    FunctionType getMethodSignature() {
-        ArrayList<BasicType> par = new ArrayList<>();
-        for (VarDecl v: params) {
-            par.add(v.type);
-        }
-        return new FunctionType(par, returnType);
-    }
-
-    public static MethodSignature fromMethodDecl(MethodDecl methodDecl){
-        List<VarDecl> varDecls = new ArrayList<>();
-        for (Map.Entry<String, BasicType> entry: methodDecl.params.entrySet()) {
-            varDecls.add(new VarDecl(entry.getKey(), entry.getValue()));
+    public static MethodSignature fromMethodDecl(MethodDecl methodDecl) {
+        VarsList varDecls = new VarsList();
+        if (!methodDecl.params.isEmpty()) {
+            for (Map.Entry<String, BasicType> entry : methodDecl.params.entrySet()) {
+                varDecls.add(new VarDecl(entry.getKey(), entry.getValue()));
+            }
         }
         return new MethodSignature(methodDecl.name, methodDecl.returnType, varDecls);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof MethodSignature) {
+            MethodSignature element = (MethodSignature) obj;
+            return this.name.equals(element.name) && returnType.equals(returnType) && this.params.equals(element.params);
+        }
+        return false;
     }
 }

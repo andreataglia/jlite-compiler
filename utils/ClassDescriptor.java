@@ -4,12 +4,12 @@ import java.util.List;
 
 class ClassDescriptor {
     String className;
-    List<VarDecl> classFields;
-    List<MethodSignature> classMethodsSignatures;
+    VarsList classFields;
+    List<MethodSignature> methodSignatures;
 
-    public ClassDescriptor(String className, List<VarDecl> classFields, List<MethodSignature> classMethodsSignatures) {
+    public ClassDescriptor(String className, VarsList classFields, List<MethodSignature> methodSignatures) {
         this.className = className;
         this.classFields = classFields;
-        this.classMethodsSignatures = classMethodsSignatures;
+        this.methodSignatures = methodSignatures;
     }
 }

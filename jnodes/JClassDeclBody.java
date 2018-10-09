@@ -49,7 +49,7 @@ public class JClassDeclBody extends JNode {
 
     HashMap<String, BasicType> getVarDeclList() {
         HashMap<String, BasicType> map = new HashMap<>();
-        if (mdBody == null) {
+        if (mdBody == null && type != null) {
             map.put(id.s, type.basicType);
             map.putAll(classDeclBody.getVarDeclList());
         }

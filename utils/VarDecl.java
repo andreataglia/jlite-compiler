@@ -8,4 +8,15 @@ public class VarDecl {
         this.id = id;
         this.type = type;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof VarDecl){
+            VarDecl element = (VarDecl) obj;
+            if(element != null && this.id.equals(element.id)){
+                return true;
+            }
+        }
+        return false;
+    }
 }

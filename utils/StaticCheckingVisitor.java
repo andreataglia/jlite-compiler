@@ -4,7 +4,6 @@ import concrete_nodes.*;
 import concrete_nodes.expressions.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,11 +22,28 @@ public class StaticCheckingVisitor implements Visitor {
         System.out.println("------------- Static Checking Output------------------");
         symbolTable.indentLevel++;
 
-        //generate class descriptors
+        //generate and check class descriptors
         List<ClassDescriptor> classDescriptors = new ArrayList<>();
         classDescriptors.add(genClassDescriptor(program.mainClass));
         for (ClassDecl c : program.classDeclList) {
             classDescriptors.add(genClassDescriptor(c));
+            try {
+                checkClassDescriptor(classDescriptors.get(classDescriptors.size() - 1));
+            } catch (TypeExecption typeExecption) {
+                typeExecption.printStackTrace();
+            }
+        }
+
+        //check class names
+        try {
+            for (int i = 0; i < classDescriptors.size(); i++) {
+                for (int j = i + 1; j < classDescriptors.size(); j++) {
+                    if (classDescriptors.get(i).className.equalsIgnoreCase(classDescriptors.get(j).className))
+                        throw new TypeExecption("Two classes have the same name");
+                }
+            }
+        } catch (TypeExecption typeExecption) {
+            typeExecption.printStackTrace();
         }
 
         //start exploring the tree
@@ -318,8 +334,8 @@ public class StaticCheckingVisitor implements Visitor {
             for (MethodDecl m : classDecl.methodDeclList) {
                 classMethodsSignatures.add(MethodSignature.fromMethodDecl(m));
                 newLine();
-                System.out.print("method:["+ m.name + "->" + m.returnType + " [");
-                for (VarDecl varDecl: classMethodsSignatures.get(classMethodsSignatures.size()-1).params) {
+                System.out.print("method:[" + m.name + "->" + m.returnType + " [");
+                for (VarDecl varDecl : classMethodsSignatures.get(classMethodsSignatures.size() - 1).params.list) {
                     localType = varDecl.type;
                     printObjType(varDecl.id);
                 }
@@ -327,6 +343,21 @@ public class StaticCheckingVisitor implements Visitor {
             }
         }
         symbolTable.indentLevel--;
-        return new ClassDescriptor(classDecl.className.toString(), classFields, classMethodsSignatures);
+        return new ClassDescriptor(classDecl.className.toString(), new VarsList(classFields), classMethodsSignatures);
     }
+
+    private void checkClassDescriptor(ClassDescriptor classDescriptor) throws TypeExecption {
+        //different fields name
+        if (!classDescriptor.classFields.allVarsAreDifferent())
+            throw new TypeExecption("Class " + classDescriptor.className + " has two vars with the same name");
+        //different methods
+        for (int i = 0; i < classDescriptor.methodSignatures.size(); i++) {
+            for (int j = i + 1; j < classDescriptor.methodSignatures.size(); j++) {
+                if (classDescriptor.methodSignatures.get(i).equals(classDescriptor.methodSignatures.get(j)))
+                    throw new TypeExecption("Class " + classDescriptor.className + " has two methods with the same signatures");
+            }
+        }
+    }
+
+
 }
