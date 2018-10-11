@@ -1,5 +1,7 @@
 package utils;
 
+import concrete_nodes.VarDecl;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +24,7 @@ public class VarsList {
     public boolean equals(Object obj) {
         if (obj instanceof VarsList) {
             VarsList element = (VarsList) obj;
-            if (element != null && this.list.size() == element.list.size()) {
+            if (this.list.size() == element.list.size()) {
                 for (VarDecl var : list) {
                     for (VarDecl otherVar : element.list) {
                         if (!var.equals(otherVar)) return false;
@@ -43,7 +45,7 @@ public class VarsList {
         return false;
     }
 
-    boolean allVarsAreDifferent() {
+    boolean allVarsHaveDifferentIds() {
         for (int i = 0; i < list.size(); i++) {
             for (int j = i + 1; j < list.size(); j++) {
                 if (list.get(i).equals(list.get(j))) return false;

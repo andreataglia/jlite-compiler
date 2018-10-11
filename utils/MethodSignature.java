@@ -1,8 +1,7 @@
 package utils;
 
 import concrete_nodes.MethodDecl;
-
-import java.util.Map;
+import concrete_nodes.VarDecl;
 
 public class MethodSignature {
     String name;
@@ -18,8 +17,8 @@ public class MethodSignature {
     public static MethodSignature fromMethodDecl(MethodDecl methodDecl) {
         VarsList varDecls = new VarsList();
         if (!methodDecl.params.isEmpty()) {
-            for (Map.Entry<String, BasicType> entry : methodDecl.params.entrySet()) {
-                varDecls.add(new VarDecl(entry.getKey(), entry.getValue()));
+            for (VarDecl entry : methodDecl.params) {
+                varDecls.add(new VarDecl(entry.id, entry.type));
             }
         }
         return new MethodSignature(methodDecl.name, methodDecl.returnType, varDecls);

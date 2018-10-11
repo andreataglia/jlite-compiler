@@ -1,6 +1,7 @@
 import concrete_nodes.Program;
 import jnodes.JProgram;
 import utils.StaticCheckingVisitor;
+import utils.TypeExecption;
 
 import java.io.*;
 
@@ -13,7 +14,11 @@ public class Main {
             Program tree = ast.genConcreteTree();
             //PrettyPrintVisitor visitor = new PrettyPrintVisitor();
             StaticCheckingVisitor visitor = new StaticCheckingVisitor();
-            tree.accept(visitor);
+            try {
+                tree.accept(visitor);
+            }catch (TypeExecption e){
+                e.printStackTrace();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

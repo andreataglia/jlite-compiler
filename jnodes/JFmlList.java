@@ -1,8 +1,11 @@
 package jnodes;
 
+import concrete_nodes.VarDecl;
 import utils.BasicType;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 //fmlList ::=
 //          | type ident fmlRestList
@@ -28,12 +31,12 @@ public class JFmlList extends JNode {
         return jfmlRestList == null ? "" : type + " " + id + " " + jfmlRestList;
     }
 
-    HashMap<String, BasicType> getParamsList(){
-        HashMap<String, BasicType> map = new HashMap<>();
+    List<VarDecl> getParamsList(){
+        List<VarDecl> list = new ArrayList<>();
         if (id != null){
-            map.put(id.s, type.basicType);
-            map.putAll(jfmlRestList.getParamsList());
+            list.add(new VarDecl(id.s, type.basicType));
+            list.addAll(jfmlRestList.getParamsList());
         }
-        return map;
+        return list;
     }
 }

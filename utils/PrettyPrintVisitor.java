@@ -3,8 +3,6 @@ package utils;
 import concrete_nodes.*;
 import concrete_nodes.expressions.*;
 
-import java.util.Map;
-
 public class PrettyPrintVisitor implements Visitor {
 
     private SymbolTable symbolTable;
@@ -14,7 +12,7 @@ public class PrettyPrintVisitor implements Visitor {
     }
 
     @Override
-    public Object visit(Program program) {
+    public Object visit(Program program) throws Exception {
         newLine();
         System.out.print("Program");
         symbolTable.indentLevel++;
@@ -28,7 +26,7 @@ public class PrettyPrintVisitor implements Visitor {
     }
 
     @Override
-    public Object visit(MainClass mainClass) {
+    public Object visit(MainClass mainClass) throws Exception {
         newLine();
         System.out.print("MainClass-" + mainClass.className.name);
         symbolTable.indentLevel++;
@@ -38,7 +36,7 @@ public class PrettyPrintVisitor implements Visitor {
     }
 
     @Override
-    public Object visit(ClassDecl classDecl) {
+    public Object visit(ClassDecl classDecl) throws Exception {
         newLine();
         System.out.print("ClassDecl-" + classDecl.className.name);
         symbolTable.indentLevel++;
@@ -48,13 +46,13 @@ public class PrettyPrintVisitor implements Visitor {
     }
 
     @Override
-    public Object visit(MethodDecl methodDecl) {
+    public Object visit(MethodDecl methodDecl) throws Exception {
         newLine();
         System.out.print("MethodDecl-" + methodDecl.returnType + " " + methodDecl.name + " [");
         boolean fistParam = true;
-        for (Map.Entry<String, BasicType> entry : methodDecl.params.entrySet()) {
+        for (VarDecl entry : methodDecl.params) {
             if (!fistParam) System.out.print(", ");
-            System.out.print(entry.getValue() + " " + entry.getKey());
+            System.out.print(entry.type + " " + entry.id);
             fistParam = false;
         }
         System.out.print("]");
@@ -68,7 +66,7 @@ public class PrettyPrintVisitor implements Visitor {
     //////////////////////// Stmts ///////////////////////////////////////////////
 
     @Override
-    public Object visit(IfStmt stmt) {
+    public Object visit(IfStmt stmt) throws Exception {
         newLine();
         System.out.print("IfStmt ");
         stmt.condition.accept(this);
@@ -88,7 +86,7 @@ public class PrettyPrintVisitor implements Visitor {
     }
 
     @Override
-    public Object visit(WhileStmt stmt) {
+    public Object visit(WhileStmt stmt) throws Exception {
         newLine();
         System.out.print("WhileStmt ");
         stmt.condition.accept(this);
@@ -108,7 +106,7 @@ public class PrettyPrintVisitor implements Visitor {
     }
 
     @Override
-    public Object visit(PrintlnStmt stmt) {
+    public Object visit(PrintlnStmt stmt) throws Exception {
         newLine();
         System.out.print("PrintlnStmt ");
         if (stmt.expr != null) stmt.expr.accept(this);
@@ -116,7 +114,7 @@ public class PrettyPrintVisitor implements Visitor {
     }
 
     @Override
-    public Object visit(AssignmentStmt stmt) {
+    public Object visit(AssignmentStmt stmt) throws Exception {
         newLine();
         System.out.print("AssignmentStmt ");
         if (stmt.leftSideAtom != null) {
@@ -129,7 +127,7 @@ public class PrettyPrintVisitor implements Visitor {
     }
 
     @Override
-    public Object visit(FunctionCallStmt stmt) {
+    public Object visit(FunctionCallStmt stmt) throws Exception {
         newLine();
         System.out.print("FunctionCallStmt ");
         stmt.atom.accept(this);
@@ -147,7 +145,7 @@ public class PrettyPrintVisitor implements Visitor {
     }
 
     @Override
-    public Object visit(ReturnStmt stmt) {
+    public Object visit(ReturnStmt stmt) throws Exception {
         newLine();
         System.out.print("ReturnStmt ");
         if (stmt.expr != null) stmt.expr.accept(this);
@@ -158,7 +156,7 @@ public class PrettyPrintVisitor implements Visitor {
     ////////////////////////////// Expressions /////////////////////////////////
 
     @Override
-    public Object visit(TwoFactorsArithExpr expr) {
+    public Object visit(TwoFactorsArithExpr expr) throws Exception {
         expr.leftSide.accept(this);
         System.out.print(" " + expr.operator + " ");
         expr.rightSide.accept(this);
@@ -166,7 +164,7 @@ public class PrettyPrintVisitor implements Visitor {
     }
 
     @Override
-    public Object visit(TwoFactorsBoolExpr expr) {
+    public Object visit(TwoFactorsBoolExpr expr) throws Exception {
         expr.leftSide.accept(this);
         System.out.print(" " + expr.operator + " ");
         expr.rightSide.accept(this);
@@ -174,7 +172,7 @@ public class PrettyPrintVisitor implements Visitor {
     }
 
     @Override
-    public Object visit(TwoFactorsRelExpr expr) {
+    public Object visit(TwoFactorsRelExpr expr) throws Exception {
         expr.leftSide.accept(this);
         System.out.print(" " + expr.operator + " ");
         expr.rightSide.accept(this);
@@ -196,6 +194,12 @@ public class PrettyPrintVisitor implements Visitor {
     @Override
     public Object visit(BoolGrdExpr expr) {
         System.out.print(expr);
+        return null;
+    }
+
+    @Override
+    public Object visit(VarDecl varDecl) {
+        System.out.print(varDecl.type + " " + varDecl.id);
         return null;
     }
 
@@ -248,11 +252,11 @@ public class PrettyPrintVisitor implements Visitor {
         return ret;
     }
 
-    private void printClass(ClassDecl classDecl) {
+    private void printClass(ClassDecl classDecl) throws Exception {
         if (!classDecl.varDeclList.isEmpty()) {
-            for (Map.Entry<String, BasicType> entry : classDecl.varDeclList.entrySet()) {
+            for (VarDecl entry : classDecl.varDeclList) {
                 newLine();
-                System.out.print("FieldDecl-" + entry.getValue() + " " + entry.getKey());
+                System.out.print("FieldDecl-" + entry.type + " " + entry.id);
             }
         }
         if (!classDecl.methodDeclList.isEmpty()) {
@@ -262,11 +266,11 @@ public class PrettyPrintVisitor implements Visitor {
         }
     }
 
-    private void printMethod(MethodDecl methodDecl) {
+    private void printMethod(MethodDecl methodDecl) throws Exception {
         if (!methodDecl.varDeclList.isEmpty()) {
-            for (Map.Entry<String, BasicType> entry : methodDecl.varDeclList.entrySet()) {
+            for (VarDecl entry : methodDecl.varDeclList) {
                 newLine();
-                System.out.print("LocalVarDecl-" + entry.getValue() + " " + entry.getKey());
+                System.out.print("LocalVarDecl-" + entry.type + " " + entry.id);
             }
         }
         if (!methodDecl.stmtList.isEmpty()) {

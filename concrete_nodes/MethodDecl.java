@@ -2,6 +2,7 @@ package concrete_nodes;
 
 import utils.BasicType;
 import utils.FunctionType;
+import utils.VarsList;
 import utils.Visitor;
 
 import java.util.ArrayList;
@@ -11,17 +12,20 @@ import java.util.Map;
 
 public class MethodDecl extends Node {
     public String name;
-    public HashMap<String, BasicType> params; //TODO can't be a hashmap!!!
+    public VarsList params;
     public BasicType returnType;
-    public HashMap<String, BasicType> varDeclList;
+    public VarsList varDeclList;
     public List<Stmt> stmtList;
 
-    public MethodDecl(String name, HashMap<String, BasicType> params, BasicType returnType, HashMap<String, BasicType> varDeclList, List<Stmt> stmtList) {
+    public MethodDecl(String name, VarsList params, BasicType returnType, VarsList varDeclList, List<Stmt> stmtList) {
         this.name = name;
         this.params = params;
+        if (params == null){
+            this.params = new VarsList();
+        }
         this.returnType = returnType;
         if (varDeclList == null) {
-            this.varDeclList = new HashMap<>();
+            this.varDeclList = new VarsList();
         } else {
             this.varDeclList = varDeclList;
         }
@@ -33,7 +37,7 @@ public class MethodDecl extends Node {
     }
 
     @Override
-    public Object accept(Visitor visitor) {
+    public Object accept(Visitor visitor) throws Exception {
         return visitor.visit(this);
     }
 }

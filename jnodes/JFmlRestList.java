@@ -1,8 +1,11 @@
 package jnodes;
 
+import concrete_nodes.VarDecl;
 import utils.BasicType;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 // '' | fmlRest fmlRestList
 public class JFmlRestList extends JNode {
@@ -23,11 +26,11 @@ public class JFmlRestList extends JNode {
         return fmlRest == null ? "" : fmlRest + "" + fmlRestList;
     }
 
-    HashMap<String, BasicType> getParamsList() {
-        HashMap<String, BasicType> map = new HashMap<>();
+    List<VarDecl> getParamsList() {
+        List<VarDecl> map = new ArrayList<>();
         if (fmlRest != null) {
-            map.put(fmlRest.id.s, fmlRest.type.basicType);
-            map.putAll(fmlRestList.getParamsList());
+            map.add(new VarDecl(fmlRest.id.s, fmlRest.type.basicType));
+            map.addAll(fmlRestList.getParamsList());
         }
         return map;
     }

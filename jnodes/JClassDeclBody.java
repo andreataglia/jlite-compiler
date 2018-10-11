@@ -1,10 +1,12 @@
 package jnodes;
 
 import concrete_nodes.MethodDecl;
+import concrete_nodes.VarDecl;
 import utils.BasicType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 //classDeclBody ::=
 //                | type ident SEMICOLON classDeclBody
@@ -47,13 +49,13 @@ public class JClassDeclBody extends JNode {
         return print;
     }
 
-    HashMap<String, BasicType> getVarDeclList() {
-        HashMap<String, BasicType> map = new HashMap<>();
+    List<VarDecl> getVarDeclList() {
+        List<VarDecl> list = new ArrayList<>();
         if (mdBody == null && type != null) {
-            map.put(id.s, type.basicType);
-            map.putAll(classDeclBody.getVarDeclList());
+            list.add(new VarDecl(id.s, type.basicType));
+            list.addAll(classDeclBody.getVarDeclList());
         }
-        return map;
+        return list;
     }
 
     ArrayList<MethodDecl> getMethodDeclList() {
@@ -61,7 +63,7 @@ public class JClassDeclBody extends JNode {
         if (mdBody != null) {
             methodDecls.add(getMethodDecl());
         }
-        if (classDeclBody != null){
+        if (classDeclBody != null) {
             methodDecls.addAll(classDeclBody.getMethodDeclList());
         }
         return methodDecls;

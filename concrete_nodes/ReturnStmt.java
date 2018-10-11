@@ -11,7 +11,7 @@ public class ReturnStmt extends Stmt {
     }
 
     @Override
-    public Object accept(Visitor visitor) {
+    public Object accept(Visitor visitor) throws Exception {
         return visitor.visit(this);
     }
 }

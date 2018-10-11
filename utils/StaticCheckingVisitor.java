@@ -2,10 +2,10 @@ package utils;
 
 import concrete_nodes.*;
 import concrete_nodes.expressions.*;
+import jdk.internal.dynalink.support.TypeUtilities;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class StaticCheckingVisitor implements Visitor {
 
@@ -17,7 +17,7 @@ public class StaticCheckingVisitor implements Visitor {
     }
 
     @Override
-    public Object visit(Program program) {
+    public Object visit(Program program) throws Exception {
         newLine();
         System.out.println("------------- Static Checking Output------------------");
         symbolTable.indentLevel++;
@@ -27,77 +27,92 @@ public class StaticCheckingVisitor implements Visitor {
         classDescriptors.add(genClassDescriptor(program.mainClass));
         for (ClassDecl c : program.classDeclList) {
             classDescriptors.add(genClassDescriptor(c));
-            try {
-                checkClassDescriptor(classDescriptors.get(classDescriptors.size() - 1));
-            } catch (TypeExecption typeExecption) {
-                typeExecption.printStackTrace();
-            }
+            checkClassDescriptor(classDescriptors.get(classDescriptors.size() - 1));
         }
 
-        //check class names
-        try {
-            for (int i = 0; i < classDescriptors.size(); i++) {
-                for (int j = i + 1; j < classDescriptors.size(); j++) {
-                    if (classDescriptors.get(i).className.equalsIgnoreCase(classDescriptors.get(j).className))
-                        throw new TypeExecption("Two classes have the same name");
-                }
+        //check classes have different names
+        for (int i = 0; i < classDescriptors.size(); i++) {
+            for (int j = i + 1; j < classDescriptors.size(); j++) {
+                if (classDescriptors.get(i).className.equalsIgnoreCase(classDescriptors.get(j).className))
+                    throw new TypeExecption("Two classes have the same name");
             }
-        } catch (TypeExecption typeExecption) {
-            typeExecption.printStackTrace();
         }
+        symbolTable.indentLevel--;
 
         //start exploring the tree
-        //program.mainClass.accept(this);
+        symbolTable.increaseIndentLevel(program.mainClass.className);
+        program.mainClass.accept(this);
+        symbolTable.decreaseIndentLevel();
         for (ClassDecl c : program.classDeclList) {
-            //c.accept(this);
+            symbolTable.increaseIndentLevel(c.className);
+            c.accept(this);
+            symbolTable.decreaseIndentLevel();
         }
-        System.out.println("\n");
-        symbolTable.indentLevel--;
+        newLine();
+        System.out.println("------------- End Static Checking Output------------------");
         return null;
     }
 
     @Override
-    public Object visit(MainClass mainClass) {
+    public Object visit(MainClass mainClass) throws Exception {
         newLine();
         System.out.print("MainClass-" + mainClass.className.name);
-        symbolTable.indentLevel++;
-        printClass(mainClass);
-        symbolTable.indentLevel--;
+        symbolTable.setCurrentClass(mainClass);
+        for (MethodDecl m : mainClass.methodDeclList) {
+            symbolTable.increaseIndentLevel(m.name);
+            if (!m.returnType.equals(m.accept(this)))
+                throw new TypeExecption("method body type doesn't match return type", mainClass.className.name, m.name);
+            symbolTable.decreaseIndentLevel();
+        }
         return null;
     }
 
     @Override
-    public Object visit(ClassDecl classDecl) {
+    public Object visit(ClassDecl classDecl) throws Exception {
         newLine();
         System.out.print("ClassDecl-" + classDecl.className.name);
         symbolTable.indentLevel++;
-        printClass(classDecl);
+        symbolTable.setCurrentClass(classDecl);
+        for (MethodDecl m : classDecl.methodDeclList) {
+            symbolTable.increaseIndentLevel(m.name);
+            if (!m.returnType.equals(m.accept(this)))
+                throw new TypeExecption("method body type doesn't match return type", classDecl.className.name, m.name);
+            symbolTable.decreaseIndentLevel();
+        }
         symbolTable.indentLevel--;
         return null;
     }
 
     @Override
-    public Object visit(MethodDecl methodDecl) {
+    public Object visit(MethodDecl methodDecl) throws Exception {
+        //TODO check if it's fine having more local vars with the same name and only get the last one
         newLine();
-        System.out.print("MethodDecl-" + methodDecl.returnType + " " + methodDecl.name + " [");
-        boolean fistParam = true;
-        for (Map.Entry<String, BasicType> entry : methodDecl.params.entrySet()) {
-            if (!fistParam) System.out.print(", ");
-            System.out.print(entry.getValue() + " " + entry.getKey());
-            fistParam = false;
+        System.out.print("MethodDecl-" + methodDecl.name);
+
+        //enrich the environment with local vars
+        symbolTable.increaseIndentLevel(methodDecl.name);
+        for (VarDecl entry : methodDecl.params) {
+            localType = entry.type;
+            newLine();
+            printObjType(entry);
+            symbolTable.pushLocalVar(entry);
         }
-        System.out.print("]");
-        symbolTable.indentLevel++;
-        printMethod(methodDecl);
-        symbolTable.indentLevel--;
-        return null;
+
+        //check if the statements are correct
+        for (Stmt s : methodDecl.stmtList) {
+            localType = (BasicType) s.accept(this);
+            printObjType(s);
+        }
+
+        symbolTable.decreaseIndentLevel();
+        return localType;
     }
 
     ////////////////////////////////////////////////////////////////////////////
     //////////////////////// Stmts ///////////////////////////////////////////////
 
     @Override
-    public Object visit(IfStmt stmt) {
+    public Object visit(IfStmt stmt) throws Exception {
         newLine();
         System.out.print("IfStmt ");
         stmt.condition.accept(this);
@@ -117,7 +132,7 @@ public class StaticCheckingVisitor implements Visitor {
     }
 
     @Override
-    public Object visit(WhileStmt stmt) {
+    public Object visit(WhileStmt stmt) throws Exception {
         newLine();
         System.out.print("WhileStmt ");
         stmt.condition.accept(this);
@@ -137,7 +152,7 @@ public class StaticCheckingVisitor implements Visitor {
     }
 
     @Override
-    public Object visit(PrintlnStmt stmt) {
+    public Object visit(PrintlnStmt stmt) throws Exception {
         newLine();
         System.out.print("PrintlnStmt ");
         if (stmt.expr != null) stmt.expr.accept(this);
@@ -145,20 +160,37 @@ public class StaticCheckingVisitor implements Visitor {
     }
 
     @Override
-    public Object visit(AssignmentStmt stmt) {
+    public Object visit(AssignmentStmt stmt) throws Exception {
         newLine();
         System.out.print("AssignmentStmt ");
+        BasicType rightSideType = (BasicType) stmt.rightSide.accept(this);
+
+        //different calculation of left side type
         if (stmt.leftSideAtom != null) {
-            stmt.leftSideAtom.accept(this);
+            //check leftSideAtom is a class
+            localType = (BasicType) stmt.leftSideAtom.accept(this);
+            printObjType(stmt.leftSideAtom);
+            if (!(localType instanceof ClassNameType))
+                throw new TypeExecption("FdAss violated: not a class", symbolTable.currentClass.name, symbolTable.currentMethod);
             System.out.print(".");
+            //check leftSideId is a field of a leftSideAtom class, and get its type
+            if (symbolTable.fieldIsInClass(stmt.leftSideId, ((ClassNameType) localType).name))
+                throw new TypeExecption("FdAss violated: class hasn't that field", symbolTable.currentClass.name, symbolTable.currentMethod);
+            localType = symbolTable.getClassFieldType(stmt.leftSideId);
+            printObjType(stmt.leftSideId);
+            //check right side to match left side type
+            System.out.print(" = ");
+            printObjType(stmt.rightSide);
+            if (!rightSideType.equals(localType))
+                throw new TypeExecption("FdAss violated: assignment types mismatch", symbolTable.currentClass.name, symbolTable.currentMethod);
+        } else {
+
         }
-        System.out.print(stmt.leftSideId + " = ");
-        stmt.rightSide.accept(this);
-        return null;
+        return new BasicType(BasicType.DataType.VOID);
     }
 
     @Override
-    public Object visit(FunctionCallStmt stmt) {
+    public Object visit(FunctionCallStmt stmt) throws Exception {
         newLine();
         System.out.print("FunctionCallStmt ");
         stmt.atom.accept(this);
@@ -176,7 +208,7 @@ public class StaticCheckingVisitor implements Visitor {
     }
 
     @Override
-    public Object visit(ReturnStmt stmt) {
+    public Object visit(ReturnStmt stmt) throws Exception {
         newLine();
         System.out.print("ReturnStmt ");
         if (stmt.expr != null) stmt.expr.accept(this);
@@ -187,7 +219,7 @@ public class StaticCheckingVisitor implements Visitor {
     ////////////////////////////// Expressions /////////////////////////////////
 
     @Override
-    public Object visit(TwoFactorsArithExpr expr) {
+    public Object visit(TwoFactorsArithExpr expr) throws Exception {
         expr.leftSide.accept(this);
         System.out.print(" " + expr.operator + " ");
         expr.rightSide.accept(this);
@@ -195,7 +227,7 @@ public class StaticCheckingVisitor implements Visitor {
     }
 
     @Override
-    public Object visit(TwoFactorsBoolExpr expr) {
+    public Object visit(TwoFactorsBoolExpr expr) throws Exception {
         expr.leftSide.accept(this);
         System.out.print(" " + expr.operator + " ");
         expr.rightSide.accept(this);
@@ -203,7 +235,7 @@ public class StaticCheckingVisitor implements Visitor {
     }
 
     @Override
-    public Object visit(TwoFactorsRelExpr expr) {
+    public Object visit(TwoFactorsRelExpr expr) throws Exception {
         expr.leftSide.accept(this);
         System.out.print(" " + expr.operator + " ");
         expr.rightSide.accept(this);
@@ -224,7 +256,7 @@ public class StaticCheckingVisitor implements Visitor {
     }
 
     @Override
-    public BasicType visit(BoolGrdExpr expr) {
+    public BasicType visit(BoolGrdExpr expr) throws Exception {
         localType = new BasicType(BasicType.DataType.BOOL);
         if (expr.isNegatedGround()) localType = (BasicType) expr.grdExpr.accept(this);
         else if (expr.isAtomGround()) localType = (BasicType) expr.atom.accept(this);
@@ -267,6 +299,12 @@ public class StaticCheckingVisitor implements Visitor {
         return null;
     }
 
+    @Override
+    public Object visit(VarDecl varDecl) {
+        System.out.print(varDecl.type + " " + varDecl.id);
+        return null;
+    }
+
 
     ///////////////////////////////////////////////////////////////////////////////
     //////////////////////// Helper Methods ///////////////////////////////////////
@@ -283,11 +321,11 @@ public class StaticCheckingVisitor implements Visitor {
         return ret;
     }
 
-    private void printClass(ClassDecl classDecl) {
+    private void printClass(ClassDecl classDecl) throws Exception {
         if (!classDecl.varDeclList.isEmpty()) {
-            for (Map.Entry<String, BasicType> entry : classDecl.varDeclList.entrySet()) {
+            for (VarDecl entry : classDecl.varDeclList) {
                 newLine();
-                System.out.print("FieldDecl-" + entry.getValue() + " " + entry.getKey());
+                System.out.print("FieldDecl-" + entry.type + " " + entry.id);
             }
         }
         if (!classDecl.methodDeclList.isEmpty()) {
@@ -297,11 +335,11 @@ public class StaticCheckingVisitor implements Visitor {
         }
     }
 
-    private void printMethod(MethodDecl methodDecl) {
+    private void printMethod(MethodDecl methodDecl) throws Exception {
         if (!methodDecl.varDeclList.isEmpty()) {
-            for (Map.Entry<String, BasicType> entry : methodDecl.varDeclList.entrySet()) {
+            for (VarDecl entry : methodDecl.varDeclList) {
                 newLine();
-                System.out.print("LocalVarDecl-" + entry.getValue() + " " + entry.getKey());
+                System.out.print("LocalVarDecl-" + entry.type + " " + entry.id);
             }
         }
         if (!methodDecl.stmtList.isEmpty()) {
@@ -322,12 +360,12 @@ public class StaticCheckingVisitor implements Visitor {
         System.out.print("Class - " + classDecl.className);
         symbolTable.indentLevel++;
         if (!classDecl.varDeclList.isEmpty()) {
-            for (Map.Entry<String, BasicType> entry : classDecl.varDeclList.entrySet()) {
-                classFields.add(new VarDecl(entry.getKey(), entry.getValue()));
-                localType = entry.getValue();
+            for (VarDecl entry : classDecl.varDeclList) {
+                classFields.add(new VarDecl(entry.id, entry.type));
+                localType = entry.type;
                 newLine();
                 System.out.print("field:");
-                printObjType(entry.getKey());
+                printObjType(entry.id);
             }
         }
         if (!classDecl.methodDeclList.isEmpty()) {
@@ -346,15 +384,21 @@ public class StaticCheckingVisitor implements Visitor {
         return new ClassDescriptor(classDecl.className.toString(), new VarsList(classFields), classMethodsSignatures);
     }
 
-    private void checkClassDescriptor(ClassDescriptor classDescriptor) throws TypeExecption {
+    private void checkClassDescriptor(ClassDescriptor classDescriptor) throws Exception {
         //different fields name
-        if (!classDescriptor.classFields.allVarsAreDifferent())
+        if (!classDescriptor.classFields.allVarsHaveDifferentIds())
             throw new TypeExecption("Class " + classDescriptor.className + " has two vars with the same name");
+        //different params names in methods
+        for (MethodSignature m : classDescriptor.methodSignatures) {
+            if (!m.params.allVarsHaveDifferentIds()) {
+                throw new TypeExecption("Two params with same name", m.name, classDescriptor.className);
+            }
+        }
         //different methods
         for (int i = 0; i < classDescriptor.methodSignatures.size(); i++) {
             for (int j = i + 1; j < classDescriptor.methodSignatures.size(); j++) {
                 if (classDescriptor.methodSignatures.get(i).equals(classDescriptor.methodSignatures.get(j)))
-                    throw new TypeExecption("Class " + classDescriptor.className + " has two methods with the same signatures");
+                    throw new TypeExecption("Two methods with the same signature", classDescriptor.className);
             }
         }
     }

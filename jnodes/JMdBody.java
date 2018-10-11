@@ -1,10 +1,12 @@
 package jnodes;
 
 import concrete_nodes.Stmt;
+import concrete_nodes.VarDecl;
 import utils.BasicType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 //mdBody ::= LBRACE varDeclList stmt stmtList RBRACE
 public class JMdBody extends JNode{
@@ -23,14 +25,14 @@ public class JMdBody extends JNode{
         return "{\n    " + varDeclList + stmt + stmtList + "}";
     }
 
-    HashMap<String, BasicType> getVarDeclList(){
-        HashMap<String, BasicType> map = new HashMap<>();
+    List<VarDecl> getVarDeclList(){
+        List<VarDecl> list = new ArrayList<>();
         if (varDeclList != null){
             for (JVarDecl var: varDeclList.getVarsList()) {
-                map.put(var.id.s, var.type.basicType);
+                list.add(new VarDecl(var.id.s, var.type.basicType));
             }
         }
-        return map;
+        return list;
     }
 
     ArrayList<Stmt> getStmts(){

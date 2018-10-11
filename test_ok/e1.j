@@ -1,5 +1,5 @@
 class Main {
-    Void main(Int i, Int a, Int b,Int d){
+    Void main(Int i, Int a, Int i,Int d){
         Int t1;
         Int t2;
         Compute help;
@@ -15,7 +15,7 @@ class Main {
 
 class Dummy {
     Compute c;
-    Int c;
+    Int t;
     Dummy j;
     Int dummy() {
         Bool i;

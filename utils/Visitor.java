@@ -5,47 +5,49 @@ import concrete_nodes.expressions.*;
 
 public interface Visitor {
 
-    Object visit(Program program);
+    Object visit(Program program) throws Exception;
 
-    Object visit(MainClass mainClass);
+    Object visit(MainClass mainClass) throws Exception;
 
-    Object visit(ClassDecl classDecl);
+    Object visit(ClassDecl classDecl) throws Exception;
 
-    Object visit(MethodDecl methodDecl);
+    Object visit(MethodDecl methodDecl) throws Exception;
 
-    Object visit(IfStmt stmt);
+    Object visit(IfStmt stmt) throws Exception;
 
-    Object visit(WhileStmt stmt);
+    Object visit(WhileStmt stmt) throws Exception;
 
-    Object visit(ReadlnStmt stmt);
+    Object visit(ReadlnStmt stmt) throws Exception;
 
-    Object visit(PrintlnStmt stmt);
+    Object visit(PrintlnStmt stmt) throws Exception;
 
-    Object visit(AssignmentStmt stmt);
+    Object visit(AssignmentStmt stmt) throws Exception;
 
-    Object visit(FunctionCallStmt stmt);
+    Object visit(FunctionCallStmt stmt) throws Exception;
 
-    Object visit(ReturnStmt stmt);
+    Object visit(ReturnStmt stmt) throws Exception;
 
-    Object visit(TwoFactorsArithExpr expr);
+    Object visit(TwoFactorsArithExpr expr) throws Exception;
 
-    Object visit(TwoFactorsBoolExpr expr);
+    Object visit(TwoFactorsBoolExpr expr) throws Exception;
 
-    Object visit(TwoFactorsRelExpr expr);
+    Object visit(TwoFactorsRelExpr expr) throws Exception;
 
-    Object visit(ArithGrdExpr expr);
+    Object visit(ArithGrdExpr expr) throws Exception;
 
-    Object visit(StringExpr expr);
+    Object visit(StringExpr expr) throws Exception;
 
-    Object visit(BoolGrdExpr expr);
+    Object visit(BoolGrdExpr expr) throws Exception;
 
-    Object visit(AtomClassInstantiation atom);
+    Object visit(VarDecl varDecl) throws Exception;
 
-    Object visit(AtomFieldAccess atom);
+    Object visit(AtomClassInstantiation atom) throws Exception;
 
-    Object visit(AtomFunctionCall atom);
+    Object visit(AtomFieldAccess atom) throws Exception;
 
-    Object visit(AtomGrd atom);
+    Object visit(AtomFunctionCall atom) throws Exception;
 
-    Object visit(AtomParenthesizedExpr atom);
+    Object visit(AtomGrd atom) throws Exception;
+
+    Object visit(AtomParenthesizedExpr atom) throws Exception;
 }
