@@ -3,27 +3,25 @@ package utils;
 import concrete_nodes.ClassDecl;
 import concrete_nodes.MethodDecl;
 import concrete_nodes.VarDecl;
+import concrete_nodes.expressions.Atom;
+import concrete_nodes.expressions.AtomGrd;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
 
-public class SymbolTable {
+class SymbolTable {
     int indentLevel;
     List<ClassDescriptor> classDescriptors;
     private HashMap<Integer, Stack<VarDecl>> enviromentVars;
     ClassNameType currentClass;
-    String currentMethod;
+    MethodDecl currentMethod;
 
     SymbolTable() {
         this.indentLevel = 0;
         enviromentVars = new HashMap<>();
         classDescriptors = new ArrayList<>();
-    }
-
-    public void setClassDescriptors(List<ClassDescriptor> classDescriptors) {
-        this.classDescriptors = classDescriptors;
     }
 
     void setCurrentClass(ClassDecl classDecl) {
@@ -42,7 +40,7 @@ public class SymbolTable {
 
     void increaseIndentLevel(MethodDecl methodDecl) {
         increaseIndentLevel();
-        currentMethod = methodDecl.name;
+        currentMethod = methodDecl;
         for (VarDecl v : methodDecl.params.list) {
             pushLocalVar(v);
         }
@@ -62,7 +60,7 @@ public class SymbolTable {
     }
 
 
-    boolean fieldIsInClass(String field, String className) {
+    boolean isFieldOfClass(String field, String className) {
         for (ClassDescriptor c : classDescriptors) {
             if (c.className.equals(className)) {
                 if (c.getFieldType(field) != null) return true;
@@ -93,6 +91,14 @@ public class SymbolTable {
             }
         }
         return null;
+    }
+
+    FunctionType lookupFunctionType(Atom atom) {
+        FunctionType ret = null;
+        if (atom instanceof AtomGrd){
+            if (((AtomGrd)atom).isIdentifierGround()) ret = null;
+        }
+        return ret;
     }
 
     FunctionType lookupFunctionType(String id) {

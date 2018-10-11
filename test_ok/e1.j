@@ -10,18 +10,17 @@ class Main {
 }
 
 class Dummy {
-    Compute c;
+    Bool c;
     Int dummy;
     Dummy j;
     Int dummy() {
         Bool i;
         Bool j;
-        return null(new Dummy());
-
-        return true || this.getCompute().square(-3);
-
-        return i + 3 + (a * 1);
-
+        return 4;
+        this.c = true || false;
+        if (this.c){
+            i = i || (j && i);
+        }else{ println("ciao"); }
     }
     Compute getCompute() {
        return c;

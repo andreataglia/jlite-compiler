@@ -33,7 +33,7 @@ public class StaticCheckingVisitor implements Visitor {
         for (int i = 0; i < symbolTable.classDescriptors.size(); i++) {
             for (int j = i + 1; j < symbolTable.classDescriptors.size(); j++) {
                 if (symbolTable.classDescriptors.get(i).className.equals(symbolTable.classDescriptors.get(j).className)) {
-                    throw new TypeExecption("Two classes have the same name");
+                    throwTypeException("Two classes have the same name", 0);
                 }
             }
         }
@@ -79,7 +79,7 @@ public class StaticCheckingVisitor implements Visitor {
         for (MethodDecl m : classDecl.methodDeclList) {
             symbolTable.increaseIndentLevel(m);
             if (!m.returnType.equals((BasicType) m.accept(this))) {
-                throw new TypeExecption("method body type doesn't match return type", classDecl.className.name, m.name);
+                throwTypeException("method body type doesn't match return type", 2);
             }
             symbolTable.decreaseIndentLevel();
         }
@@ -109,7 +109,7 @@ public class StaticCheckingVisitor implements Visitor {
         //check if the statements are correct
         for (Stmt s : methodDecl.stmtList) {
             localType = (BasicType) s.accept(this);
-            printObjType(" --> " + s);
+            printObjType("Stmt");
         }
         symbolTable.decreaseIndentLevel();
         return localType;
@@ -122,48 +122,59 @@ public class StaticCheckingVisitor implements Visitor {
     public Object visit(IfStmt stmt) throws Exception {
         newLine();
         System.out.print("IfStmt ");
-        stmt.condition.accept(this);
-        symbolTable.indentLevel++;
+        if (!((BasicType) stmt.condition.accept(this)).equals(BasicType.DataType.BOOL))
+            throwTypeException("If condition violated: not Bool ", 2);
+        printObjType(stmt.condition);
+        symbolTable.increaseIndentLevel();
         for (Stmt s : stmt.trueBranch) {
-            s.accept(this);
+            localType = (DataType) s.accept(this);
         }
-        symbolTable.indentLevel--;
+        symbolTable.decreaseIndentLevel();
         newLine();
         System.out.print("ElseBranch: ");
-        symbolTable.indentLevel++;
+        DataType trueBranchType = localType;
+        symbolTable.increaseIndentLevel();
         for (Stmt s : stmt.falseBranch) {
-            s.accept(this);
+            localType = (DataType) s.accept(this);
         }
-        symbolTable.indentLevel--;
-        return null;
+        symbolTable.decreaseIndentLevel();
+        if (!((BasicType) localType).equals(trueBranchType)) throwTypeException("IfStmt branches type mismatch", 2);
+        return localType;
     }
 
     @Override
     public Object visit(WhileStmt stmt) throws Exception {
         newLine();
         System.out.print("WhileStmt ");
-        stmt.condition.accept(this);
-        symbolTable.indentLevel++;
+        if (!stmt.condition.accept(this).equals(BasicType.DataType.BOOL))
+            throwTypeException("While condition violated: not Bool ", 2);
+        symbolTable.increaseIndentLevel();
+        localType = new BasicType(BasicType.DataType.NULL);
         for (Stmt s : stmt.body) {
-            s.accept(this);
+            localType = (DataType) s.accept(this);
         }
-        symbolTable.indentLevel--;
-        return null;
+        symbolTable.decreaseIndentLevel();
+        return localType;
     }
 
     @Override
-    public Object visit(ReadlnStmt stmt) {
+    public Object visit(ReadlnStmt stmt) throws TypeException {
         newLine();
-        System.out.print("ReadlnStmt " + stmt.id);
-        return null;
+        System.out.print("ReadlnStmt ");
+        BasicType idType = symbolTable.lookupVarType(stmt.id);
+        if (!(idType.equals(BasicType.DataType.BOOL) || idType.equals(BasicType.DataType.STRING) || idType.equals(BasicType.DataType.INT)))
+            throwTypeException("ReadlnStmt can't be applied to this identifier", 2);
+        return new BasicType(BasicType.DataType.VOID);
     }
 
     @Override
     public Object visit(PrintlnStmt stmt) throws Exception {
         newLine();
         System.out.print("PrintlnStmt ");
-        if (stmt.expr != null) stmt.expr.accept(this);
-        return null;
+        BasicType idType = (BasicType) stmt.expr.accept(this);
+        if (!(idType.equals(BasicType.DataType.BOOL) || idType.equals(BasicType.DataType.STRING) || idType.equals(BasicType.DataType.INT)))
+            throwTypeException("PrintStmt can't be applied to this expression", 2);
+        return new BasicType(BasicType.DataType.VOID);
     }
 
     @Override
@@ -178,22 +189,22 @@ public class StaticCheckingVisitor implements Visitor {
             localType = (BasicType) stmt.leftSideAtom.accept(this);
             printObjType(stmt.leftSideAtom);
             if (!(localType instanceof ClassNameType))
-                throw new TypeExecption("FdAss violated: not a class", symbolTable.currentClass.name, symbolTable.currentMethod);
+                throwTypeException("FdAss violated: not a class", 2);
             System.out.print(".");
             //check leftSideId is a field of a leftSideAtom class, and get its type
-            if (!symbolTable.fieldIsInClass(stmt.leftSideId, ((ClassNameType) localType).name))
-                throw new TypeExecption("FdAss violated: class hasn't that field", symbolTable.currentClass.name, symbolTable.currentMethod);
+            if (!symbolTable.isFieldOfClass(stmt.leftSideId, ((ClassNameType) localType).name))
+                throwTypeException("FdAss violated: class hasn't that field", 2);
             localType = symbolTable.lookupClassFieldType((ClassNameType) localType, stmt.leftSideId);
             printObjType(stmt.leftSideId);
         } else {
             localType = symbolTable.lookupVarType(stmt.leftSideId);
             printObjType(stmt.leftSideId);
             if (localType == null) {
-                throw new TypeExecption("VarAss violated: left side type undefined", symbolTable.currentClass.name, symbolTable.currentMethod);
+                throwTypeException("VarAss violated: left side type undefined", 2);
             }
         }
         if (!rightSideType.equals(localType)) {
-            throw new TypeExecption("Ass violated: assignment types mismatch", symbolTable.currentClass.name, symbolTable.currentMethod);
+            throwTypeException("Ass violated: assignment types mismatch", 2);
         }
         System.out.print(" = ");
         localType = rightSideType;
@@ -224,8 +235,11 @@ public class StaticCheckingVisitor implements Visitor {
     public Object visit(ReturnStmt stmt) throws Exception {
         newLine();
         System.out.print("ReturnStmt ");
-        if (stmt.expr != null) stmt.expr.accept(this);
-        return null;
+        localType = new BasicType(BasicType.DataType.VOID);
+        if (stmt.expr != null) localType = (DataType) stmt.expr.accept(this);
+        if (!symbolTable.currentMethod.returnType.equals(localType))
+            throwTypeException("ReturnStmt doesn't match return type", 2);
+        return localType;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -234,24 +248,24 @@ public class StaticCheckingVisitor implements Visitor {
     @Override
     public Object visit(TwoFactorsArithExpr expr) throws Exception {
         localType = (BasicType) (expr.leftSide.accept(this));
-        if (!(localType.equals(BasicType.DataType.INT) && localType.equals(expr.rightSide.accept(this))))
-            throw new TypeExecption("Arith violated: non int member", symbolTable.currentClass.name, symbolTable.currentMethod);
+        if (!(((BasicType) localType).equals(BasicType.DataType.INT) && localType.equals(expr.rightSide.accept(this))))
+            throwTypeException("Arith violated: non int member", 2);
         return localType;
     }
 
     @Override
     public Object visit(TwoFactorsBoolExpr expr) throws Exception {
         localType = (BasicType) (expr.leftSide.accept(this));
-        if (!(localType.equals(BasicType.DataType.BOOL) && localType.equals(expr.rightSide.accept(this))))
-            throw new TypeExecption("Bool violated: non bool member", symbolTable.currentClass.name, symbolTable.currentMethod);
+        if (!(((BasicType) localType).equals(BasicType.DataType.BOOL) && localType.equals(expr.rightSide.accept(this))))
+            throwTypeException("Bool violated: non bool member", 2);
         return localType;
     }
 
     @Override
     public Object visit(TwoFactorsRelExpr expr) throws Exception {
         localType = (BasicType) (expr.leftSide.accept(this));
-        if (!(localType.equals(BasicType.DataType.INT) && localType.equals(expr.rightSide.accept(this))))
-            throw new TypeExecption("Rel violated: non int member", symbolTable.currentClass.name, symbolTable.currentMethod);
+        if (!(((BasicType) localType).equals(BasicType.DataType.INT) && localType.equals(expr.rightSide.accept(this))))
+            throwTypeException("Rel violated: non int member", 2);
         return new BasicType(BasicType.DataType.BOOL);
     }
 
@@ -290,32 +304,36 @@ public class StaticCheckingVisitor implements Visitor {
         //check leftSideAtom is a class
         localType = (BasicType) atom.atom.accept(this);
         if (!(localType instanceof ClassNameType))
-            throw new TypeExecption("Field violated: not a class", symbolTable.currentClass.name, symbolTable.currentMethod);
-        //check id is a field of a leftSideAtom class, and get its type
-        if (!symbolTable.fieldIsInClass(atom.field, ((ClassNameType) localType).name))
-            throw new TypeExecption("Field violated: class hasn't that field", symbolTable.currentClass.name, symbolTable.currentMethod);
+            throwTypeException("Field violated: not a class", 2);
+        //check id is a field or method of a leftSideAtom class, and get its type
+        if (!symbolTable.isFieldOfClass(atom.field, ((ClassNameType) localType).name))
+            throwTypeException("Field violated: class hasn't field " + atom.field, 2);
         localType = symbolTable.lookupClassFieldType((ClassNameType) localType, atom.field);
         return localType;
     }
 
     @Override
-    public FunctionType visit(AtomFunctionCall atom) throws Exception {
-        //atom is the function name
-        localType = (DataType) atom.atom.accept(this);
-        if (!(localType instanceof FunctionType)) throw new TypeExecption("LocalCall violated: not a function name", symbolTable.currentClass.name, symbolTable.currentMethod);
-        //TODO impl
+    public FunctionType visit(AtomFunctionCall atom) throws Exception { //TODO impl
+        //lookUp function name after having understood the type of atom
+        if ((atom.atom instanceof AtomGrd)) {
+
+        }
+        if (!(localType instanceof FunctionType))
+            throwTypeException("LocalCall violated: not a function name", 2);
+
         return (FunctionType) localType;
     }
 
     @Override
-    public DataType visit(AtomGrd atom) throws TypeExecption {
+    public DataType visit(AtomGrd atom) throws TypeException {
         localType = null;
         if (atom.isNullGround()) localType = new BasicType(BasicType.DataType.NULL); //TODO check how to deal with it
         else if (atom.isThisGround()) localType = symbolTable.currentClass;
         else if (atom.isIdentifierGround()) {
             localType = symbolTable.lookupVarType(atom.id);
-            if (localType == null)
-                throw new TypeExecption("Id violated", symbolTable.currentClass.name, symbolTable.currentMethod);
+            if (localType == null) {
+                throwTypeException("Id violated: there is not such an identifier as " + atom.id, 2);
+            }
         }
         return localType;
     }
@@ -384,19 +402,32 @@ public class StaticCheckingVisitor implements Visitor {
     private void checkClassDescriptor(ClassDescriptor classDescriptor) throws Exception {
         //different fields name
         if (!classDescriptor.classFields.allVarsHaveDifferentIds())
-            throw new TypeExecption("Class " + classDescriptor.className + " has two vars with the same name");
+            throwTypeException("Class " + classDescriptor.className + " has two vars with the same name", 0);
         //different params names in methods
         for (MethodSignature m : classDescriptor.methodSignatures) {
             if (!m.params.allVarsHaveDifferentIds()) {
-                throw new TypeExecption("Two params with same name", m.name, classDescriptor.className.toString());
+                throwTypeException("Two params with same name in method " + m.name + " of Class " + classDescriptor.className.toString(), 0);
             }
         }
         //different methods
         for (int i = 0; i < classDescriptor.methodSignatures.size(); i++) {
             for (int j = i + 1; j < classDescriptor.methodSignatures.size(); j++) {
                 if (classDescriptor.methodSignatures.get(i).equals(classDescriptor.methodSignatures.get(j)))
-                    throw new TypeExecption("Two methods with the same signature", classDescriptor.className.toString());
+                    throwTypeException("Two methods with the same signature in class" + classDescriptor.className.toString(), 0);
             }
+        }
+    }
+
+    private void throwTypeException(String issue, int depth) throws TypeException {
+        switch (depth) {
+            case 1:
+                throw new TypeException(issue, symbolTable.currentClass.name);
+            case 2:
+                throw new TypeException(issue, symbolTable.currentClass.name, symbolTable.currentMethod.name);
+            case 3:
+                throw new TypeException(issue + " in Stmt ", symbolTable.currentClass.name, symbolTable.currentMethod.name);
+            default:
+                throw new TypeException(issue);
         }
     }
 

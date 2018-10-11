@@ -1,7 +1,7 @@
 import concrete_nodes.Program;
 import jnodes.JProgram;
 import utils.StaticCheckingVisitor;
-import utils.TypeExecption;
+import utils.TypeException;
 
 import java.io.*;
 
@@ -17,7 +17,7 @@ public class Main {
             StaticCheckingVisitor visitor = new StaticCheckingVisitor();
             try {
                 tree.accept(visitor);
-            } catch (TypeExecption e) {
+            } catch (TypeException e) {
                 e.printStackTrace();
                 System.out.println("\n\nERROR: Static Checking Failed");
                 allGood = false;

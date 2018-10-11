@@ -17,7 +17,7 @@ class ClassDescriptor {
 
     BasicType getFieldType(String varId){
         for (VarDecl v: classFields.list) {
-            if (v.id == varId) return v.type;
+            if (v.id.equals(varId)) return v.type;
         }
         return null;
     }
