@@ -19,11 +19,14 @@ class Dummy {
         return 4;
         this.c = true || false;
         if (this.c){
-            i = i || (j && i);
-        }else{ println("ciao"); }
+            i = i || j && i;
+        }else{
+        readln(i);
+        println(this.j.j.c); }
+        return 5;
     }
     Compute getCompute() {
-       return c;
+       return new Compute();
     }
 
 }

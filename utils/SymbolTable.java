@@ -1,49 +1,40 @@
 package utils;
 
-import concrete_nodes.ClassDecl;
 import concrete_nodes.MethodDecl;
 import concrete_nodes.VarDecl;
 import concrete_nodes.expressions.Atom;
 import concrete_nodes.expressions.AtomGrd;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
 
 class SymbolTable {
     int indentLevel;
     List<ClassDescriptor> classDescriptors;
-    private HashMap<Integer, Stack<VarDecl>> enviromentVars;
+    private Stack<List<VarDecl>> enviromentVars;
     ClassNameType currentClass;
     MethodDecl currentMethod;
 
     SymbolTable() {
         this.indentLevel = 0;
-        enviromentVars = new HashMap<>();
+        enviromentVars = new Stack<>();
         classDescriptors = new ArrayList<>();
-    }
-
-    void setCurrentClass(ClassDecl classDecl) {
-        this.currentClass = classDecl.className;
     }
 
     void increaseIndentLevel() {
         indentLevel++;
-        enviromentVars.put(indentLevel, new Stack<>());
+        enviromentVars.push(new ArrayList<>());
     }
 
     void decreaseIndentLevel() {
+        enviromentVars.pop();
         indentLevel--;
-        enviromentVars.remove(indentLevel);
     }
 
     void increaseIndentLevel(MethodDecl methodDecl) {
         increaseIndentLevel();
         currentMethod = methodDecl;
-        for (VarDecl v : methodDecl.params.list) {
-            pushLocalVar(v);
-        }
     }
 
     void increaseIndentLevel(ClassNameType classNameType) {
@@ -52,13 +43,8 @@ class SymbolTable {
     }
 
     void pushLocalVar(VarDecl varDecl) {
-        enviromentVars.get(indentLevel).push(varDecl);
+        enviromentVars.peek().add(varDecl);
     }
-
-    void popLocalVar() {
-        enviromentVars.get(indentLevel).pop();
-    }
-
 
     boolean isFieldOfClass(String field, String className) {
         for (ClassDescriptor c : classDescriptors) {
@@ -83,9 +69,9 @@ class SymbolTable {
     }
 
     BasicType lookupVarType(String id) {
-        for (int i = indentLevel; i > 0; i--) {
-            if (enviromentVars.get(indentLevel) != null) {
-                for (VarDecl var : enviromentVars.get(indentLevel)) {
+        for (int i = enviromentVars.size() - 1; i > 0; i--) {
+            if (enviromentVars.get(i) != null) {
+                for (VarDecl var : enviromentVars.get(i)) {
                     if (var.id.equals(id)) return var.type;
                 }
             }
@@ -95,15 +81,15 @@ class SymbolTable {
 
     FunctionType lookupFunctionType(Atom atom) {
         FunctionType ret = null;
-        if (atom instanceof AtomGrd){
-            if (((AtomGrd)atom).isIdentifierGround()) ret = null;
+        if (atom instanceof AtomGrd) {
+            if (((AtomGrd) atom).isIdentifierGround()) ret = null;
         }
         return ret;
     }
 
     FunctionType lookupFunctionType(String id) {
-        for (ClassDescriptor c: classDescriptors) {
-            for (MethodSignature m: c.methodSignatures) {
+        for (ClassDescriptor c : classDescriptors) {
+            for (MethodSignature m : c.methodSignatures) {
                 if (m.name.equals(id)) return m.getFunctionType();
             }
         }

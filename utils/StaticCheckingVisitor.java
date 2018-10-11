@@ -59,7 +59,6 @@ public class StaticCheckingVisitor implements Visitor {
     public Object visit(MainClass mainClass) throws Exception {
         newLine();
         System.out.print("MainClass-" + mainClass.className.name);
-        symbolTable.setCurrentClass(mainClass);
         typeCheckClass(mainClass);
         return null;
     }
@@ -68,21 +67,18 @@ public class StaticCheckingVisitor implements Visitor {
     public Object visit(ClassDecl classDecl) throws Exception {
         newLine();
         System.out.print("ClassDecl-" + classDecl.className.name);
-        symbolTable.indentLevel++;
-        symbolTable.setCurrentClass(classDecl);
         typeCheckClass(classDecl);
-        symbolTable.indentLevel--;
         return null;
     }
 
     private void typeCheckClass(ClassDecl classDecl) throws Exception {
+        symbolTable.increaseIndentLevel(classDecl.className);
         for (MethodDecl m : classDecl.methodDeclList) {
-            symbolTable.increaseIndentLevel(m);
             if (!m.returnType.equals((BasicType) m.accept(this))) {
                 throwTypeException("method body type doesn't match return type", 2);
             }
-            symbolTable.decreaseIndentLevel();
         }
+        symbolTable.decreaseIndentLevel();
     }
 
     @Override
@@ -138,7 +134,7 @@ public class StaticCheckingVisitor implements Visitor {
             localType = (DataType) s.accept(this);
         }
         symbolTable.decreaseIndentLevel();
-        if (!((BasicType) localType).equals(trueBranchType)) throwTypeException("IfStmt branches type mismatch", 2);
+        if (!localType.equals(trueBranchType)) throwTypeException("IfStmt branches type mismatch", 2);
         return localType;
     }
 
@@ -416,6 +412,7 @@ public class StaticCheckingVisitor implements Visitor {
                     throwTypeException("Two methods with the same signature in class" + classDescriptor.className.toString(), 0);
             }
         }
+        //TODO whatch out for params which don't exist
     }
 
     private void throwTypeException(String issue, int depth) throws TypeException {

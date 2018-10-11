@@ -85,6 +85,9 @@ end_comment = "*/"
     "null" { System.out.print(yytext()); return symbol(sym.NULL, yytext()); }
     "NULL" { System.out.print(yytext()); return symbol(sym.NULL, yytext()); }
 
+    "println" { System.out.print(yytext()); return symbol(sym.PRINTLN, yytext()); }
+    "readln" { System.out.print(yytext()); return symbol(sym.READLN, yytext()); }
+
     /* operators */
     "+" { System.out.print(yytext()); return symbol(sym.PLUS,yytext()); }
     "-" { System.out.print(yytext()); return symbol(sym.MINUS,yytext()); }
