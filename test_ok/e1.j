@@ -11,7 +11,7 @@ class Main {
 
 class Dummy {
     Compute c;
-    Int t;
+    Int dummy;
     Dummy j;
     Int dummy() {
         Bool i;

@@ -9,7 +9,7 @@ import java.util.List;
 public class StaticCheckingVisitor implements Visitor {
 
     private SymbolTable symbolTable;
-    private BasicType localType;
+    private DataType localType;
 
     public StaticCheckingVisitor() {
         this.symbolTable = new SymbolTable();
@@ -274,7 +274,7 @@ public class StaticCheckingVisitor implements Visitor {
         localType = new BasicType(BasicType.DataType.BOOL);
         if (expr.isNegatedGround()) localType = (BasicType) expr.grdExpr.accept(this);
         else if (expr.isAtomGround()) localType = (BasicType) expr.atom.accept(this);
-        return localType;
+        return (BasicType) localType;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -299,31 +299,34 @@ public class StaticCheckingVisitor implements Visitor {
     }
 
     @Override
-    public Object visit(AtomFunctionCall atom) { //TODO impl
-
-        return null;
+    public FunctionType visit(AtomFunctionCall atom) throws Exception {
+        //atom is the function name
+        localType = (DataType) atom.atom.accept(this);
+        if (!(localType instanceof FunctionType)) throw new TypeExecption("LocalCall violated: not a function name", symbolTable.currentClass.name, symbolTable.currentMethod);
+        //TODO impl
+        return (FunctionType) localType;
     }
 
     @Override
-    public BasicType visit(AtomGrd atom) throws TypeExecption {
+    public DataType visit(AtomGrd atom) throws TypeExecption {
         localType = null;
         if (atom.isNullGround()) localType = new BasicType(BasicType.DataType.NULL); //TODO check how to deal with it
         else if (atom.isThisGround()) localType = symbolTable.currentClass;
         else if (atom.isIdentifierGround()) {
             localType = symbolTable.lookupVarType(atom.id);
             if (localType == null)
-                throw new TypeExecption("Id violated", symbolTable.currentClass.toString(), symbolTable.currentMethod);
+                throw new TypeExecption("Id violated", symbolTable.currentClass.name, symbolTable.currentMethod);
         }
         return localType;
     }
 
     @Override
-    public Object visit(AtomParenthesizedExpr atom) throws Exception {
-        return atom.expr.accept(this);
+    public DataType visit(AtomParenthesizedExpr atom) throws Exception {
+        return (DataType) atom.expr.accept(this);
     }
 
     @Override
-    public Object visit(VarDecl varDecl) {
+    public BasicType visit(VarDecl varDecl) {
         return varDecl.type;
     }
 

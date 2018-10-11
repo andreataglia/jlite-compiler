@@ -95,6 +95,15 @@ public class SymbolTable {
         return null;
     }
 
+    FunctionType lookupFunctionType(String id) {
+        for (ClassDescriptor c: classDescriptors) {
+            for (MethodSignature m: c.methodSignatures) {
+                if (m.name.equals(id)) return m.getFunctionType();
+            }
+        }
+        return null;
+    }
+
     ClassNameType lookUpClass(String className) {
         for (ClassDescriptor c : classDescriptors) {
             System.out.println(c.className);
