@@ -41,9 +41,8 @@ public class SymbolTable {
     void increaseIndentLevel(MethodDecl methodDecl) {
         increaseIndentLevel();
         currentMethod = methodDecl.name;
-        for (VarDecl v: methodDecl.params
-             ) {
-
+        for (VarDecl v : methodDecl.params.list) {
+            pushLocalVar(v);
         }
     }
 
@@ -78,9 +77,13 @@ public class SymbolTable {
         return false;
     }
 
-    BasicType getLocalVarType(String id){
-        for (VarDecl var: enviromentVars.get(indentLevel)) {
-            if (var.id.equals(id)) return var.type;
+    BasicType getLocalVarType(String id) {
+        for (int i = indentLevel; i > 0; i--) {
+            if (enviromentVars.get(indentLevel) != null) {
+                for (VarDecl var : enviromentVars.get(indentLevel)) {
+                    if (var.id.equals(id)) return var.type;
+                }
+            }
         }
         return null;
     }

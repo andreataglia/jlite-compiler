@@ -20,7 +20,7 @@ public class MethodDecl extends Node {
     public MethodDecl(String name, VarsList params, BasicType returnType, VarsList varDeclList, List<Stmt> stmtList) {
         this.name = name;
         this.params = params;
-        if (params == null){
+        if (params == null) {
             this.params = new VarsList();
         }
         this.returnType = returnType;
@@ -29,6 +29,18 @@ public class MethodDecl extends Node {
         } else {
             this.varDeclList = varDeclList;
         }
+        if (stmtList == null) {
+            this.stmtList = new ArrayList<>();
+        } else {
+            this.stmtList = stmtList;
+        }
+    }
+
+    public MethodDecl(String name, List<VarDecl> params, BasicType returnType, List<VarDecl> varDeclList, List<Stmt> stmtList) {
+        this.name = name;
+        this.params = new VarsList(params);
+        this.returnType = returnType;
+        this.varDeclList = new VarsList(varDeclList);
         if (stmtList == null) {
             this.stmtList = new ArrayList<>();
         } else {

@@ -16,8 +16,8 @@ public class MethodSignature {
 
     public static MethodSignature fromMethodDecl(MethodDecl methodDecl) {
         VarsList varDecls = new VarsList();
-        if (!methodDecl.params.isEmpty()) {
-            for (VarDecl entry : methodDecl.params) {
+        if (!methodDecl.params.list.isEmpty()) {
+            for (VarDecl entry : methodDecl.params.list) {
                 varDecls.add(new VarDecl(entry.id, entry.type));
             }
         }

@@ -59,7 +59,7 @@ public class StaticCheckingVisitor implements Visitor {
         System.out.print("MainClass-" + mainClass.className.name);
         symbolTable.setCurrentClass(mainClass);
         for (MethodDecl m : mainClass.methodDeclList) {
-            symbolTable.increaseIndentLevel(m.name);
+            symbolTable.increaseIndentLevel(m);
             if (!m.returnType.equals(m.accept(this)))
                 throw new TypeExecption("method body type doesn't match return type", mainClass.className.name, m.name);
             symbolTable.decreaseIndentLevel();
@@ -74,7 +74,7 @@ public class StaticCheckingVisitor implements Visitor {
         symbolTable.indentLevel++;
         symbolTable.setCurrentClass(classDecl);
         for (MethodDecl m : classDecl.methodDeclList) {
-            symbolTable.increaseIndentLevel(m.name);
+            symbolTable.increaseIndentLevel(m);
             if (!m.returnType.equals(m.accept(this)))
                 throw new TypeExecption("method body type doesn't match return type", classDecl.className.name, m.name);
             symbolTable.decreaseIndentLevel();
@@ -90,8 +90,8 @@ public class StaticCheckingVisitor implements Visitor {
         System.out.print("MethodDecl-" + methodDecl.name);
 
         //enrich the environment with local vars
-        symbolTable.increaseIndentLevel(methodDecl.name);
-        for (VarDecl entry : methodDecl.params) {
+        symbolTable.increaseIndentLevel(methodDecl);
+        for (VarDecl entry : methodDecl.params.list) {
             localType = entry.type;
             newLine();
             printObjType(entry);
@@ -336,8 +336,8 @@ public class StaticCheckingVisitor implements Visitor {
     }
 
     private void printMethod(MethodDecl methodDecl) throws Exception {
-        if (!methodDecl.varDeclList.isEmpty()) {
-            for (VarDecl entry : methodDecl.varDeclList) {
+        if (!methodDecl.varDeclList.list.isEmpty()) {
+            for (VarDecl entry : methodDecl.varDeclList.list) {
                 newLine();
                 System.out.print("LocalVarDecl-" + entry.type + " " + entry.id);
             }

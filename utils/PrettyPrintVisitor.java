@@ -50,7 +50,7 @@ public class PrettyPrintVisitor implements Visitor {
         newLine();
         System.out.print("MethodDecl-" + methodDecl.returnType + " " + methodDecl.name + " [");
         boolean fistParam = true;
-        for (VarDecl entry : methodDecl.params) {
+        for (VarDecl entry : methodDecl.params.list) {
             if (!fistParam) System.out.print(", ");
             System.out.print(entry.type + " " + entry.id);
             fistParam = false;
@@ -267,8 +267,8 @@ public class PrettyPrintVisitor implements Visitor {
     }
 
     private void printMethod(MethodDecl methodDecl) throws Exception {
-        if (!methodDecl.varDeclList.isEmpty()) {
-            for (VarDecl entry : methodDecl.varDeclList) {
+        if (!methodDecl.varDeclList.list.isEmpty()) {
+            for (VarDecl entry : methodDecl.varDeclList.list) {
                 newLine();
                 System.out.print("LocalVarDecl-" + entry.type + " " + entry.id);
             }

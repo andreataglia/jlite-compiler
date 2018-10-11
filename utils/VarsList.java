@@ -10,6 +10,7 @@ public class VarsList {
 
     public VarsList(List<VarDecl> list) {
         this.list = list;
+        if (list == null) this.list = new ArrayList<>();
     }
 
     public VarsList() {
