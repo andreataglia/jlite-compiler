@@ -1,10 +1,9 @@
 package concrete_nodes;
 
 import utils.BasicType;
-import utils.TypeExecption;
 import utils.Visitor;
 
-public class VarDecl extends Node{
+public class VarDecl extends Node {
     public String id;
     public BasicType type;
 
@@ -14,17 +13,14 @@ public class VarDecl extends Node{
     }
 
     /**
-     *
      * @param obj
      * @return true if the two VarDecl have the same name
      */
     @Override
     public boolean equals(Object obj) {
-        if(obj instanceof VarDecl){
+        if (obj instanceof VarDecl) {
             VarDecl element = (VarDecl) obj;
-            if(this.id.equals(element.id)){
-                return true;
-            }
+            return this.id.equals(element.id);
         }
         return false;
     }
@@ -32,5 +28,10 @@ public class VarDecl extends Node{
     @Override
     public Object accept(Visitor visitor) throws Exception {
         return visitor.visit(this);
+    }
+
+    @Override
+    public String toString() {
+        return type + " " + id;
     }
 }

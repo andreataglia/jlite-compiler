@@ -25,8 +25,15 @@ public class BasicType extends DataType {
         NULL
     }
 
+    public boolean equals(Object other) {
+        if (other instanceof BasicType){
+            return this.toString().equals(other.toString());
+        }
+        return false;
+    }
+
     public boolean equals(BasicType other) {
-        return this.toString().equalsIgnoreCase(other.toString());
+        return this.toString().equals(other.toString());
     }
 
     public boolean equals(BasicType.DataType dataType) {

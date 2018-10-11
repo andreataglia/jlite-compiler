@@ -24,6 +24,18 @@ public class ArithGrdExpr extends ArithExpr {
         this.negateFactor = negateFactor;
     }
 
+    public boolean isIntLiteral() {
+        return intLiteral != null;
+    }
+
+    public boolean isAtomGrd() {
+        return atom != null;
+    }
+
+    public boolean isNegateArithGrd() {
+        return negateFactor != null;
+    }
+
     @Override
     public Object accept(Visitor visitor) throws Exception {
         return visitor.visit(this);

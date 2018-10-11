@@ -54,4 +54,13 @@ public class VarsList {
         }
         return true;
     }
+
+    @Override
+    public String toString() {
+        String s = "";
+        for (VarDecl v : list) {
+            s += " " + v;
+        }
+        return s;
+    }
 }

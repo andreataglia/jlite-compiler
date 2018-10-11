@@ -7,6 +7,7 @@ import java.io.*;
 
 public class Main {
     static public void main(String argv[]) {
+        boolean allGood = true;
         try {
             parser p = new parser(new Lexer(new FileReader(argv[0])));
             JProgram ast = (JProgram) p.parse().value;
@@ -16,9 +17,12 @@ public class Main {
             StaticCheckingVisitor visitor = new StaticCheckingVisitor();
             try {
                 tree.accept(visitor);
-            }catch (TypeExecption e){
+            } catch (TypeExecption e) {
                 e.printStackTrace();
+                System.out.println("\n\nERROR: Static Checking Failed");
+                allGood = false;
             }
+            if (allGood) System.out.println("\n\nSuccess!");
         } catch (Exception e) {
             e.printStackTrace();
         }

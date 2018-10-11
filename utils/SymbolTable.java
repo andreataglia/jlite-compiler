@@ -4,6 +4,7 @@ import concrete_nodes.ClassDecl;
 import concrete_nodes.MethodDecl;
 import concrete_nodes.VarDecl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
@@ -11,16 +12,17 @@ import java.util.Stack;
 public class SymbolTable {
     int indentLevel;
     List<ClassDescriptor> classDescriptors;
-    HashMap<Integer, Stack<VarDecl>> enviromentVars;
+    private HashMap<Integer, Stack<VarDecl>> enviromentVars;
     ClassNameType currentClass;
     String currentMethod;
 
     SymbolTable() {
         this.indentLevel = 0;
+        enviromentVars = new HashMap<>();
+        classDescriptors = new ArrayList<>();
     }
 
-    public SymbolTable(List<ClassDescriptor> classDescriptors) {
-        super();
+    public void setClassDescriptors(List<ClassDescriptor> classDescriptors) {
         this.classDescriptors = classDescriptors;
     }
 
@@ -59,14 +61,6 @@ public class SymbolTable {
         enviromentVars.get(indentLevel).pop();
     }
 
-    BasicType getClassFieldType(String id) {
-        BasicType type;
-        for (ClassDescriptor c : classDescriptors) {
-            type = c.getFieldType(id);
-            if (type != null) return type;
-        }
-        return null;
-    }
 
     boolean fieldIsInClass(String field, String className) {
         for (ClassDescriptor c : classDescriptors) {
@@ -77,13 +71,34 @@ public class SymbolTable {
         return false;
     }
 
-    BasicType getLocalVarType(String id) {
+    //////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////LookUps///////////////////////////////////////////
+
+
+    BasicType lookupClassFieldType(ClassNameType classNameType, String id) {
+        for (ClassDescriptor c : classDescriptors) {
+            if (c.className.equals(classNameType)) {
+                return c.getFieldType(id);
+            }
+        }
+        return null;
+    }
+
+    BasicType lookupVarType(String id) {
         for (int i = indentLevel; i > 0; i--) {
             if (enviromentVars.get(indentLevel) != null) {
                 for (VarDecl var : enviromentVars.get(indentLevel)) {
                     if (var.id.equals(id)) return var.type;
                 }
             }
+        }
+        return null;
+    }
+
+    ClassNameType lookUpClass(String className) {
+        for (ClassDescriptor c : classDescriptors) {
+            System.out.println(c.className);
+            if (c.className.name.equals(className)) return c.className;
         }
         return null;
     }

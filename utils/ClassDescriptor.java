@@ -5,11 +5,11 @@ import concrete_nodes.VarDecl;
 import java.util.List;
 
 class ClassDescriptor {
-    String className;
+    ClassNameType className;
     VarsList classFields;
     List<MethodSignature> methodSignatures;
 
-    ClassDescriptor(String className, VarsList classFields, List<MethodSignature> methodSignatures) {
+    ClassDescriptor(ClassNameType className, VarsList classFields, List<MethodSignature> methodSignatures) {
         this.className = className;
         this.classFields = classFields;
         this.methodSignatures = methodSignatures;

@@ -1,15 +1,11 @@
 class Main {
-    Void main(Int i, Int a, Int i,Int d){
-        Int t1;
+    Void main(Int i, Int a, Int j,Int d){
+        String t1;
         Int t2;
         Compute help;
-        if ( a > b && new Mbare()){
-           return null;
-           a = this;
-           com.t1 = aaaa + b;
-        } else{
-            return;
-        }
+        //new Dummy().t = t2;
+        t1 = "t2";
+        t2 = 1;
     }
 }
 
