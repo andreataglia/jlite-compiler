@@ -4,7 +4,7 @@ import concrete_nodes.expressions.ArithGrdExpr;
 
 // ftr ::= INTEGER_LITERAL
 //        | MINUS ftr
-//        | atom
+//        | functionId
 public class JFtr extends JNode {
     public Integer integer;
     public JFtr ftr;

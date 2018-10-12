@@ -63,7 +63,7 @@ non terminal JConj conj;
 non terminal JRExp rExp;
 non terminal JBGrd bGrd;
 non terminal JAExp aExp;
-non terminal JAtom atom;
+non terminal JAtom functionId;
 non terminal JFtr ftr;
 non terminal JSExp sExp;
 non terminal JVarDecl varDecl;
@@ -136,8 +136,8 @@ non terminal JClassNameType cname;
        | READLN:o LPAREN ident:i RPAREN SEMICOLON {: RESULT = new JIoStmt(o,i); :}
        | PRINTLN:o LPAREN exp:e RPAREN SEMICOLON {: RESULT = new JIoStmt(o,e); :}
        | ident:i EQUAL exp:e SEMICOLON {: RESULT = new JAssignStmt(i, e); :}
-       | atom:a DOT ident:i EQUAL exp:e SEMICOLON {: RESULT = new JAssignStmt(a,i,e); :}
-       | atom:a LPAREN expList:e RPAREN SEMICOLON {: RESULT = new JAtomExpStmt(a, e); :}
+       | functionId:a DOT ident:i EQUAL exp:e SEMICOLON {: RESULT = new JAssignStmt(a,i,e); :}
+       | functionId:a LPAREN expList:e RPAREN SEMICOLON {: RESULT = new JAtomExpStmt(a, e); :}
        | RETURN exp:e SEMICOLON {: RESULT = new JReturnStmt(e); :}
        | RETURN SEMICOLON {: RESULT = new JReturnStmt(); :}
        ; 
@@ -149,22 +149,22 @@ non terminal JClassNameType cname;
 
   bExp ::= bExp:b OR conj:c {: RESULT = new JBExp(b,c); :}
         | conj:c {: RESULT = new JBExp(c); :}
-        | bExp:b OR atom:a {: RESULT = new JBExp(b,a); :}
-        | atom:a1 OR atom:a2 {: RESULT = new JBExp(a1,a2); :}
-        | atom:a OR conj:c {: RESULT = new JBExp(a,c); :}
+        | bExp:b OR functionId:a {: RESULT = new JBExp(b,a); :}
+        | functionId:a1 OR functionId:a2 {: RESULT = new JBExp(a1,a2); :}
+        | functionId:a OR conj:c {: RESULT = new JBExp(a,c); :}
         ; /*binary expression*/
 
 
   conj ::= conj:a AND rExp:b {: RESULT = new JConj(a,b); :}
         | rExp:a {: RESULT = new JConj(a); :}
-        | conj:a AND atom:b {: RESULT = new JConj(a,b); :}
-        | atom:a AND atom:b {: RESULT = new JConj(a,b); :}
-        | atom:a AND rExp:b {: RESULT = new JConj(a,b); :}
+        | conj:a AND functionId:b {: RESULT = new JConj(a,b); :}
+        | functionId:a AND functionId:b {: RESULT = new JConj(a,b); :}
+        | functionId:a AND rExp:b {: RESULT = new JConj(a,b); :}
         ;
 
   rExp ::= aExp:a bOp:b aExp:c {: RESULT = new JRExp(a, b, c); :}
         | bGrd:a {: RESULT = new JRExp(a); :}
-        | NOT atom:a {: RESULT = new JRExp(a); :}
+        | NOT functionId:a {: RESULT = new JRExp(a); :}
         /*relational expression*/
         ;
 
@@ -185,14 +185,14 @@ non terminal JClassNameType cname;
 
   ftr ::= INTEGER_LITERAL:n {: RESULT = new JFtr(n); :}
         | MINUS ftr:n {: RESULT = new JFtr(n); :}
-        | atom:n {: RESULT = new JFtr(n); :}
+        | functionId:n {: RESULT = new JFtr(n); :}
       ; /*arithmetic factor*/
 
   sExp ::= STRING_LITERAL:n {: RESULT = new JSExp(n); :} /*string expression*/
         ;
 
-  atom ::= atom:a DOT ident:b {: RESULT = new JAtom(a,b); :}
-       | atom:a LPAREN expList:b RPAREN {: RESULT = new JAtom(a,b); :}
+  functionId ::= functionId:a DOT ident:b {: RESULT = new JAtom(a,b); :}
+       | functionId:a LPAREN expList:b RPAREN {: RESULT = new JAtom(a,b); :}
        | THIS:a {: RESULT = new JAtom(String.valueOf(a)); :}
        | ident:id {: RESULT = new JAtom(id); :}
        | NEW cname:a LPAREN RPAREN {: RESULT = new JAtom(a); :}

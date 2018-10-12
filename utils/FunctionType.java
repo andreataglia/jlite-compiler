@@ -24,4 +24,12 @@ public class FunctionType extends DataType {
         }
         return ret;
     }
+
+    public boolean paramsMatch(ArrayList<BasicType> params){
+        if (params.size() != paramsType.size()) return false;
+        for (int i = 0; i < params.size(); i++) {
+            if (!params.get(i).equals(paramsType.get(i))) return false;
+        }
+        return true;
+    }
 }

@@ -1,7 +1,7 @@
 package jnodes;
 
-// atom ::= atom DOT ident
-//       | atom LPAREN expList RPAREN
+// functionId ::= functionId DOT ident
+//       | functionId LPAREN expList RPAREN
 //       | THIS
 //       | ident
 //       | NEW OBJECT LPAREN RPAREN

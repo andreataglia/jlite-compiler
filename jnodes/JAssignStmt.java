@@ -4,7 +4,7 @@ import concrete_nodes.AssignmentStmt;
 import concrete_nodes.Stmt;
 
 // ident EQUAL exp SEMICOLON
-// | atom DOT ident EQUAL exp SEMICOLON
+// | functionId DOT ident EQUAL exp SEMICOLON
 public class JAssignStmt extends JStmt {
     public JId id;
     public JExp exp;

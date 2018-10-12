@@ -3,7 +3,7 @@ package jnodes;
 import concrete_nodes.FunctionCallStmt;
 import concrete_nodes.Stmt;
 
-// atom LPAREN expList RPAREN SEMICOLON
+// functionId LPAREN expList RPAREN SEMICOLON
 public class JAtomExpStmt extends JStmt {
     public JAtom atom;
     public JExpList expList;

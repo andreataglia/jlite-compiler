@@ -8,8 +8,8 @@ import concrete_nodes.Stmt;
 //       | READLN LPAREN ident RPAREN SEMICOLON
 //       | PRINTLN LPAREN exp RPAREN SEMICOLON
 //       | ident EQUAL exp SEMICOLON
-//       | atom DOT ident EQUAL exp SEMICOLON
-//       | atom LPAREN expList RPAREN SEMICOLON
+//       | functionId DOT ident EQUAL exp SEMICOLON
+//       | functionId LPAREN expList RPAREN SEMICOLON
 //       | RETURN exp SEMICOLON
 //       | RETURN SEMICOLON
 abstract public class JStmt extends JNode{

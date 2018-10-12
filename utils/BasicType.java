@@ -32,10 +32,6 @@ public class BasicType extends DataType {
         return false;
     }
 
-    public boolean equals(BasicType other) {
-        return this.toString().equals(other.toString());
-    }
-
     public boolean equals(BasicType.DataType dataType) {
         return this.dataType.name().equals(dataType.name());
     }

@@ -8,9 +8,9 @@ import utils.BoolOperand;
 
 // conj ::= conj AND rExp
 //          | rExp
-//          | conj AND atom
-//          | atom AND atom
-//          | atom AND rExp
+//          | conj AND functionId
+//          | functionId AND functionId
+//          | functionId AND rExp
 public class JConj extends JNode {
     //left side
     public JConj conj1;

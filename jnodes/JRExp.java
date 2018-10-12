@@ -5,7 +5,7 @@ import concrete_nodes.expressions.BoolGrdExpr;
 import concrete_nodes.expressions.TwoFactorsRelExpr;
 import utils.RelBoolOperand;
 
-// rExp ::= aExp bOp aExp | bGrd | NOT atom
+// rExp ::= aExp bOp aExp | bGrd | NOT functionId
 public class JRExp extends JNode{
     public JAExp aexp1;
     public JAExp aexp2;

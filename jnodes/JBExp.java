@@ -7,9 +7,9 @@ import utils.BoolOperand;
 
 //bExp ::= bExp OR conj
 //        | conj
-//        | bExp OR atom
-//        | atom OR atom
-//        | atom OR conj
+//        | bExp OR functionId
+//        | functionId OR functionId
+//        | functionId OR conj
 public class JBExp extends JExp {
     //left side
     public JBExp bExp;

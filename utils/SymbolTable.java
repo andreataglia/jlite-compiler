@@ -7,34 +7,32 @@ import concrete_nodes.expressions.AtomGrd;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 class SymbolTable {
     int indentLevel;
     List<ClassDescriptor> classDescriptors;
-    private Stack<List<VarDecl>> enviromentVars;
+    private List<VarDecl> methodLocalVars;
     ClassNameType currentClass;
     MethodDecl currentMethod;
 
     SymbolTable() {
         this.indentLevel = 0;
-        enviromentVars = new Stack<>();
+        methodLocalVars = new ArrayList<>();
         classDescriptors = new ArrayList<>();
     }
 
     void increaseIndentLevel() {
         indentLevel++;
-        enviromentVars.push(new ArrayList<>());
     }
 
     void decreaseIndentLevel() {
-        enviromentVars.pop();
         indentLevel--;
     }
 
     void increaseIndentLevel(MethodDecl methodDecl) {
         increaseIndentLevel();
         currentMethod = methodDecl;
+        methodLocalVars = new ArrayList<>();
     }
 
     void increaseIndentLevel(ClassNameType classNameType) {
@@ -43,7 +41,7 @@ class SymbolTable {
     }
 
     void pushLocalVar(VarDecl varDecl) {
-        enviromentVars.peek().add(varDecl);
+        methodLocalVars.add(varDecl);
     }
 
     boolean isFieldOfClass(String field, String className) {
@@ -69,28 +67,18 @@ class SymbolTable {
     }
 
     BasicType lookupVarType(String id) {
-        for (int i = enviromentVars.size() - 1; i > 0; i--) {
-            if (enviromentVars.get(i) != null) {
-                for (VarDecl var : enviromentVars.get(i)) {
-                    if (var.id.equals(id)) return var.type;
-                }
-            }
+        for (VarDecl var : methodLocalVars) {
+            if (var.id.equals(id)) return var.type;
         }
         return null;
     }
 
-    FunctionType lookupFunctionType(Atom atom) {
-        FunctionType ret = null;
-        if (atom instanceof AtomGrd) {
-            if (((AtomGrd) atom).isIdentifierGround()) ret = null;
-        }
-        return ret;
-    }
-
-    FunctionType lookupFunctionType(String id) {
+    FunctionType lookupFunctionTypeInClass(ClassNameType classNameType, String id) {
         for (ClassDescriptor c : classDescriptors) {
-            for (MethodSignature m : c.methodSignatures) {
-                if (m.name.equals(id)) return m.getFunctionType();
+            if (c.className.equals(classNameType)){
+                for (MethodSignature m : c.methodSignatures) {
+                    if (m.name.equals(id)) return m.getFunctionType();
+                }
             }
         }
         return null;
@@ -98,7 +86,6 @@ class SymbolTable {
 
     ClassNameType lookUpClass(String className) {
         for (ClassDescriptor c : classDescriptors) {
-            System.out.println(c.className);
             if (c.className.name.equals(className)) return c.className;
         }
         return null;
