@@ -1,18 +1,13 @@
 package concrete_nodes;
 
-import concrete_nodes.expressions.Atom;
-import concrete_nodes.expressions.Expr;
+import concrete_nodes.expressions.AtomFunctionCall;
 import utils.Visitor;
 
-import java.util.List;
-
 public class FunctionCallStmt extends Stmt{
-    public Atom atom;
-    public List<Expr> paramsList;
+    public AtomFunctionCall atom;
 
-    public FunctionCallStmt(Atom atom, List<Expr> paramsList) {
+    public FunctionCallStmt(AtomFunctionCall atom) {
         this.atom = atom;
-        this.paramsList = paramsList;
     }
 
     @Override

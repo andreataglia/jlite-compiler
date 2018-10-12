@@ -7,7 +7,7 @@ public class FunctionType extends DataType {
     public ArrayList<BasicType> paramsType;
     public BasicType returnType;
 
-    public FunctionType(ArrayList<BasicType> paramsType, BasicType returnType) {
+    FunctionType(ArrayList<BasicType> paramsType, BasicType returnType) {
         this.paramsType = paramsType;
         this.returnType = returnType;
     }
@@ -25,7 +25,7 @@ public class FunctionType extends DataType {
         return ret;
     }
 
-    public boolean paramsMatch(ArrayList<BasicType> params){
+    boolean paramsMatch(ArrayList<BasicType> params){
         if (params.size() != paramsType.size()) return false;
         for (int i = 0; i < params.size(); i++) {
             if (!params.get(i).equals(paramsType.get(i))) return false;

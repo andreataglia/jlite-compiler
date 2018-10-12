@@ -133,8 +133,8 @@ public class PrettyPrintVisitor implements Visitor {
         stmt.atom.accept(this);
         System.out.print("(");
         boolean firstParam = true;
-        if (!stmt.paramsList.isEmpty()) {
-            for (Expr e : stmt.paramsList) {
+        if (!stmt.atom.paramsList.isEmpty()) {
+            for (Expr e : stmt.atom.paramsList) {
                 if (!firstParam) System.out.print(", ");
                 e.accept(this);
                 firstParam = false;

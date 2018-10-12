@@ -9,8 +9,11 @@ public class VarsList {
     List<VarDecl> list;
 
     public VarsList(List<VarDecl> list) {
-        this.list = list;
+        this.list = new ArrayList<>();
         if (list == null) this.list = new ArrayList<>();
+        else {
+            this.list.addAll(list);
+        }
     }
 
     public VarsList() {

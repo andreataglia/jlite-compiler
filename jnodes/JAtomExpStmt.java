@@ -2,6 +2,7 @@ package jnodes;
 
 import concrete_nodes.FunctionCallStmt;
 import concrete_nodes.Stmt;
+import concrete_nodes.expressions.AtomFunctionCall;
 
 // functionId LPAREN expList RPAREN SEMICOLON
 public class JAtomExpStmt extends JStmt {
@@ -20,6 +21,6 @@ public class JAtomExpStmt extends JStmt {
 
     @Override
     Stmt getConcreteStmt() {
-        return new FunctionCallStmt(atom.getConcreteNode(), expList.getExprList());
+        return new FunctionCallStmt(new AtomFunctionCall(atom.getConcreteNode(), expList.getExprList()));
     }
 }
