@@ -89,15 +89,16 @@ class SymbolTable {
         return null;
     }
 
-    FunctionType lookupFunctionTypeInClass(ClassNameType classNameType, String id) {
+    List<FunctionType> lookupFunctionTypeInClass(ClassNameType classNameType, String id) {
+        List<FunctionType> list = new ArrayList<>();
         for (ClassDescriptor c : classDescriptors) {
             if (c.className.equals(classNameType)) {
                 for (MethodSignature m : c.methodSignatures) {
-                    if (m.name.equals(id)) return m.getFunctionType();
+                    if (m.name.equals(id)) list.add(m.getFunctionType());
                 }
             }
         }
-        return null;
+        return list;
     }
 
     ClassNameType lookUpClass(String className) {

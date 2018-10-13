@@ -319,7 +319,7 @@ public class StaticCheckingVisitor implements Visitor {
 
     @Override
     public BasicType visit(AtomFunctionCall atom) throws Exception {
-        FunctionType matchingFunction;
+        List<FunctionType> matchingFunctions;
         String functionId = "";
         ClassNameType functionClass = null;
         if (atom.functionId instanceof AtomFieldAccess) {
@@ -340,14 +340,18 @@ public class StaticCheckingVisitor implements Visitor {
             throwTypeException("FunctionCall violated: not a function identifier ", 2);
         }
 
-        matchingFunction = symbolTable.lookupFunctionTypeInClass(functionClass, functionId);
-        if (matchingFunction == null) throwTypeException("FunctionCall violated: not a function identifier ", 2);
+        matchingFunctions = symbolTable.lookupFunctionTypeInClass(functionClass, functionId);
+        if (matchingFunctions.isEmpty()) throwTypeException("FunctionCall violated: not a function identifier ", 2);
+
         ArrayList<BasicType> params = new ArrayList<>();
         for (Expr expr : atom.paramsList) {
             params.add((BasicType) expr.accept(this));
         }
-        if (!matchingFunction.paramsMatch(params))
-            throwTypeException("FunctionCall violated: params mismatch", 2);
+        FunctionType matchingFunction = null;
+        for (FunctionType f : matchingFunctions) {
+            if (f.paramsMatch(params)) matchingFunction = f;
+        }
+        if (matchingFunction == null) throwTypeException("FunctionCall violated: params mismatch", 2);
         localType = matchingFunction.returnType;
 
         return localType;

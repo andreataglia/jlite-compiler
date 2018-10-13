@@ -69,21 +69,21 @@ end_comment = "*/"
     "true" { System.out.print(yytext()); return symbol(sym.TRUE, yytext()); }
     "false" {System.out.print(yytext()); return symbol(sym.FALSE, yytext()); }
     "String" {System.out.print(yytext()); return symbol(sym.STRING, yytext()); }
+    "Void" { System.out.print(yytext()); return symbol(sym.VOID, yytext()); }
+    "null" { System.out.print(yytext()); return symbol(sym.NULL, yytext()); }
+    "NULL" { System.out.print(yytext()); return symbol(sym.NULL, yytext()); }
 
     /* control flow */
     "if" {System.out.print(yytext()); return symbol(sym.IF, yytext()); }
     "else" {System.out.print(yytext()); return symbol(sym.ELSE, yytext()); }
     "while" { System.out.print(yytext()); return symbol(sym.WHILE, yytext()); }
     "return" { System.out.print(yytext()); return symbol(sym.RETURN, yytext()); }
-    
+
     /* declarations */
     "class" { System.out.print(yytext()); return symbol(sym.CLASS, yytext()); }
-    "Void" { System.out.print(yytext()); return symbol(sym.VOID, yytext()); }
     "main" { System.out.print(yytext()); return symbol(sym.MAIN, yytext()); }
     "this" { System.out.print(yytext()); return symbol(sym.THIS, yytext()); }
     "new" { System.out.print(yytext()); return symbol(sym.NEW, yytext()); }
-    "null" { System.out.print(yytext()); return symbol(sym.NULL, yytext()); }
-    "NULL" { System.out.print(yytext()); return symbol(sym.NULL, yytext()); }
 
     "println" { System.out.print(yytext()); return symbol(sym.PRINTLN, yytext()); }
     "readln" { System.out.print(yytext()); return symbol(sym.READLN, yytext()); }

@@ -1,3 +1,5 @@
+//testing overloading
+
 class Main {
     Void main(){
         Pizza pizza;
@@ -5,6 +7,7 @@ class Main {
         pizza = new Pizza();
         pizza.print();
         shop.orderPizza(new Shop().randomPizza(), "Andrea Taglia");
+        pizza.avail = shop.randomPizza(pizza);
         return;
     }
 }
@@ -17,6 +20,14 @@ class Shop {
         }else{
             return true;
         }
+    }
+
+    Bool randomPizza(Pizza pizza){
+        return false;
+    }
+
+    Bool randomPizza(Int size){
+        return true;
     }
 
     Pizza randomPizza(){
