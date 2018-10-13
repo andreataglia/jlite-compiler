@@ -17,12 +17,12 @@ parser.java: cupsepc.cup
 	$(CUP) cupsepc.cup
 
 run: Main.class
-	@echo "-------- Parsing file: $(in) ------------"
+	@echo "compiling $(in)..."
 	@$(JAVA) -cp .:java-cup-11b-runtime.jar Main $(in) > output.txt
 	@echo "Done executing. Look at output.txt for the outcome (cat output.txt)"
 
 test: 
-	@echo "-------- Parsing file: e1.j ------------"
+	@echo "compiling test.j..."
 	@$(JAVA) -cp .:java-cup-11b-runtime.jar Main test_ok/test.j > output.txt
 	@echo "Done executing. Look at output.txt for the outcome"
 	cat output.txt

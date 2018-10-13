@@ -13,6 +13,7 @@ public class BasicType extends DataType {
         if (dataType == DataType.OBJECT) {
             ret = ((ClassNameType) this).name;
         }
+        ret = ret.substring(0, 1).toUpperCase() + ret.substring(1);
         return ret;
     }
 

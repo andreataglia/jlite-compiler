@@ -6,7 +6,7 @@ import concrete_nodes.VarDecl;
 import java.util.ArrayList;
 import java.util.List;
 
-class SymbolTable {
+public class SymbolTable {
     int indentLevel;
     List<ClassDescriptor> classDescriptors;
     private List<VarDecl> classLocalVars;
@@ -14,7 +14,7 @@ class SymbolTable {
     ClassNameType currentClass;
     MethodDecl currentMethod;
 
-    SymbolTable() {
+    public SymbolTable() {
         this.indentLevel = 0;
         methodLocalVars = new ArrayList<>();
         classLocalVars = new ArrayList<>();

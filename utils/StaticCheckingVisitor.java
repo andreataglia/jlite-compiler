@@ -11,8 +11,8 @@ public class StaticCheckingVisitor implements Visitor {
     private SymbolTable symbolTable;
     private BasicType localType;
 
-    public StaticCheckingVisitor() {
-        this.symbolTable = new SymbolTable();
+    public StaticCheckingVisitor(SymbolTable symbolTable) {
+        this.symbolTable = symbolTable;
     }
 
     @Override
