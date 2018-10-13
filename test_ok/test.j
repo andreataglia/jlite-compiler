@@ -12,6 +12,9 @@ class Main {
 }
 
 class Ciao{
+    Ciao a;
+    Main b;
+    Int c;
     Int prova(Bool a){
         return 5;
     }

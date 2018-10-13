@@ -2,7 +2,12 @@ package utils;
 
 import concrete_nodes.*;
 import concrete_nodes.expressions.*;
-import nodes3.Program3;
+import nodes3.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class IRGeneratorVisitor implements Visitor {
 
@@ -19,32 +24,38 @@ public class IRGeneratorVisitor implements Visitor {
 
     @Override
     public Program3 visit(Program program) throws Exception {
-        //print CData3
         System.out.println("\n\n========== CData3 ==========");
-        printClass(program.mainClass);
+        HashMap<CName3, List<VarDecl3>> cData3 = new HashMap<>();
+        cData3.put(new CName3(program.mainClass.className), convertList(program.mainClass.varDeclList));
         for (ClassDecl c : program.classDeclList) {
-            printClass(c);
+            cData3.put(new CName3(c.className), convertList(c.varDeclList));
+        }
+        for (Map.Entry<CName3, List<VarDecl3>> entry : cData3.entrySet()) {
+            printClass(entry.getKey(), entry.getValue());
         }
 
         //generate code for each method
         System.out.println("\n\n========== CMtd3 ==========");
-
+        List<CMtd3> methods = new ArrayList<>();
         symbolTable.increaseIndentLevel(program.mainClass.className);
         for (MethodDecl m : program.mainClass.methodDeclList) {
-            m.accept(this);
+            List<Stmt3> stmts = (List<Stmt3>) m.accept(this);
+            methods.add(new CMtd3(new Type3(m.returnType),new Id3(m.name),convertList(m.params), convertList(m.varDeclList), stmts));
         }
         symbolTable.decreaseIndentLevel();
 
         for (ClassDecl c : program.classDeclList) {
             symbolTable.increaseIndentLevel(c.className);
             for (MethodDecl m : c.methodDeclList) {
-                m.accept(this);
+                List<Stmt3> stmts = (List<Stmt3>) m.accept(this);
+                methods.add(new CMtd3(new Type3(m.returnType),new Id3(m.name),convertList(m.params), convertList(m.varDeclList), stmts));
+
             }
             symbolTable.decreaseIndentLevel();
         }
 
         System.out.println("\n\n=====fx== End of IR3 Program =======");
-        return null;
+        return new Program3(cData3, methods);
     }
 
     @Override
@@ -277,11 +288,11 @@ public class IRGeneratorVisitor implements Visitor {
         return ret;
     }
 
-    private void printClass(ClassDecl classDecl) {
-        System.out.print("\nData3 " + classDecl.className + " {");
-        if (!classDecl.varDeclList.isEmpty()) {
-            for (VarDecl entry : classDecl.varDeclList) {
-                System.out.print("\n" + entry.type + " " + entry.id + ";");
+    private void printClass(CName3 name, List<VarDecl3> vars) {
+        System.out.print("\nData3 " + name.name + " {");
+        if (!vars.isEmpty()) {
+            for (VarDecl3 entry : vars) {
+                System.out.print("\n    " + entry + ";");
             }
         }
         System.out.print("\n}");
@@ -294,7 +305,7 @@ public class IRGeneratorVisitor implements Visitor {
 
     private String exprDownToId3(Expr expr) throws Exception {
         //check if it's already id3
-        if (expr instanceof ArithGrdExpr){
+        if (expr instanceof ArithGrdExpr) {
             if (((ArithGrdExpr) expr).isIntLiteral()) return expr.accept(this).toString();
         }
         String temp = newTemp();
@@ -310,5 +321,22 @@ public class IRGeneratorVisitor implements Visitor {
         this.tempCount++;
         return "_t" + tempCount;
     }
+
+    private List<VarDecl3> convertList(List<VarDecl> vars) {
+        List<VarDecl3> list = new ArrayList<>();
+        for (VarDecl v : vars) {
+            list.add(new VarDecl3(v));
+        }
+        return list;
+    }
+
+    private List<VarDecl3> convertList(VarsList vars) {
+        List<VarDecl3> list = new ArrayList<>();
+        for (VarDecl v : vars.list) {
+            list.add(new VarDecl3(v));
+        }
+        return list;
+    }
+
 
 }

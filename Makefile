@@ -5,7 +5,7 @@ CUP=$(JAVA) -cp .:java-cup-11b.jar java_cup.Main <
 
 all: Main.class
 
-Main.class: Main.java Lexer.java parser.java jnodes/*.java utils/*.java concrete_nodes/*.java concrete_nodes/expressions/*.java
+Main.class: Main.java Lexer.java parser.java jnodes/*.java utils/*.java concrete_nodes/*.java concrete_nodes/expressions/*.java nodes3/*.java
 
 %.class: %.java
 	@$(JAVAC) $^
@@ -32,4 +32,4 @@ compile:
 
 
 clean:
-	rm -f parser.java Lexer.java sym.java output.txt *.class jnodes/*.class *~ utils/*.class concrete_nodes/*.class concrete_nodes/expressions/*.class
+	rm -f parser.java Lexer.java sym.java output.txt *.class jnodes/*.class *~ utils/*.class concrete_nodes/*.class concrete_nodes/expressions/*.class nodes3/*.class
