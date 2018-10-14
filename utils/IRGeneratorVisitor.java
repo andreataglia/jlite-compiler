@@ -45,10 +45,11 @@ public class IRGeneratorVisitor implements Visitor {
             currentVars = new ArrayList<>();
             currentVars.addAll(convertList(m.varDeclList));
             List<VarDecl3> params = new ArrayList<>();
-            params.add(new VarDecl3(new CName3(program.mainClass.className), new Id3("this")));
+            params.add(new VarDecl3(new CName3(program.mainClass.className), new Id3(new CName3(program.mainClass.className), "this")));
             params.addAll(convertList(m.params));
             m.accept(this);
-            methods.add(new CMtd3(new Type3(m.returnType), new Id3(m.name), params, currentVars, currentStmts));
+            //TODO Id3 should be function type
+            methods.add(new CMtd3(new Type3(m.returnType), new Id3(null, m.name), params, currentVars, currentStmts));
         }
         symbolTable.decreaseIndentLevel();
 
@@ -59,10 +60,11 @@ public class IRGeneratorVisitor implements Visitor {
                 currentVars = new ArrayList<>();
                 currentVars.addAll(convertList(m.varDeclList));
                 List<VarDecl3> params = new ArrayList<>();
-                params.add(new VarDecl3(new CName3(c.className), new Id3("this")));
+                params.add(new VarDecl3(new CName3(c.className), new Id3(new CName3(c.className), "this")));
                 params.addAll(convertList(m.params));
-                methods.add(new CMtd3(new Type3(m.returnType), new Id3(m.name), params, currentVars, currentStmts));
                 m.accept(this);
+                //TODO Id3 should be function type
+                methods.add(new CMtd3(new Type3(m.returnType), new Id3(null, m.name), params, currentVars, currentStmts));
             }
             symbolTable.decreaseIndentLevel();
         }
@@ -81,7 +83,8 @@ public class IRGeneratorVisitor implements Visitor {
                 System.out.print("\n    " + v + ";");
             }
             for (Stmt3 s : m.stmtList) {
-                System.out.print("\n   " + s + ";");
+                if (s.equals(Stmt3.Stmt3Type.LABEL)) System.out.print("\n   " + s);
+                else System.out.print("\n    " + s + ";");
             }
             System.out.println("\n}");
         }
@@ -193,7 +196,7 @@ public class IRGeneratorVisitor implements Visitor {
 
     @Override
     public Object visit(ReturnStmt stmt) throws Exception {
-        if (stmt.expr != null) currentStmts.add(new Stmt3(Stmt3.Stmt3Type.RETURN_VAR, exprDownToId3(stmt.expr)));
+        if (stmt.expr != null) currentStmts.add(new Stmt3(Stmt3.Stmt3Type.RETURN_VAR, exprDownToId3((Exp3) stmt.expr.accept(this))));
         else currentStmts.add(new Stmt3(Stmt3.Stmt3Type.RETURN));
         return null;
     }
@@ -203,86 +206,59 @@ public class IRGeneratorVisitor implements Visitor {
 
     @Override
     public Exp3 visit(TwoFactorsArithExpr expr) throws Exception {
-        expr.leftSide.accept(this);
-        System.out.print(" " + expr.operator + " ");
-        expr.rightSide.accept(this);
-        return null;
+        return new Exp3Impl(new Type3(expr.type), exprDownToIdc3((Exp3) expr.leftSide.accept(this)), expr.operator, exprDownToIdc3((Exp3) expr.rightSide.accept(this)));
     }
 
     @Override
     public Exp3 visit(TwoFactorsBoolExpr expr) throws Exception {
-        expr.leftSide.accept(this);
-        System.out.print(" " + expr.operator + " ");
-        expr.rightSide.accept(this);
-        return null;
+        return new Exp3Impl(new Type3(expr.type), exprDownToIdc3((Exp3) expr.leftSide.accept(this)), expr.operator, exprDownToIdc3((Exp3) expr.rightSide.accept(this)));
     }
 
     @Override
     public RelExp3Impl visit(TwoFactorsRelExpr expr) throws Exception {
-        return new RelExp3Impl(downToIdc3(expr.leftSide), expr.operator, downToIdc3(expr.rightSide));
-    }
-
-    Idc3 downToIdc3(ArithExpr expr) throws Exception {
-        Idc3 idc3 = new Id3("WARNING: empty id3 - expr");
-        if (expr instanceof ArithGrdExpr) {
-            if (((ArithGrdExpr) expr).isIntLiteral()) idc3 = new Const(((ArithGrdExpr) expr).intLiteral);
-            else if (((ArithGrdExpr) expr).isNegateArithGrd()) idc3 = exprDownToId3(expr);
-            else if (((ArithGrdExpr) expr).isAtomGrd()) idc3 = downToIdc3(((ArithGrdExpr) expr).atom);
-            else System.out.println("..TODO.."); //TODO impl
-        } else if (expr instanceof TwoFactorsArithExpr) {
-            idc3 = exprDownToId3(expr);
-        }
-        return idc3;
-    }
-
-    Idc3 downToIdc3(Atom atom) throws Exception {
-        Idc3 idc3 = new Id3("WARNING: empty id3 - atom");
-        if (atom instanceof AtomParenthesizedExpr) idc3 = exprDownToId3(((AtomParenthesizedExpr) atom).expr);
-        else if (atom instanceof AtomClassInstantiation)
-            idc3 = exprDownToId3(new Exp3Impl(new CName3(((AtomClassInstantiation) atom).cname)), new Type3(new ClassNameType(((AtomClassInstantiation) atom).cname.name)));
-        else System.out.println("..TODO.."); //TODO impl
-        return idc3;
+        return new RelExp3Impl(new Type3(expr.type), exprDownToIdc3((Exp3) expr.leftSide.accept(this)), expr.operator, exprDownToIdc3((Exp3) expr.rightSide.accept(this)));
     }
 
     @Override
     public Exp3 visit(ArithGrdExpr expr) throws Exception {
         Exp3 ret = null;
-        if (expr.isIntLiteral()) ret = new Const(expr.intLiteral);
-        else if (expr.isNegateArithGrd()) ret = new Exp3Impl(exprDownToId3(expr.negateFactor));
+        if (expr.isIntLiteral()) ret = new Const(new Type3(expr.type),expr.intLiteral);
+        else if (expr.isNegateArithGrd()) ret = new Exp3Impl(new Type3(expr.type),"!", exprDownToId3((Exp3) expr.negateFactor.accept(this)));
         else if (expr.isAtomGrd()) ret = (Exp3) expr.atom.accept(this);
         return ret;
     }
 
     @Override
     public Exp3 visit(StringExpr expr) {
-        return new Const(expr.s);
+        return new Const(new Type3(expr.type), expr.s);
     }
 
     @Override
     public Exp3 visit(BoolGrdExpr expr) throws Exception {
         Exp3 ret = null;
-        if (expr.isGround()) ret = new Const(expr.boolGrd);
+        if (expr.isGround()) ret = new Const(new Type3(expr.type), expr.boolGrd);
         else if (expr.isAtomGround()) ret = (Exp3) expr.atom.accept(this);
-        else if (expr.isNegatedGround()) ret = new Exp3Impl(exprDownToId3((Expr) expr.grdExpr.accept(this)));
+        else if (expr.isNegatedGround()) ret = new Exp3Impl(new Type3(expr.type), "-", exprDownToId3((Exp3) expr.grdExpr.accept(this)));
         return ret;
     }
 
     @Override
     public String visit(VarDecl varDecl) {
-        return varDecl.toString();
+        System.err.println("WARNING: visiting VarDecl should never be reached in IRGenerator");
+        return null;
     }
 
     ////////////////////////////////////////////////////////////////////////////
     ////////////////////// Expressions - Atoms /////////////////////////////////
 
     @Override
-    public String visit(AtomClassInstantiation atom) {
-        return "@";
+    public Exp3Impl visit(AtomClassInstantiation atom) {
+        return new Exp3Impl(new Type3(atom.type), new CName3(atom.cname));
     }
 
     @Override
-    public String visit(AtomFieldAccess atom) {
-        return "@";
+    public Exp3Impl visit(AtomFieldAccess atom) throws Exception {
+        return new Exp3Impl(new Type3(atom.type), exprDownToId3((Exp3) atom.atom.accept(this)), new Id3(new Type3(atom.type), atom.field));
     }
 
     @Override
@@ -291,13 +267,17 @@ public class IRGeneratorVisitor implements Visitor {
     }
 
     @Override
-    public String visit(AtomGrd atom) {
-        return atom.toString();
+    public Idc3 visit(AtomGrd atom) {
+        Idc3 ret = null;
+        if (atom.isIdentifierGround()) ret = new Id3(new Type3(atom.type), atom.id);
+        else if (atom.isThisGround()) ret = new Id3(new Type3(atom.type),"this");
+        else if (atom.isNullGround()) ret = new Const(new Type3(atom.type));
+        return ret;
     }
 
     @Override
-    public String visit(AtomParenthesizedExpr atom) {
-        return "@";
+    public Exp3 visit(AtomParenthesizedExpr atom) throws Exception {
+        return (Exp3) atom.expr.accept(this);
     }
 
 
@@ -336,19 +316,21 @@ public class IRGeneratorVisitor implements Visitor {
     //Type temp;
     //temp = Exp3Impl;
     //return temp;
-    private Id3 exprDownToId3(Expr expr) throws Exception {
-        Id3 newTemp = new Id3(newTemp());
-        currentVars.add(new VarDecl3(new Type3(expr.type), newTemp));
-        currentStmts.add(new Stmt3(Stmt3.Stmt3Type.ASS_VAR, newTemp, (Exp3) expr.accept(this)));
-        //temp is the returned <id3>
-        return newTemp;
+    private Id3 exprDownToId3(Exp3 expr) throws Exception {
+        if (!(expr instanceof Id3)) {
+            Id3 newTemp = new Id3(expr.type, newTemp());
+            currentVars.add(new VarDecl3(expr.type, newTemp));
+            currentStmts.add(new Stmt3(Stmt3.Stmt3Type.ASS_VAR, newTemp, expr));
+            //temp is the returned <id3>
+            return newTemp;
+        } else {
+            return (Id3) expr;
+        }
     }
 
-    private Id3 exprDownToId3(Exp3Impl expr, Type3 type) {
-        Id3 temp = new Id3(newTemp());
-        currentStmts.add(new Stmt3(Stmt3.Stmt3Type.ASS_VARDECL, type, temp, expr));
-        //temp is the returned <id3>
-        return temp;
+    private Idc3 exprDownToIdc3(Exp3 exp) throws Exception {
+        if (!(exp instanceof Idc3)) return exprDownToId3(exp);
+        else return (Idc3) exp;
     }
 
     private String newTemp() {

@@ -2,6 +2,11 @@ package nodes3;
 
 import java.util.List;
 
+//⟨Label3⟩ : | if ( ⟨RelExp3Impl⟩ ) goto ⟨Label3⟩ ; | goto ⟨Label3⟩ ;
+//| readln ( ⟨id3⟩ ) ; | println ( ⟨idc3⟩ ) ;
+//| ⟨Type3⟩ ⟨id3⟩ = ⟨Exp3Impl⟩ ; | ⟨id3⟩ = ⟨Exp3Impl⟩ ; | ⟨id3⟩.⟨id3⟩ = ⟨Exp3Impl⟩ ;
+//| ⟨id3⟩( ⟨VList3⟩ ) ;
+//| return ⟨id3⟩ ; | return ;
 public class Stmt3 extends Node3 {
     Stmt3Type stmtType;
     String string;
@@ -30,16 +35,16 @@ public class Stmt3 extends Node3 {
         this.stmtType = stmtType;
         this.string = string;
         this.relExp3 = relExp3;
-        print = " if (" + relExp3 + ") goto " + string + ";";
+        print = "if (" + relExp3 + ") goto " + string;
     }
 
     public Stmt3(Stmt3Type stmtType, Id3 id3_1) {
         this.stmtType = stmtType;
         this.id3_1 = id3_1;
         if ((stmtType.equals(Stmt3Type.READLN))) {
-            print = " readln(" + id3_1 + ")";
+            print = "readln(" + id3_1 + ")";
         } else if (stmtType.equals(Stmt3Type.RETURN_VAR)) {
-            print = " return " + id3_1;
+            print = "return " + id3_1;
         } else {
             System.err.println("WARNING: wrong init Stmt3");
         }
@@ -50,6 +55,7 @@ public class Stmt3 extends Node3 {
         if (!(stmtType.equals(Stmt3Type.PRINTLN))) System.err.println("WARNING: wrong init Stmt3");
         this.stmtType = stmtType;
         this.idc3 = idc3;
+        print = "println(" + idc3 + ")";
     }
 
     public Stmt3(Stmt3Type stmtType, Type3 type, Id3 varName, Exp3 exp3Impl) {
@@ -58,6 +64,7 @@ public class Stmt3 extends Node3 {
         this.exp3Impl = exp3Impl;
         this.vartype = type;
         this.id3_1 = varName;
+        print = "" + type + " " + varName + " = " + exp3Impl;
     }
 
 
@@ -66,6 +73,7 @@ public class Stmt3 extends Node3 {
         this.stmtType = stmtType;
         this.id3_1 = id3_1;
         this.exp3Impl = exp3Impl;
+        print = "" + id3_1 + " = " + exp3Impl;
     }
 
     public Stmt3(Stmt3Type stmtType, Id3 id3_1, Id3 id3_2, Exp3 exp3Impl) {
@@ -74,6 +82,7 @@ public class Stmt3 extends Node3 {
         this.id3_1 = id3_1;
         this.id3_2 = id3_2;
         this.exp3Impl = exp3Impl;
+        print = "" + id3_1 + "." + id3_2 + " = " + exp3Impl;
     }
 
     public Stmt3(Stmt3Type stmtType, Id3 id3_1, List<Idc3> params) {
@@ -81,11 +90,20 @@ public class Stmt3 extends Node3 {
         this.stmtType = stmtType;
         this.id3_1 = id3_1;
         this.params = params;
+        print = "" + id3_1 + "(";
+        boolean firstParam = true;
+        for (Idc3 p : params) {
+            if (!firstParam) print += ", ";
+            print += p;
+            firstParam = false;
+        }
+        print += ")";
     }
 
     public Stmt3(Stmt3Type stmtType) {
         if (!(stmtType.equals(Stmt3Type.RETURN))) System.err.println("WARNING: wrong init Stmt3");
         this.stmtType = stmtType;
+        print = "return";
     }
 
 
@@ -94,11 +112,6 @@ public class Stmt3 extends Node3 {
         return print;
     }
 
-    //⟨Label3⟩ : | if ( ⟨RelExp3Impl⟩ ) goto ⟨Label3⟩ ; | goto ⟨Label3⟩ ;
-    //| readln ( ⟨id3⟩ ) ; | println ( ⟨idc3⟩ ) ;
-    //| ⟨Type3⟩ ⟨id3⟩ = ⟨Exp3Impl⟩ ; | ⟨id3⟩ = ⟨Exp3Impl⟩ ; | ⟨id3⟩.⟨id3⟩ = ⟨Exp3Impl⟩ ;
-    //| ⟨id3⟩( ⟨VList3⟩ ) ;
-    //| return ⟨id3⟩ ; | return ;
     public enum Stmt3Type {
         LABEL,
         GOTO,

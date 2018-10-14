@@ -13,7 +13,7 @@ public class VarDecl3 {
 
     public VarDecl3(VarDecl varDecl) {
         this.type = new Type3(varDecl.type);
-        this.id = new Id3(varDecl.id);
+        this.id = new Id3(type, varDecl.id);
     }
 
     @Override

@@ -309,7 +309,9 @@ public class StaticCheckingVisitor implements Visitor {
 
     @Override
     public BasicType visit(AtomClassInstantiation atom) {
-        return symbolTable.lookUpClass(atom.cname.toString());
+        localType = symbolTable.lookUpClass(atom.cname.toString());
+        atom.type = localType;
+        return localType;
     }
 
     @Override
@@ -322,6 +324,7 @@ public class StaticCheckingVisitor implements Visitor {
         if (!symbolTable.isFieldOfClass(atom.field, ((ClassNameType) localType).name))
             throwTypeException("Field violated: class hasn't field " + atom.field, 2);
         localType = symbolTable.lookupClassFieldType((ClassNameType) localType, atom.field);
+        atom.type = localType;
         return localType;
     }
 
@@ -362,6 +365,7 @@ public class StaticCheckingVisitor implements Visitor {
         if (matchingFunction == null) throwTypeException("FunctionCall violated: params mismatch", 2);
         localType = matchingFunction.returnType;
 
+        atom.type = localType;
         return localType;
     }
 
@@ -376,12 +380,15 @@ public class StaticCheckingVisitor implements Visitor {
                 throwTypeException("Id violated: there is not such an identifier as " + atom.id, 2);
             }
         }
+        atom.type = localType;
         return localType;
     }
 
     @Override
     public BasicType visit(AtomParenthesizedExpr atom) throws Exception {
-        return (BasicType) atom.expr.accept(this);
+        localType = (BasicType) atom.expr.accept(this);
+        atom.type = localType;
+        return localType;
     }
 
     @Override

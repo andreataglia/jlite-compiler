@@ -9,22 +9,26 @@ public class Const extends Idc3 {
 
     private String print;
 
-    public Const(Boolean booleanLiteral) {
+    public Const(Type3 type, Boolean booleanLiteral) {
+        super(type);
         this.booleanLiteral = booleanLiteral;
         print = String.valueOf(booleanLiteral);
     }
 
-    public Const(Integer integerLiteral) {
+    public Const(Type3 type, Integer integerLiteral) {
+        super(type);
         this.integerLiteral = integerLiteral;
         print = String.valueOf(integerLiteral);
     }
 
-    public Const(String stringLiteral) {
+    public Const(Type3 type, String stringLiteral) {
+        super(type);
         this.stringLiteral = stringLiteral;
         print = stringLiteral;
     }
 
-    public Const() {
+    public Const(Type3 type) {
+        super(type);
         nullLiteral = true;
         print = "null";
     }
