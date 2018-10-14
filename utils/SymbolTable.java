@@ -49,15 +49,6 @@ public class SymbolTable {
         classLocalVars.add(varDecl);
     }
 
-    boolean isFieldOfClass(String field, String className) {
-        for (ClassDescriptor c : classDescriptors) {
-            if (c.className.name.equals(className)) {
-                if (c.getFieldType(field) != null) return true;
-            }
-        }
-        return false;
-    }
-
     void printState() {
         System.out.println("\n<<<<< Symbol Table State >>>>>>");
         for (VarDecl v : classLocalVars) {
@@ -72,7 +63,7 @@ public class SymbolTable {
 
     BasicType lookupClassFieldType(ClassNameType classNameType, String id) {
         for (ClassDescriptor c : classDescriptors) {
-            if (c.className.equals(classNameType)) {
+            if (c.className.name.equals(classNameType.name)) {
                 return c.getFieldType(id);
             }
         }

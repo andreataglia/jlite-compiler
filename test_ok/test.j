@@ -1,25 +1,29 @@
-class Main {
-    Void main(){
-        Int a;
-        Int b;
-        if (a == (55 * 8 + b / 0 - (new Ciao().c + new Ciao().a.a.a.c)) ){
-            return ;
-        }else{
-            return ;
+class MainC {
+    Void main (){
+        Functional fo ;
+        Int i;
+        Int j ;
+        readln(i) ;
+
+        if (i > 0) {
+            fo = new Functional() ;
+            j = fo.f.getFun(true).f.f(i) ;
+            println(j) ;
+        } else {
+            println("Error") ;
         }
-        return;
+        return ;
     }
 }
 
-class Ciao{
-    Ciao a;
-    Main b;
-    Int c;
-    Bool prova(Bool a){
-        return a;
-        while (true){
-            println("ciao mbare");
-        }
-        return false;
+class Functional {
+    Int a;
+    Functional f;
+    Int f(Int b){
+        f(a);
+        return 3;
+    }
+    Functional getFun(Bool boo){
+        return new Functional();
     }
 }

@@ -1,5 +1,6 @@
 package concrete_nodes.expressions;
 
+import utils.ClassNameType;
 import utils.Visitor;
 
 import java.util.List;
@@ -7,6 +8,9 @@ import java.util.List;
 public class AtomFunctionCall extends Atom{
     public Atom functionId;
     public List<Expr> paramsList;
+
+    public ClassNameType classFunctionOwner;
+    public String functionName;
 
     public AtomFunctionCall(Atom functionId, List<Expr> paramsList) {
         this.functionId = functionId;

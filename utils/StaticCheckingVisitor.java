@@ -166,12 +166,12 @@ public class StaticCheckingVisitor implements Visitor {
     }
 
     @Override
-    public BasicType visit(ReadlnStmt stmt) throws TypeException {
+    public BasicType visit(ReadlnStmt stmt) throws Exception {
         newLine();
         System.out.print("ReadlnStmt ");
-        BasicType idType = symbolTable.lookupVarType(stmt.id.id);
+        BasicType idType = (BasicType) stmt.id.accept(this);
         if (!(idType.equals(BasicType.DataType.BOOL) || idType.equals(BasicType.DataType.STRING) || idType.equals(BasicType.DataType.INT)))
-            throwTypeException("ReadlnStmt can't be applied to this identifier", 2);
+            throwTypeException("ReadlnStmt can't be applied to this identifier " + stmt.id, 2);
         localType = new BasicType(BasicType.DataType.VOID);
         printObjType("Stmt");
         return localType;
@@ -204,12 +204,14 @@ public class StaticCheckingVisitor implements Visitor {
                 throwTypeException("FdAss violated: not a class", 2);
             System.out.print(".");
             //check leftSideId is a field of a leftSideAtom class, and get its type
-            if (!symbolTable.isFieldOfClass(stmt.leftSideId.id, ((ClassNameType) localType).name))
-                throwTypeException("FdAss violated: class hasn't that field", 2);
             localType = symbolTable.lookupClassFieldType((ClassNameType) localType, stmt.leftSideId.id);
+            if (localType == null) {
+                throwTypeException("FdAss violated: class hasn't that field", 2);
+            }
+            stmt.leftSideId.type = localType;
             printObjType(stmt.leftSideId);
         } else {
-            localType = symbolTable.lookupVarType(stmt.leftSideId.id);
+            localType = (BasicType) stmt.leftSideId.accept(this);
             printObjType(stmt.leftSideId);
             if (localType == null) {
                 throwTypeException("VarAss violated: left side type undefined", 2);
@@ -314,6 +316,7 @@ public class StaticCheckingVisitor implements Visitor {
         return localType;
     }
 
+    //AtomFieldAccess is not a function call, but a field access of a class
     @Override
     public BasicType visit(AtomFieldAccess atom) throws Exception {
         //check leftSideAtom is a class
@@ -321,9 +324,10 @@ public class StaticCheckingVisitor implements Visitor {
         if (!(localType instanceof ClassNameType))
             throwTypeException("Field violated: not a class", 2);
         //check id is a field or method of a leftSideAtom class, and get its type
-        if (!symbolTable.isFieldOfClass(atom.field, ((ClassNameType) localType).name))
-            throwTypeException("Field violated: class hasn't field " + atom.field, 2);
         localType = symbolTable.lookupClassFieldType((ClassNameType) localType, atom.field);
+        if (localType == null) {
+            throwTypeException("Field violated: class " + localType + " hasn't field " + atom.field, 2);
+        }
         atom.type = localType;
         return localType;
     }
@@ -365,6 +369,9 @@ public class StaticCheckingVisitor implements Visitor {
         if (matchingFunction == null) throwTypeException("FunctionCall violated: params mismatch", 2);
         localType = matchingFunction.returnType;
 
+        atom.classFunctionOwner = functionClass;
+        atom.functionName = functionId;
+
         atom.type = localType;
         return localType;
     }
@@ -379,7 +386,7 @@ public class StaticCheckingVisitor implements Visitor {
             if (localType == null) {
                 throwTypeException("Id violated: there is not such an identifier as " + atom.id, 2);
             }
-        }
+        } else System.err.println("WARNING: AtomGrd is of none of id, this, null");
         atom.type = localType;
         return localType;
     }

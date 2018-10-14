@@ -60,12 +60,12 @@ public class Exp3Impl extends Exp3 {
         print = uOp3 + idc3_1;
     }
 
-    //⟨id3⟩( ⟨VList3⟩ )
+    //⟨id3⟩( ⟨VList3⟩ )  -- note that first param is the object on which the function call is executed
     public Exp3Impl(Type3 type, Id3 id3_1, List<Idc3> params) {
         super(type);
         this.id3_1 = id3_1;
         this.params = params;
-        print = " " + id3_1 + "(";
+        print = id3_1 + "(";
         boolean firstParam = true;
         for (Idc3 p : params) {
             if (!firstParam) print += ", ";

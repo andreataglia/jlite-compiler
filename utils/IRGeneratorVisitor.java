@@ -84,7 +84,7 @@ public class IRGeneratorVisitor implements Visitor {
             }
             for (Stmt3 s : m.stmtList) {
                 if (s.equals(Stmt3.Stmt3Type.LABEL)) System.out.print("\n   " + s);
-                else System.out.print("\n   " + s + ";");
+                else System.out.print("\n    " + s + ";");
             }
             System.out.println("\n}");
         }
@@ -181,19 +181,7 @@ public class IRGeneratorVisitor implements Visitor {
 
     @Override
     public Object visit(FunctionCallStmt stmt) throws Exception {
-        newLine();
-        System.out.print("FunctionCallStmt ");
-        stmt.atom.accept(this);
-        System.out.print("(");
-        boolean firstParam = true;
-        if (!stmt.atom.paramsList.isEmpty()) {
-            for (Expr e : stmt.atom.paramsList) {
-                if (!firstParam) System.out.print(", ");
-                e.accept(this);
-                firstParam = false;
-            }
-        }
-        System.out.print(")");
+        currentStmts.add(new Stmt3(Stmt3.Stmt3Type.FUNCTION, (Exp3Impl) stmt.atom.accept(this)));
         return null;
     }
 
@@ -268,8 +256,19 @@ public class IRGeneratorVisitor implements Visitor {
     }
 
     @Override
-    public String visit(AtomFunctionCall atom) {
-        return "@";
+    public Exp3Impl visit(AtomFunctionCall atom) throws Exception {
+        List<Idc3> params = new ArrayList<>();
+        Id3 functionName = new Id3(new Type3(atom.type), atom.functionName);
+        //local call by default
+        Id3 functionObject = new Id3(new CName3(atom.classFunctionOwner), "this");
+        if (atom.functionId instanceof AtomFieldAccess) {
+            functionObject = exprDownToId3((Exp3) ((AtomFieldAccess) atom.functionId).atom.accept(this));
+        }
+        params.add(functionObject);
+        for (Expr e: atom.paramsList) {
+            params.add(exprDownToIdc3((Exp3) e.accept(this)));
+        }
+        return new Exp3Impl(new Type3(atom.type), functionName, params);
     }
 
     @Override

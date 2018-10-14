@@ -84,19 +84,11 @@ public class Stmt3 extends Node3 {
         print = "" + id3_1 + "." + id3_2 + " = " + exp3Impl;
     }
 
-    public Stmt3(Stmt3Type stmtType, Id3 id3_1, List<Idc3> params) {
+    public Stmt3(Stmt3Type stmtType, Exp3Impl atomFunctionCall) {
         if (!(stmtType.equals(Stmt3Type.FUNCTION))) System.err.println("WARNING: wrong init Stmt3");
         this.stmtType = stmtType;
-        this.id3_1 = id3_1;
-        this.params = params;
-        print = "" + id3_1 + "(";
-        boolean firstParam = true;
-        for (Idc3 p : params) {
-            if (!firstParam) print += ", ";
-            print += p;
-            firstParam = false;
-        }
-        print += ")";
+        this.exp3Impl = atomFunctionCall;
+        print = atomFunctionCall.toString();
     }
 
     public Stmt3(Stmt3Type stmtType) {
