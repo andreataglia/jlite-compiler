@@ -14,6 +14,8 @@ public class IRGeneratorVisitor implements Visitor {
     private SymbolTable symbolTable;
     private int labelCount;
     private int tempCount;
+    private List<Stmt3> currentStmts;
+    private List<VarDecl3> currentVars;
 
     public IRGeneratorVisitor(SymbolTable symbolTable) {
         this.symbolTable = symbolTable;
@@ -39,19 +41,30 @@ public class IRGeneratorVisitor implements Visitor {
         List<CMtd3> methods = new ArrayList<>();
         symbolTable.increaseIndentLevel(program.mainClass.className);
         for (MethodDecl m : program.mainClass.methodDeclList) {
-            List<Stmt3> stmts = (List<Stmt3>) m.accept(this);
-            methods.add(new CMtd3(new Type3(m.returnType),new Id3(m.name),convertList(m.params), convertList(m.varDeclList), stmts));
+            currentStmts = new ArrayList<>();
+            currentVars = new ArrayList<>();
+            currentVars.addAll(convertList(m.varDeclList));
+            m.accept(this);
+            methods.add(new CMtd3(new Type3(m.returnType), new Id3(m.name), convertList(m.params), currentVars, currentStmts));
         }
         symbolTable.decreaseIndentLevel();
 
         for (ClassDecl c : program.classDeclList) {
             symbolTable.increaseIndentLevel(c.className);
             for (MethodDecl m : c.methodDeclList) {
-                List<Stmt3> stmts = (List<Stmt3>) m.accept(this);
-                methods.add(new CMtd3(new Type3(m.returnType),new Id3(m.name),convertList(m.params), convertList(m.varDeclList), stmts));
-
+                currentStmts = new ArrayList<>();
+                m.accept(this);
+                List<VarDecl3> params = new ArrayList<>();
+                params.add(new VarDecl3(new CName3(c.className), new Id3("this")));
+                params.addAll(convertList(m.params));
+                methods.add(new CMtd3(new Type3(m.returnType), new Id3(m.name), params, convertList(m.varDeclList), currentStmts));
             }
             symbolTable.decreaseIndentLevel();
+        }
+
+        //once done creating the new tree, print every method just by calling the toString()
+        for (CMtd3 m : methods) {
+            System.out.println(m.toString());
         }
 
         System.out.println("\n\n=====fx== End of IR3 Program =======");
@@ -70,28 +83,11 @@ public class IRGeneratorVisitor implements Visitor {
 
     @Override
     public Object visit(MethodDecl methodDecl) throws Exception {
-        newLine();
-        System.out.print(methodDecl.returnType + " " + methodDecl.name + "(" + symbolTable.currentClass + " this");
-        //TODO parama is allowed to be NULL, but in IR3 specs doesn't allow a type to be null
-        for (VarDecl entry : methodDecl.params.list) {
-            System.out.print(", " + entry.type + " " + entry.id);
-        }
-        System.out.print("){");
-        symbolTable.increaseIndentLevel(methodDecl);
-        if (!methodDecl.varDeclList.list.isEmpty()) {
-            for (VarDecl entry : methodDecl.varDeclList.list) {
-                newLine();
-                System.out.print(entry.type + " " + entry.id + ";");
-            }
-        }
         if (!methodDecl.stmtList.isEmpty()) {
             for (Stmt s : methodDecl.stmtList) {
                 s.accept(this);
             }
         }
-        symbolTable.decreaseIndentLevel();
-        newLine();
-        System.out.print("}");
         return null;
     }
 
@@ -103,19 +99,17 @@ public class IRGeneratorVisitor implements Visitor {
         String trueBranchLabel = newLabel();
         String exitLabel = newLabel();
 
-        String condition = (String) stmt.condition.accept(this);
-        newLine();
-        System.out.print("if (" + condition + ") goto " + trueBranchLabel + ";");
+        RelExp3Impl condition = (RelExp3Impl) stmt.condition.accept(this);
+        currentStmts.add(new Stmt3(Stmt3.Stmt3Type.IF, trueBranchLabel, condition));
         for (Stmt s : stmt.falseBranch) {
             s.accept(this);
         }
-        newLine();
-        System.out.print("goto " + exitLabel + ";");
-        printLabel(trueBranchLabel);
+        currentStmts.add(new Stmt3(Stmt3.Stmt3Type.GOTO, exitLabel));
+        currentStmts.add(new Stmt3(Stmt3.Stmt3Type.LABEL, trueBranchLabel));
         for (Stmt s : stmt.trueBranch) {
             s.accept(this);
         }
-        printLabel(exitLabel);
+        currentStmts.add(new Stmt3(Stmt3.Stmt3Type.LABEL, exitLabel));
         return null;
     }
 
@@ -195,7 +189,7 @@ public class IRGeneratorVisitor implements Visitor {
         expr.leftSide.accept(this);
         System.out.print(" " + expr.operator + " ");
         expr.rightSide.accept(this);
-        return "<Exp3>";
+        return "<Exp3Impl>";
     }
 
     @Override
@@ -203,12 +197,34 @@ public class IRGeneratorVisitor implements Visitor {
         expr.leftSide.accept(this);
         System.out.print(" " + expr.operator + " ");
         expr.rightSide.accept(this);
-        return "<Exp3>";
+        return "<Exp3Impl>";
     }
 
     @Override
-    public String visit(TwoFactorsRelExpr expr) throws Exception {
-        return (exprDownToId3(expr.leftSide) + " " + expr.operator + " " + exprDownToId3(expr.rightSide));
+    public RelExp3Impl visit(TwoFactorsRelExpr expr) throws Exception {
+        return new RelExp3Impl(downToIdc3(expr.leftSide), expr.operator, downToIdc3(expr.rightSide));
+    }
+
+    Idc3 downToIdc3(ArithExpr expr) throws Exception {
+        Idc3 idc3 = new Id3("WARNING: empty id3 - expr");
+        if (expr instanceof ArithGrdExpr) {
+            if (((ArithGrdExpr) expr).isIntLiteral()) idc3 = new Const(((ArithGrdExpr) expr).intLiteral);
+            else if (((ArithGrdExpr) expr).isNegateArithGrd()) idc3 = exprDownToId3(expr);
+            else if (((ArithGrdExpr) expr).isAtomGrd()) idc3 = downToIdc3(((ArithGrdExpr) expr).atom);
+            else System.out.println("..TODO.."); //TODO impl
+        } else if (expr instanceof TwoFactorsArithExpr) {
+            idc3 = exprDownToId3(expr);
+        }
+        return idc3;
+    }
+
+    Idc3 downToIdc3(Atom atom) throws Exception {
+        Idc3 idc3 = new Id3("WARNING: empty id3 - atom");
+        if (atom instanceof AtomParenthesizedExpr) idc3 = exprDownToId3(((AtomParenthesizedExpr) atom).expr);
+        else if (atom instanceof AtomClassInstantiation)
+            idc3 = exprDownToId3(new Exp3Impl(new CName3(((AtomClassInstantiation) atom).cname)), new Type3(new ClassNameType(((AtomClassInstantiation) atom).cname.name)));
+        else System.out.println("..TODO.."); //TODO impl
+        return idc3;
     }
 
     @Override
@@ -271,10 +287,6 @@ public class IRGeneratorVisitor implements Visitor {
     ///////////////////////////////////////////////////////////////////////////////
     //////////////////////// Helper Methods ///////////////////////////////////////
 
-    private void printLabel(String label) {
-        System.out.print("\n" + getIndentation(true) + "Label " + label + ":");
-    }
-
     private void newLine() {
         System.out.print("\n" + getIndentation(false));
     }
@@ -303,16 +315,21 @@ public class IRGeneratorVisitor implements Visitor {
         return String.valueOf(labelCount);
     }
 
-    private String exprDownToId3(Expr expr) throws Exception {
-        //check if it's already id3
-        if (expr instanceof ArithGrdExpr) {
-            if (((ArithGrdExpr) expr).isIntLiteral()) return expr.accept(this).toString();
-        }
-        String temp = newTemp();
-        newLine();
-        System.out.print(expr.type + " " + temp + ";");
-        newLine();
-        System.out.print(temp + " = " + expr.accept(this) + ";");
+    //it just breaks the expr into:
+    //Type temp;
+    //temp = Exp3Impl;
+    //return temp;
+    private Id3 exprDownToId3(Expr expr) throws Exception {
+        Id3 newTemp = new Id3(newTemp());
+        currentVars.add(new VarDecl3(new Type3(expr.type), newTemp));
+        currentStmts.add(new Stmt3(Stmt3.Stmt3Type.ASS_VAR, newTemp, (Exp3) expr.accept(this)));
+        //temp is the returned <id3>
+        return newTemp;
+    }
+
+    private Id3 exprDownToId3(Exp3Impl expr, Type3 type) {
+        Id3 temp = new Id3(newTemp());
+        currentStmts.add(new Stmt3(Stmt3.Stmt3Type.ASS_VARDECL, type, temp, expr));
         //temp is the returned <id3>
         return temp;
     }

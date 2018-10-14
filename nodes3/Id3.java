@@ -6,4 +6,9 @@ public class Id3 extends Idc3 {
     public Id3(String id) {
         this.id = id;
     }
+
+    @Override
+    public String toString() {
+        return id;
+    }
 }

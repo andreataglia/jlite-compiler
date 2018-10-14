@@ -39,7 +39,7 @@ public class MethodSignature {
     public boolean equals(Object obj) {
         if (obj instanceof MethodSignature) {
             MethodSignature element = (MethodSignature) obj;
-            return this.name.equals(element.name) && returnType.equals(returnType) && this.params.equals(element.params);
+            return this.name.equals(element.name) && this.params.equals(element.params);
         }
         return false;
     }
