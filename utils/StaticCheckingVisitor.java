@@ -169,7 +169,7 @@ public class StaticCheckingVisitor implements Visitor {
     public BasicType visit(ReadlnStmt stmt) throws TypeException {
         newLine();
         System.out.print("ReadlnStmt ");
-        BasicType idType = symbolTable.lookupVarType(stmt.id);
+        BasicType idType = symbolTable.lookupVarType(stmt.id.id);
         if (!(idType.equals(BasicType.DataType.BOOL) || idType.equals(BasicType.DataType.STRING) || idType.equals(BasicType.DataType.INT)))
             throwTypeException("ReadlnStmt can't be applied to this identifier", 2);
         localType = new BasicType(BasicType.DataType.VOID);
@@ -204,12 +204,12 @@ public class StaticCheckingVisitor implements Visitor {
                 throwTypeException("FdAss violated: not a class", 2);
             System.out.print(".");
             //check leftSideId is a field of a leftSideAtom class, and get its type
-            if (!symbolTable.isFieldOfClass(stmt.leftSideId, ((ClassNameType) localType).name))
+            if (!symbolTable.isFieldOfClass(stmt.leftSideId.id, ((ClassNameType) localType).name))
                 throwTypeException("FdAss violated: class hasn't that field", 2);
-            localType = symbolTable.lookupClassFieldType((ClassNameType) localType, stmt.leftSideId);
+            localType = symbolTable.lookupClassFieldType((ClassNameType) localType, stmt.leftSideId.id);
             printObjType(stmt.leftSideId);
         } else {
-            localType = symbolTable.lookupVarType(stmt.leftSideId);
+            localType = symbolTable.lookupVarType(stmt.leftSideId.id);
             printObjType(stmt.leftSideId);
             if (localType == null) {
                 throwTypeException("VarAss violated: left side type undefined", 2);

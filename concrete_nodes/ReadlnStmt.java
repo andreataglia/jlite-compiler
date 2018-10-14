@@ -1,11 +1,12 @@
 package concrete_nodes;
 
+import concrete_nodes.expressions.AtomGrd;
 import utils.Visitor;
 
 public class ReadlnStmt extends Stmt{
-    public String id;
+    public AtomGrd id;
 
-    public ReadlnStmt(String id) {
+    public ReadlnStmt(AtomGrd id) {
         this.id = id;
     }
 

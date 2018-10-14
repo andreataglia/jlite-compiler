@@ -84,7 +84,7 @@ public class IRGeneratorVisitor implements Visitor {
             }
             for (Stmt3 s : m.stmtList) {
                 if (s.equals(Stmt3.Stmt3Type.LABEL)) System.out.print("\n   " + s);
-                else System.out.print("\n    " + s + ";");
+                else System.out.print("\n   " + s + ";");
             }
             System.out.println("\n}");
         }
@@ -121,7 +121,8 @@ public class IRGeneratorVisitor implements Visitor {
         String trueBranchLabel = newLabel();
         String exitLabel = newLabel();
 
-        RelExp3Impl condition = (RelExp3Impl) stmt.condition.accept(this);
+        Exp3 condition = (Exp3) stmt.condition.accept(this);
+        if (!(condition instanceof RelExp3Impl)) condition = exprDownToIdc3(condition);
         currentStmts.add(new Stmt3(Stmt3.Stmt3Type.IF, trueBranchLabel, condition));
         for (Stmt s : stmt.falseBranch) {
             s.accept(this);
@@ -137,42 +138,44 @@ public class IRGeneratorVisitor implements Visitor {
 
     @Override
     public Object visit(WhileStmt stmt) throws Exception {
-        newLine();
-        System.out.print("WhileStmt ");
-        stmt.condition.accept(this);
-        symbolTable.indentLevel++;
+        String beginLabel = newLabel();
+        String bodyLabel = newLabel();
+        String exitLabel = newLabel();
+
+        Exp3 condition = (Exp3) stmt.condition.accept(this);
+        if (!(condition instanceof RelExp3Impl)) condition = exprDownToIdc3(condition);
+        currentStmts.add(new Stmt3(Stmt3.Stmt3Type.LABEL, beginLabel));
+        currentStmts.add(new Stmt3(Stmt3.Stmt3Type.IF, bodyLabel, condition));
+        currentStmts.add(new Stmt3(Stmt3.Stmt3Type.GOTO, exitLabel));
+        currentStmts.add(new Stmt3(Stmt3.Stmt3Type.LABEL, bodyLabel));
         for (Stmt s : stmt.body) {
             s.accept(this);
         }
-        symbolTable.indentLevel--;
+        currentStmts.add(new Stmt3(Stmt3.Stmt3Type.GOTO, beginLabel));
+        currentStmts.add(new Stmt3(Stmt3.Stmt3Type.LABEL, exitLabel));
+
         return null;
     }
 
     @Override
-    public Object visit(ReadlnStmt stmt) {
-        newLine();
-        System.out.print("ReadlnStmt " + stmt.id);
+    public Object visit(ReadlnStmt stmt) throws Exception {
+        currentStmts.add(new Stmt3(Stmt3.Stmt3Type.READLN, new Id3(new Type3(stmt.id.type), stmt.id.id)));
         return null;
     }
 
     @Override
     public Object visit(PrintlnStmt stmt) throws Exception {
-        newLine();
-        System.out.print("PrintlnStmt ");
-        if (stmt.expr != null) stmt.expr.accept(this);
+        currentStmts.add(new Stmt3(Stmt3.Stmt3Type.PRINTLN, exprDownToIdc3((Exp3) stmt.expr.accept(this))));
         return null;
     }
 
     @Override
     public Object visit(AssignmentStmt stmt) throws Exception {
-        newLine();
-        System.out.print("AssignmentStmt ");
-        if (stmt.leftSideAtom != null) {
-            stmt.leftSideAtom.accept(this);
-            System.out.print(".");
+        if (stmt.isSimpleAssignment()){
+            currentStmts.add(new Stmt3(Stmt3.Stmt3Type.ASS_VAR, new Id3(new Type3(stmt.leftSideId.type), stmt.leftSideId.id), (Exp3) stmt.rightSide.accept(this)));
+        }else{
+            currentStmts.add(new Stmt3(Stmt3.Stmt3Type.ASS_FIELD, exprDownToId3((Exp3) stmt.leftSideAtom.accept(this)), new Id3(new Type3(stmt.leftSideId.type), stmt.leftSideId.id), (Exp3) stmt.rightSide.accept(this)));
         }
-        System.out.print(stmt.leftSideId + " = ");
-        stmt.rightSide.accept(this);
         return null;
     }
 
@@ -196,7 +199,8 @@ public class IRGeneratorVisitor implements Visitor {
 
     @Override
     public Object visit(ReturnStmt stmt) throws Exception {
-        if (stmt.expr != null) currentStmts.add(new Stmt3(Stmt3.Stmt3Type.RETURN_VAR, exprDownToId3((Exp3) stmt.expr.accept(this))));
+        if (stmt.expr != null)
+            currentStmts.add(new Stmt3(Stmt3.Stmt3Type.RETURN_VAR, exprDownToId3((Exp3) stmt.expr.accept(this))));
         else currentStmts.add(new Stmt3(Stmt3.Stmt3Type.RETURN));
         return null;
     }
@@ -222,8 +226,9 @@ public class IRGeneratorVisitor implements Visitor {
     @Override
     public Exp3 visit(ArithGrdExpr expr) throws Exception {
         Exp3 ret = null;
-        if (expr.isIntLiteral()) ret = new Const(new Type3(expr.type),expr.intLiteral);
-        else if (expr.isNegateArithGrd()) ret = new Exp3Impl(new Type3(expr.type),"!", exprDownToId3((Exp3) expr.negateFactor.accept(this)));
+        if (expr.isIntLiteral()) ret = new Const(new Type3(expr.type), expr.intLiteral);
+        else if (expr.isNegateArithGrd())
+            ret = new Exp3Impl(new Type3(expr.type), "!", exprDownToId3((Exp3) expr.negateFactor.accept(this)));
         else if (expr.isAtomGrd()) ret = (Exp3) expr.atom.accept(this);
         return ret;
     }
@@ -238,7 +243,8 @@ public class IRGeneratorVisitor implements Visitor {
         Exp3 ret = null;
         if (expr.isGround()) ret = new Const(new Type3(expr.type), expr.boolGrd);
         else if (expr.isAtomGround()) ret = (Exp3) expr.atom.accept(this);
-        else if (expr.isNegatedGround()) ret = new Exp3Impl(new Type3(expr.type), "-", exprDownToId3((Exp3) expr.grdExpr.accept(this)));
+        else if (expr.isNegatedGround())
+            ret = new Exp3Impl(new Type3(expr.type), "-", exprDownToId3((Exp3) expr.grdExpr.accept(this)));
         return ret;
     }
 
@@ -270,7 +276,7 @@ public class IRGeneratorVisitor implements Visitor {
     public Idc3 visit(AtomGrd atom) {
         Idc3 ret = null;
         if (atom.isIdentifierGround()) ret = new Id3(new Type3(atom.type), atom.id);
-        else if (atom.isThisGround()) ret = new Id3(new Type3(atom.type),"this");
+        else if (atom.isThisGround()) ret = new Id3(new Type3(atom.type), "this");
         else if (atom.isNullGround()) ret = new Const(new Type3(atom.type));
         return ret;
     }

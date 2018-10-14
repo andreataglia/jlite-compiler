@@ -3,6 +3,7 @@ package jnodes;
 import concrete_nodes.PrintlnStmt;
 import concrete_nodes.ReadlnStmt;
 import concrete_nodes.Stmt;
+import concrete_nodes.expressions.AtomGrd;
 
 //      READLN LPAREN ident RPAREN SEMICOLON
 //      | PRINTLN LPAREN exp RPAREN SEMICOLON
@@ -17,7 +18,7 @@ public class JIoStmt extends JStmt {
         this.ioOperation = ioOperation;
         this.id = id;
 
-        stmt = new ReadlnStmt(id.s);
+        stmt = new ReadlnStmt(new AtomGrd(id.s));
     }
 
     public JIoStmt(String ioOperation, JExp exp) {

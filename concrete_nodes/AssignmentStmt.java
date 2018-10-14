@@ -1,22 +1,29 @@
 package concrete_nodes;
 
 import concrete_nodes.expressions.Atom;
+import concrete_nodes.expressions.AtomGrd;
 import concrete_nodes.expressions.Expr;
 import utils.Visitor;
 
 public class AssignmentStmt extends Stmt {
-    public String leftSideId;
+    public AtomGrd leftSideId;
     public Atom leftSideAtom;
     public Expr rightSide;
 
-    public AssignmentStmt(String leftSideId, Expr rightSide) {
+    //<id> = <Exp>
+    public AssignmentStmt(AtomGrd leftSideId, Expr rightSide) {
         this.leftSideId = leftSideId;
         this.rightSide = rightSide;
     }
 
-    public AssignmentStmt(String leftSideId, Atom leftSideAtom, Expr rightSide) {
+    //<Atom>.<id> = <Exp>
+    public AssignmentStmt(AtomGrd leftSideId, Atom leftSideAtom, Expr rightSide) {
         this(leftSideId, rightSide);
         this.leftSideAtom = leftSideAtom;
+    }
+
+    public boolean isSimpleAssignment(){
+        return leftSideAtom == null;
     }
 
     @Override

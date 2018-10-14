@@ -14,7 +14,6 @@ public class Stmt3 extends Node3 {
     Id3 id3_2;
     Exp3 exp3Impl;
     Type3 vartype;
-    RelExp3Impl relExp3;
     Idc3 idc3;
     List<Idc3> params;
 
@@ -25,16 +24,16 @@ public class Stmt3 extends Node3 {
             System.err.println("WARNING: wrong init Stmt3");
         this.stmtType = stmtType;
         this.string = string;
-        if (stmtType.equals(Stmt3Type.GOTO)) print = " goto " + string;
+        if (stmtType.equals(Stmt3Type.GOTO)) print = "goto " + string;
         else print = "Label: " + string;
 
     }
 
-    public Stmt3(Stmt3Type stmtType, String string, RelExp3Impl relExp3) {
+    public Stmt3(Stmt3Type stmtType, String string, Exp3 relExp3) {
         if (!(stmtType.equals(Stmt3Type.IF))) System.err.println("WARNING: wrong init Stmt3");
         this.stmtType = stmtType;
         this.string = string;
-        this.relExp3 = relExp3;
+        this.exp3Impl = relExp3;
         print = "if (" + relExp3 + ") goto " + string;
     }
 
