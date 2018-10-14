@@ -18,6 +18,6 @@ public class VarDecl3 {
 
     @Override
     public String toString() {
-        return type.type + " " + id.id;
+        return type + " " + id;
     }
 }

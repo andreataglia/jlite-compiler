@@ -15,7 +15,7 @@ public class IRGeneratorVisitor implements Visitor {
     private int labelCount;
     private int tempCount;
     private List<Stmt3> currentStmts;
-    private List<VarDecl3> currentVars;
+    private List<VarDecl3> currentVars; //current method local vars
 
     public IRGeneratorVisitor(SymbolTable symbolTable) {
         this.symbolTable = symbolTable;
@@ -44,8 +44,11 @@ public class IRGeneratorVisitor implements Visitor {
             currentStmts = new ArrayList<>();
             currentVars = new ArrayList<>();
             currentVars.addAll(convertList(m.varDeclList));
+            List<VarDecl3> params = new ArrayList<>();
+            params.add(new VarDecl3(new CName3(program.mainClass.className), new Id3("this")));
+            params.addAll(convertList(m.params));
             m.accept(this);
-            methods.add(new CMtd3(new Type3(m.returnType), new Id3(m.name), convertList(m.params), currentVars, currentStmts));
+            methods.add(new CMtd3(new Type3(m.returnType), new Id3(m.name), params, currentVars, currentStmts));
         }
         symbolTable.decreaseIndentLevel();
 
@@ -53,18 +56,34 @@ public class IRGeneratorVisitor implements Visitor {
             symbolTable.increaseIndentLevel(c.className);
             for (MethodDecl m : c.methodDeclList) {
                 currentStmts = new ArrayList<>();
-                m.accept(this);
+                currentVars = new ArrayList<>();
+                currentVars.addAll(convertList(m.varDeclList));
                 List<VarDecl3> params = new ArrayList<>();
                 params.add(new VarDecl3(new CName3(c.className), new Id3("this")));
                 params.addAll(convertList(m.params));
-                methods.add(new CMtd3(new Type3(m.returnType), new Id3(m.name), params, convertList(m.varDeclList), currentStmts));
+                methods.add(new CMtd3(new Type3(m.returnType), new Id3(m.name), params, currentVars, currentStmts));
+                m.accept(this);
             }
             symbolTable.decreaseIndentLevel();
         }
 
         //once done creating the new tree, print every method just by calling the toString()
         for (CMtd3 m : methods) {
-            System.out.println(m.toString());
+            System.out.print("\n" + m.returnType + " " + m.name + " (");
+            boolean fistParam = true;
+            for (VarDecl3 entry : m.params) {
+                if (!fistParam) System.out.print(", ");
+                System.out.print(entry);
+                fistParam = false;
+            }
+            System.out.print("){");
+            for (VarDecl3 v : m.varDeclList) {
+                System.out.print("\n    " + v + ";");
+            }
+            for (Stmt3 s : m.stmtList) {
+                System.out.print("\n   " + s + ";");
+            }
+            System.out.println("\n}");
         }
 
         System.out.println("\n\n=====fx== End of IR3 Program =======");
@@ -173,11 +192,9 @@ public class IRGeneratorVisitor implements Visitor {
     }
 
     @Override
-    public String visit(ReturnStmt stmt) throws Exception {
-        String ret = "";
-        if (stmt.expr != null) ret = " " + exprDownToId3(stmt.expr);
-        newLine();
-        System.out.print("return" + ret + ";");
+    public Object visit(ReturnStmt stmt) throws Exception {
+        if (stmt.expr != null) currentStmts.add(new Stmt3(Stmt3.Stmt3Type.RETURN_VAR, exprDownToId3(stmt.expr)));
+        else currentStmts.add(new Stmt3(Stmt3.Stmt3Type.RETURN));
         return null;
     }
 
@@ -185,19 +202,19 @@ public class IRGeneratorVisitor implements Visitor {
     ////////////////////////////// Expressions /////////////////////////////////
 
     @Override
-    public String visit(TwoFactorsArithExpr expr) throws Exception {
+    public Exp3 visit(TwoFactorsArithExpr expr) throws Exception {
         expr.leftSide.accept(this);
         System.out.print(" " + expr.operator + " ");
         expr.rightSide.accept(this);
-        return "<Exp3Impl>";
+        return null;
     }
 
     @Override
-    public String visit(TwoFactorsBoolExpr expr) throws Exception {
+    public Exp3 visit(TwoFactorsBoolExpr expr) throws Exception {
         expr.leftSide.accept(this);
         System.out.print(" " + expr.operator + " ");
         expr.rightSide.accept(this);
-        return "<Exp3Impl>";
+        return null;
     }
 
     @Override
@@ -228,25 +245,25 @@ public class IRGeneratorVisitor implements Visitor {
     }
 
     @Override
-    public String visit(ArithGrdExpr expr) throws Exception {
-        String ret = null;
-        if (expr.isIntLiteral()) ret = expr.toString();
-        else if (expr.isNegateArithGrd()) ret = "-" + expr.negateFactor.accept(this);
-        else if (expr.isAtomGrd()) ret = expr.atom.accept(this).toString();
+    public Exp3 visit(ArithGrdExpr expr) throws Exception {
+        Exp3 ret = null;
+        if (expr.isIntLiteral()) ret = new Const(expr.intLiteral);
+        else if (expr.isNegateArithGrd()) ret = new Exp3Impl(exprDownToId3(expr.negateFactor));
+        else if (expr.isAtomGrd()) ret = (Exp3) expr.atom.accept(this);
         return ret;
     }
 
     @Override
-    public String visit(StringExpr expr) {
-        return expr.toString();
+    public Exp3 visit(StringExpr expr) {
+        return new Const(expr.s);
     }
 
     @Override
-    public String visit(BoolGrdExpr expr) throws Exception {
-        String ret = null;
-        if (expr.isGround()) ret = expr.boolGrd.toString();
-        else if (expr.isAtomGround()) ret = expr.atom.accept(this).toString();
-        else if (expr.isNegatedGround()) ret = "!" + expr.grdExpr.accept(this);
+    public Exp3 visit(BoolGrdExpr expr) throws Exception {
+        Exp3 ret = null;
+        if (expr.isGround()) ret = new Const(expr.boolGrd);
+        else if (expr.isAtomGround()) ret = (Exp3) expr.atom.accept(this);
+        else if (expr.isNegatedGround()) ret = new Exp3Impl(exprDownToId3((Expr) expr.grdExpr.accept(this)));
         return ret;
     }
 

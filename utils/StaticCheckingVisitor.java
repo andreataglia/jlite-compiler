@@ -255,6 +255,7 @@ public class StaticCheckingVisitor implements Visitor {
         localType = (BasicType) (expr.leftSide.accept(this));
         if (!(localType.equals(BasicType.DataType.INT) && localType.equals(expr.rightSide.accept(this))))
             throwTypeException("Arith violated: non int member", 2);
+        expr.type = localType;
         return localType;
     }
 
@@ -263,6 +264,7 @@ public class StaticCheckingVisitor implements Visitor {
         localType = (BasicType) (expr.leftSide.accept(this));
         if (!(localType.equals(BasicType.DataType.BOOL) && localType.equals(expr.rightSide.accept(this))))
             throwTypeException("Bool violated: non bool member", 2);
+        expr.type = localType;
         return localType;
     }
 
@@ -271,7 +273,9 @@ public class StaticCheckingVisitor implements Visitor {
         localType = (BasicType) (expr.leftSide.accept(this));
         if (!(localType.equals(BasicType.DataType.INT) && localType.equals(expr.rightSide.accept(this))))
             throwTypeException("Rel violated: non int member", 2);
-        return new BasicType(BasicType.DataType.BOOL);
+        localType = new BasicType(BasicType.DataType.BOOL);
+        expr.type = localType;
+        return localType;
     }
 
     @Override
@@ -280,12 +284,15 @@ public class StaticCheckingVisitor implements Visitor {
         else if (expr.isAtomGrd()) localType = (BasicType) expr.atom.accept(this);
         else if (expr.isNegateArithGrd()) localType = (BasicType) expr.negateFactor.accept(this);
         else throw new Exception("ArithGrdExpr " + expr + " shouldn't be null");
+        expr.type = localType;
         return localType;
     }
 
     @Override
     public BasicType visit(StringExpr expr) {
-        return new BasicType(BasicType.DataType.STRING);
+        localType = new BasicType(BasicType.DataType.STRING);
+        expr.type = localType;
+        return localType;
     }
 
     @Override
@@ -293,6 +300,7 @@ public class StaticCheckingVisitor implements Visitor {
         localType = new BasicType(BasicType.DataType.BOOL);
         if (expr.isNegatedGround()) localType = (BasicType) expr.grdExpr.accept(this);
         else if (expr.isAtomGround()) localType = (BasicType) expr.atom.accept(this);
+        expr.type = localType;
         return localType;
     }
 

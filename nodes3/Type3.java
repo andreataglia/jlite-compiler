@@ -9,4 +9,9 @@ public class Type3 {
         if (type.equals(BasicType.DataType.NULL)) System.err.println("WARNING: initialized a NULL Type3");
         this.type = type;
     }
+
+    @Override
+    public String toString() {
+        return type.toString();
+    }
 }
