@@ -10,14 +10,13 @@ import java.io.FileReader;
 
 public class Main {
 
-    static boolean DEBUG = true;
+    static boolean DEBUG = false;
 
     static public void main(String argv[]) {
         boolean allGood = true;
         try {
             parser p = new parser(new Lexer(new FileReader(argv[0])));
             JProgram ast = (JProgram) p.parse().value;
-            //System.out.println(ast.toString());
             Program tree = ast.genConcreteTree();
             //PrettyPrintVisitor visitor = new PrettyPrintVisitor();
             utils.SymbolTable symbolTable = new SymbolTable();

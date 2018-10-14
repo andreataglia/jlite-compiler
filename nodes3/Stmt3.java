@@ -8,7 +8,7 @@ import java.util.List;
 //| ⟨id3⟩( ⟨VList3⟩ ) ;
 //| return ⟨id3⟩ ; | return ;
 public class Stmt3 extends Node3 {
-    Stmt3Type stmtType;
+    public Stmt3Type stmtType;
     String string;
     Id3 id3_1;
     Id3 id3_2;
@@ -116,8 +116,9 @@ public class Stmt3 extends Node3 {
         RETURN,
         RETURN_VAR;
 
-        public boolean equals(Stmt3Type other) {
-            return this.name().equals(other.name());
-        }
+    }
+
+    public boolean equals(Stmt3Type other) {
+        return this.stmtType.name().equals(other.name());
     }
 }

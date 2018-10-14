@@ -8,11 +8,11 @@ public class JBGrd extends JNode {
     public JBGrd jbGrd;
     public String bool;
 
-    BoolGrdExpr boolGrdExpr;
+    private BoolGrdExpr boolGrdExpr;
 
     public JBGrd(String bool) {
         this.bool = bool;
-        boolGrdExpr = new BoolGrdExpr(new Boolean(bool));
+        boolGrdExpr = new BoolGrdExpr(Boolean.valueOf(bool));
     }
 
     public JBGrd(JBGrd jbGrd) {

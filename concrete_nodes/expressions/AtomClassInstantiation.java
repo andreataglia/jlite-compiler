@@ -17,6 +17,6 @@ public class AtomClassInstantiation extends Atom {
 
     @Override
     public String toString() {
-        return "new " + cname +"()";
+        return "new " + cname + "()";
     }
 }

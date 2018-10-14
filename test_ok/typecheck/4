@@ -28,12 +28,19 @@ while(i) {
 i = !j;
 }
 c = this.getCompute();
+return 1;
 }
 return this.getCompute().square(-3);
-return i ;
+return 3 ;
 }
 Compute getCompute() {
 // c = new Compute();
 return c;
 }
+}
+
+class Compute{
+	Int square(Int a){
+		return -a;
+	}
 }

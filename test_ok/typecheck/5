@@ -8,15 +8,13 @@ class Main {
 
     Void main() {
 
-        // || is left associative
-        return 4 <= 2 || 9 != 8 || false;
+        return;
+    }
 
-        // && is left associative
-        return null && 10 < 9 && foo("bar");
+}
 
-        // + is left associative
-        return 4 + 3 + 2;
-
+class Ciao{
+    Int foo(Int a){
         // - is left associative
         return 10 - 9 - 8;
 
@@ -24,16 +22,29 @@ class Main {
         return 10 * 3 * 99;
 
         // / is left associative
-        //return 99 / 2 / 3;
+        return 99 / 2 / 3;
+    }
 
-        // || has greater precedence than &&
+    Bool foo(){
+        // || is left associative
+        println(4 <= 2 || 9 != 8 || false);
+
+        // && is left associative
+        println(true && 10 < 9 && new Ciao().foo());
+
+        // + is left associative
+        println(4 + 3 + (-2));
+
+        
+        // || has greater precedence than &&     
         return true || false && true || false;
         return true && false || true && false;
 
         // atoms have the highest precedence
-        return !new Bar();
-        return !foo("bar");
+        println( !new Ciao().foo());
+        return !(foo());
 
+        /*
         // Unneeded brackets will be removed by the pretty-printer
         return (4 * 3) + (9 / 2);
 
@@ -53,6 +64,8 @@ class Main {
 
         // Left associative
         a.b.c.d = e;
+        */
+       
+       return true;
     }
-
 }

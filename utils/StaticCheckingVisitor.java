@@ -48,7 +48,7 @@ public class StaticCheckingVisitor implements Visitor {
             c.accept(this);
         }
         newLine();
-        System.out.println("------------- End Static Checking Output------------------");
+        System.out.println("\n------------- End Static Checking Output------------------");
         return null;
     }
 
@@ -169,8 +169,9 @@ public class StaticCheckingVisitor implements Visitor {
     public BasicType visit(ReadlnStmt stmt) throws Exception {
         newLine();
         System.out.print("ReadlnStmt ");
-        BasicType idType = (BasicType) stmt.id.accept(this);
-        if (!(idType.equals(BasicType.DataType.BOOL) || idType.equals(BasicType.DataType.STRING) || idType.equals(BasicType.DataType.INT)))
+        localType = (BasicType) stmt.id.accept(this);
+        printObjType(stmt.id);
+        if (!(localType.equals(BasicType.DataType.BOOL) || localType.equals(BasicType.DataType.STRING) || localType.equals(BasicType.DataType.INT)))
             throwTypeException("ReadlnStmt can't be applied to this identifier " + stmt.id, 2);
         localType = new BasicType(BasicType.DataType.VOID);
         printObjType("Stmt");
@@ -181,8 +182,9 @@ public class StaticCheckingVisitor implements Visitor {
     public Object visit(PrintlnStmt stmt) throws Exception {
         newLine();
         System.out.print("PrintlnStmt ");
-        BasicType idType = (BasicType) stmt.expr.accept(this);
-        if (!(idType.equals(BasicType.DataType.BOOL) || idType.equals(BasicType.DataType.STRING) || idType.equals(BasicType.DataType.INT)))
+        localType = (BasicType) stmt.expr.accept(this);
+        printObjType(stmt.expr);
+        if (!(localType.equals(BasicType.DataType.BOOL) || localType.equals(BasicType.DataType.STRING) || localType.equals(BasicType.DataType.INT)))
             throwTypeException("PrintStmt can't be applied to this expression", 2);
         localType = new BasicType(BasicType.DataType.VOID);
         printObjType("Stmt");
@@ -242,7 +244,10 @@ public class StaticCheckingVisitor implements Visitor {
         newLine();
         System.out.print("ReturnStmt ");
         localType = new BasicType(BasicType.DataType.VOID);
-        if (stmt.expr != null) localType = (BasicType) stmt.expr.accept(this);
+        if (stmt.expr != null) {
+            localType = (BasicType) stmt.expr.accept(this);
+            printObjType(stmt.expr);
+        }
         if (!symbolTable.currentMethod.returnType.equals(localType))
             throwTypeException("ReturnStmt doesn't match return type", 2);
         printObjType("Stmt");

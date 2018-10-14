@@ -48,8 +48,8 @@ public class IRGeneratorVisitor implements Visitor {
             params.add(new VarDecl3(new CName3(program.mainClass.className), new Id3(new CName3(program.mainClass.className), "this")));
             params.addAll(convertList(m.params));
             m.accept(this);
-            //TODO Id3 should be function type
-            methods.add(new CMtd3(new Type3(m.returnType), new Id3(null, m.name), params, currentVars, currentStmts));
+            //TODO Id3 type is set to the return type of the function.
+            methods.add(new CMtd3(new Type3(m.returnType), new Id3(new Type3(m.returnType), m.name), params, currentVars, currentStmts));
         }
         symbolTable.decreaseIndentLevel();
 
@@ -63,8 +63,8 @@ public class IRGeneratorVisitor implements Visitor {
                 params.add(new VarDecl3(new CName3(c.className), new Id3(new CName3(c.className), "this")));
                 params.addAll(convertList(m.params));
                 m.accept(this);
-                //TODO Id3 should be function type
-                methods.add(new CMtd3(new Type3(m.returnType), new Id3(null, m.name), params, currentVars, currentStmts));
+                //TODO Id3 type is set to the return type of the function.
+                methods.add(new CMtd3(new Type3(m.returnType), new Id3(new Type3(m.returnType), m.name), params, currentVars, currentStmts));
             }
             symbolTable.decreaseIndentLevel();
         }
@@ -289,19 +289,6 @@ public class IRGeneratorVisitor implements Visitor {
     ///////////////////////////////////////////////////////////////////////////////
     //////////////////////// Helper Methods ///////////////////////////////////////
 
-    private void newLine() {
-        System.out.print("\n" + getIndentation(false));
-    }
-
-    private String getIndentation(boolean labelPrint) {
-        String ret = "";
-        if (symbolTable.indentLevel > 1) {
-            ret += "    ";
-        }
-        if (labelPrint && !ret.isEmpty()) ret = ret.substring(1);
-        return ret;
-    }
-
     private void printClass(CName3 name, List<VarDecl3> vars) {
         System.out.print("\nData3 " + name.name + " {");
         if (!vars.isEmpty()) {
@@ -309,7 +296,7 @@ public class IRGeneratorVisitor implements Visitor {
                 System.out.print("\n    " + entry + ";");
             }
         }
-        System.out.print("\n}");
+        System.out.println("\n}");
     }
 
     private String newLabel() {
