@@ -1,6 +1,9 @@
-# jlite-parser
+# jLite Front-End Compiler 
 
-This is a Java parser for jLite programs. The grammar of jlite can be found in the pdf file `assignment_text.pdf`.
+
+This is a Java front end compiler for jLite programs. The grammar of jlite can be found in the pdf file `assignment_text.pdf`.
+
+The compiler aims at isolating in the best possible the way all the programming language details so as to isolate from the backend compiler work. This allows any backend compilers to be used as it can just take care of the machine code details.
 
 The project consists of two main parts: the Lexer and the Parser. The Lexer has been created using the jflex tool which creates java classes starting from a .lex specification file. The Parsers has been produced using Java Cup, which produces java classes out of a .cup specification file. The Main class starts the parsing process using the generated classes as described above taking an input file name from command line argument.  
 
@@ -35,6 +38,16 @@ If everything goes fine you will see the following as last line:
 Indeed, you can look into the file `output.txt` for the parsed input.
 
 If you were to feed a bad program to the parser the makefile recipe will fail and you can look into `output.txt` to have more info about where the parser got stuck.
+
+## Understanding the output
+The front end compiler gives one output per component if everything goes well during the compilation process:
+- <b>Parsing</b> produces the first section which is a mere pretty printing of the input program
+- <b>Static Checking</b> produces a first part in which the Class Descriptors are printed. That's the default environment for the whole program. Second part produces the type checking results for each class. Not that every component _Comp_ has been marked with the resulting Type in the following way: 
+_[Comp -> Type]_
+- <b>Code Generator</b> produces a first part with the program Data as specified by the formal description and right below all the functions code.
+
+In case of errors at any stage, the compiling process will stop and the error will be reported in console. Make rule will obviously failed.
+To have greater details about the error _DEBUG_ flag in Main class should be set to true, but that is meant for development purposes only.
 
 ## Tests
 

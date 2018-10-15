@@ -1,7 +1,9 @@
 package jnodes;
 
+import concrete_nodes.expressions.Expr;
+
 // expRest ::= COMMA exp
-public class JExpRest extends JNode{
+public class JExpRest extends JExp{
     public JExp exp;
 
     public JExpRest(JExp exp) {
@@ -11,5 +13,10 @@ public class JExpRest extends JNode{
     @Override
     public String toString() {
         return ", " + exp;
+    }
+
+    @Override
+    Expr getConcreteExpr() {
+        return exp.getConcreteExpr();
     }
 }

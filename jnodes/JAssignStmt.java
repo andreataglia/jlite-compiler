@@ -1,25 +1,39 @@
 package jnodes;
 
+import concrete_nodes.AssignmentStmt;
+import concrete_nodes.Stmt;
+import concrete_nodes.expressions.AtomGrd;
+
 // ident EQUAL exp SEMICOLON
-// | atom DOT ident EQUAL exp SEMICOLON
+// | functionId DOT ident EQUAL exp SEMICOLON
 public class JAssignStmt extends JStmt {
     public JId id;
     public JExp exp;
     public JAtom atom;
 
+    AssignmentStmt stmt;
+
     public JAssignStmt(JId id, JExp exp) {
         this.id = id;
         this.exp = exp;
+        stmt = new AssignmentStmt(new AtomGrd(id.s), exp.getConcreteExpr());
     }
 
-    public JAssignStmt(JId id, JExp exp, JAtom atom) {
+    public JAssignStmt(JAtom atom, JId id, JExp exp) {
         this.id = id;
         this.exp = exp;
         this.atom = atom;
+
+        stmt = new AssignmentStmt(new AtomGrd(id.s), atom.getConcreteNode(), exp.getConcreteExpr());
     }
 
     @Override
     public String toString() {
         return (atom != null ? atom + "." : "") + id + "=" + exp + ";";
+    }
+
+    @Override
+    Stmt getConcreteStmt() {
+        return stmt;
     }
 }

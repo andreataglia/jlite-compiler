@@ -2,10 +2,10 @@ package jnodes;
 
 //varDecl ::= type ident SEMICOLON
 public class JVarDecl extends JNode{
-    public JType type;
+    public JBasicType type;
     public JId id;
 
-    public JVarDecl(JType type, JId id) {
+    public JVarDecl(JBasicType type, JId id) {
         this.type = type;
         this.id = id;
     }

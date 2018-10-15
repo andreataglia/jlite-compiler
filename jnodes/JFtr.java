@@ -1,8 +1,10 @@
 package jnodes;
 
+import concrete_nodes.expressions.ArithGrdExpr;
+
 // ftr ::= INTEGER_LITERAL
 //        | MINUS ftr
-//        | atom
+//        | functionId
 public class JFtr extends JNode {
     public Integer integer;
     public JFtr ftr;
@@ -31,5 +33,16 @@ public class JFtr extends JNode {
     @Override
     public String toString() {
         return print;
+    }
+
+    ArithGrdExpr getConcreteNode(){
+        if (integer != null){
+            return new ArithGrdExpr(integer);
+        }else if (ftr != null){
+            return new ArithGrdExpr(ftr.getConcreteNode());
+        }else if (atom != null){
+            return new ArithGrdExpr(atom.getConcreteNode());
+        }
+        return null;
     }
 }

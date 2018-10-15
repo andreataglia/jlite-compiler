@@ -2,6 +2,9 @@
    
 import java_cup.runtime.*;
 import jnodes.*;
+import utils.*;
+import java.util.ArrayList;
+
 
 parser code {:
     
@@ -52,7 +55,7 @@ non terminal JExpRestList expRestList;
 non terminal JMainClass mainClass;
 non terminal JFmlList fmlList;
 non terminal JFmlRest fmlRest;
-non terminal JType type;
+non terminal JBasicType type;
 non terminal JStmt stmt;
 non terminal JBExp bExp;
 non terminal JExp exp;
@@ -68,13 +71,12 @@ non terminal JVarDeclList varDeclList;
 non terminal JStmtList stmtList;
 non terminal JFmlRestList fmlRestList;
 non terminal JMdBody mdBody;
-non terminal JCname cname;
-
+non terminal JClassNameType cname;
 
 /* -------------Precedence and Associatively of Terminals Section----------- */
-   
+
 /* The lower line always will have higher precedence than the line before it.*/
-  precedence left PLUS, MINUS; 
+  precedence left PLUS, MINUS;
   precedence left TIMES, DIVIDE;
 
 /* ----------------------------Grammar Section-------------------- */
@@ -86,18 +88,18 @@ non terminal JCname cname;
             ;
 
   classDeclList ::= {: RESULT = new JClassDeclList(); :}
-                | classDecl:a classDeclList:b {: RESULT = new JClassDeclList(a,b); :}
-                ;
+                  | classDecl:a classDeclList:b {: RESULT = new JClassDeclList(a,b); :}
+                  ;
 
   classDecl ::= CLASS cname:a LBRACE classDeclBody:b RBRACE {: reducedVarDecl = false; RESULT = new JClassDecl(a,b); :}
-            ;
-
-  varDeclList ::= {: RESULT = new JVarDeclList(); :}
-              | varDecl:a varDeclList:b {: RESULT = new JVarDeclList(a,b); :}
               ;
 
+  varDeclList ::= {: RESULT = new JVarDeclList(); :}
+               | varDecl:a varDeclList:b {: RESULT = new JVarDeclList(a,b); :}
+               ;
+
   varDecl ::= type:a ident:b SEMICOLON {: RESULT = new JVarDecl(a,b); :}
-           ;
+            ;
 
   classDeclBody ::= {: RESULT = new JClassDeclBody();:}
                 | type:a ident:b SEMICOLON classDeclBody:c {: reducedVarDecl = true; RESULT = new JClassDeclBody(a,b,c); :}
@@ -115,10 +117,10 @@ non terminal JCname cname;
   fmlRest ::= COMMA type:t ident:i {: RESULT = new JFmlRest(t,i); :}
           ;
 
-  type ::= INT:s {: RESULT = new JType(String.valueOf(s)); :}
-        | BOOL:s {: RESULT = new JType(String.valueOf(s)); :}
-        | STRING:s {: RESULT = new JType(String.valueOf(s)); :}
-        | VOID:s {: RESULT = new JType(String.valueOf(s)); :}
+  type ::= INT:s {: RESULT = new JBasicType(new BasicType(BasicType.DataType.INT)); :}
+        | BOOL:s {: RESULT = new JBasicType(new BasicType(BasicType.DataType.BOOL)); :}
+        | STRING:s {: RESULT = new JBasicType(new BasicType(BasicType.DataType.STRING)); :}
+        | VOID:s {: RESULT = new JBasicType(new BasicType(BasicType.DataType.VOID)); :}
         | cname:s {: RESULT = s; :}
         ;
 
@@ -134,7 +136,7 @@ non terminal JCname cname;
        | READLN:o LPAREN ident:i RPAREN SEMICOLON {: RESULT = new JIoStmt(o,i); :}
        | PRINTLN:o LPAREN exp:e RPAREN SEMICOLON {: RESULT = new JIoStmt(o,e); :}
        | ident:i EQUAL exp:e SEMICOLON {: RESULT = new JAssignStmt(i, e); :}
-       | atom:a DOT ident:i EQUAL exp:e SEMICOLON {: RESULT = new JAtomStmt(a,i,e); :}
+       | atom:a DOT ident:i EQUAL exp:e SEMICOLON {: RESULT = new JAssignStmt(a,i,e); :}
        | atom:a LPAREN expList:e RPAREN SEMICOLON {: RESULT = new JAtomExpStmt(a, e); :}
        | RETURN exp:e SEMICOLON {: RESULT = new JReturnStmt(e); :}
        | RETURN SEMICOLON {: RESULT = new JReturnStmt(); :}
@@ -143,7 +145,7 @@ non terminal JCname cname;
   exp ::= bExp:e  {: RESULT = e; :}
         | aExp:e  {: RESULT = e; :}
         | sExp:e  {: RESULT = e; :}
-      ;
+        ;
 
   bExp ::= bExp:b OR conj:c {: RESULT = new JBExp(b,c); :}
         | conj:c {: RESULT = new JBExp(c); :}
@@ -203,7 +205,7 @@ non terminal JCname cname;
   ident ::= ID:id {: RESULT = new JId(String.valueOf(id)); :}
         ;
 
-  cname ::= CNAME:c {: RESULT = new JCname(String.valueOf(c)); :}
+  cname ::= CNAME:c {: RESULT = new JClassNameType(new ClassNameType(String.valueOf(c))); :}
         ;
 
   expList ::= exp:a expRestList:b  {: RESULT = new JExpList(a, b); :}

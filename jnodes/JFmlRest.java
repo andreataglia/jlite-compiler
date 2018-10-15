@@ -2,10 +2,10 @@ package jnodes;
 
 //fmlRest ::= COMMA type ident
 public class JFmlRest extends JNode{
-    public JType type;
+    public JBasicType type;
     public JId id;
 
-    public JFmlRest(JType type, JId id) {
+    public JFmlRest(JBasicType type, JId id) {
         this.type = type;
         this.id = id;
     }

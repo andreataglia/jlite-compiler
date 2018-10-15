@@ -1,5 +1,9 @@
 package jnodes;
 
+import concrete_nodes.ClassDecl;
+
+import java.util.ArrayList;
+
 //classDeclList ::=
 //                | classDecl classDeclList
 public class JClassDeclList extends JNode {
@@ -17,5 +21,18 @@ public class JClassDeclList extends JNode {
     @Override
     public String toString() {
         return classDecl != null ? classDecl + " " + classDeclList : "";
+    }
+
+    boolean isEmpty(){
+        return classDecl == null;
+    }
+
+    ArrayList<ClassDecl> getClassList() {
+        ArrayList<ClassDecl> list = new ArrayList<>();
+        if (classDecl != null) {
+            list.add(classDecl.genConcreteClass());
+            if (!classDeclList.isEmpty()) list.addAll(classDeclList.getClassList());
+        }
+        return list;
     }
 }

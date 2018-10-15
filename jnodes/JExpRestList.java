@@ -1,5 +1,9 @@
 package jnodes;
 
+import concrete_nodes.expressions.Expr;
+
+import java.util.ArrayList;
+
 // expRestList ::=
 //              | expRest expRestList
 public class JExpRestList extends JNode {
@@ -17,5 +21,14 @@ public class JExpRestList extends JNode {
     @Override
     public String toString() {
         return expRest != null ? expRest + " " + expRestList : "";
+    }
+
+    ArrayList<Expr> getExprList(){
+        ArrayList<Expr> list = new ArrayList<>();
+        if (expRest != null){
+            list.add(expRest.getConcreteExpr());
+            list.addAll(expRestList.getExprList());
+        }
+        return list;
     }
 }
