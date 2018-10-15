@@ -14,7 +14,7 @@ class Main {
     v = new Vector();
     v.p1 = new Point();
     p2 = new Point();
-    v.getPoint().p1.x = 90;
+    v.getPoint().x = 90;
     v.p1.y = 89;
     p2.x = 43 + 78 * 9 - 7;
     readln(buffer);
@@ -23,7 +23,7 @@ class Main {
 
     println(v.norm() * 7 + 45 * 9);
 
-    return false;
+    return;
   }
 }
 
@@ -39,12 +39,23 @@ class Point {
 class Vector {
   Point p1;
   Point p2;
+  String s;
+  Bool b;
+  Int i;
 
   Int norm() {
     Int res;
     res = (p1.x - p2.x) * (p1.x - p2.x) + (p2.y - p1.y) * (p2.y - p1.y);
-    res = math.function.should_be_float("OK", true, "Yes", 90)
-            .sqrt(res);
+    b = true;
+    res = should_be_float("ee", true, "s", 9000);
     return res + 67 - 67;
+  }
+
+  Int should_be_float(String a, Bool b, String c, Int d){
+      return d + d;
+  }
+
+  Point getPoint(){
+      return new Point();
   }
 }

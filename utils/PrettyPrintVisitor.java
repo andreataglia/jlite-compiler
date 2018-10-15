@@ -13,6 +13,7 @@ public class PrettyPrintVisitor implements Visitor {
 
     @Override
     public Object visit(Program program) throws Exception {
+        System.out.println("\n------------- Parsing Output ------------------");
         newLine();
         System.out.print("Program");
         symbolTable.indentLevel++;
@@ -22,6 +23,8 @@ public class PrettyPrintVisitor implements Visitor {
         }
         System.out.println("\n");
         symbolTable.indentLevel--;
+        System.out.println("\n------------- End Parsing Output ------------------");
+        System.out.println("-----------------------------------------------------");
         return null;
     }
 

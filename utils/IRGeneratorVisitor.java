@@ -216,7 +216,7 @@ public class IRGeneratorVisitor implements Visitor {
         Exp3 ret = null;
         if (expr.isIntLiteral()) ret = new Const(new Type3(expr.type), expr.intLiteral);
         else if (expr.isNegateArithGrd())
-            ret = new Exp3Impl(new Type3(expr.type), "!", exprDownToId3((Exp3) expr.negateFactor.accept(this)));
+            ret = new Exp3Impl(new Type3(expr.type), "-", exprDownToId3((Exp3) expr.negateFactor.accept(this)));
         else if (expr.isAtomGrd()) ret = (Exp3) expr.atom.accept(this);
         return ret;
     }
@@ -232,7 +232,7 @@ public class IRGeneratorVisitor implements Visitor {
         if (expr.isGround()) ret = new Const(new Type3(expr.type), expr.boolGrd);
         else if (expr.isAtomGround()) ret = (Exp3) expr.atom.accept(this);
         else if (expr.isNegatedGround())
-            ret = new Exp3Impl(new Type3(expr.type), "-", exprDownToId3((Exp3) expr.grdExpr.accept(this)));
+            ret = new Exp3Impl(new Type3(expr.type), "!", exprDownToId3((Exp3) expr.grdExpr.accept(this)));
         return ret;
     }
 

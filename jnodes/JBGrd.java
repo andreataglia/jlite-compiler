@@ -18,6 +18,7 @@ public class JBGrd extends JNode {
     public JBGrd(JBGrd jbGrd) {
         this.jbGrd = jbGrd;
         boolGrdExpr = new BoolGrdExpr(jbGrd.getConcreteNode());
+        System.out.println(">>>>>>>>>>>>>>>>>>> created JBgrd " + toString());
     }
 
     @Override

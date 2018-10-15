@@ -1,7 +1,7 @@
 //Source: Taglia vector_class.j
 class Main123 {
 	Void main () {
-		return null;
+		return;
 	}
 }
 
@@ -27,7 +27,7 @@ class Vector {
 	}
 
 	Bool isEqual_v1(Vector that) {
-		if (that == null) {
+		if (that.isEqual_v2(that)) {
 			return false;
 		} else {
 			return this.x == that.x && this.y == that.y;
@@ -35,7 +35,7 @@ class Vector {
 	}
 
 	Bool isEqual_v2(Vector that) {
-		if (!that) {
+		if (!true) {
 			return false;
 		} else {
 			return this.x == that.x && this.y == that.y;
@@ -43,6 +43,6 @@ class Vector {
 	}
 
 	Bool isEqual_v3(Vector that) {
-		return !that && this.x == that.x && this.y == that.y;
+		return !that.isEqual_v2(new Vector()) && this.x == that.x && this.y == that.y;
 	}
 }

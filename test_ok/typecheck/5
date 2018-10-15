@@ -16,7 +16,7 @@ class Main {
 class Ciao{
     Int foo(Int a){
         // - is left associative
-        return 10 - 9 - 8;
+        return 10 - foo(a) - 8;
 
         // * is left associative
         return 10 * 3 * 99;

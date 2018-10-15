@@ -10,33 +10,44 @@ import java.io.FileReader;
 
 public class Main {
 
-    static boolean DEBUG = false;
+    private static boolean DEBUG = false;
 
     static public void main(String argv[]) {
         boolean allGood = true;
         try {
+            //Parsing
+            System.out.println("\n------------- Parsing Output ------------------");
             parser p = new parser(new Lexer(new FileReader(argv[0])));
             JProgram ast = (JProgram) p.parse().value;
             Program tree = ast.genConcreteTree();
             //PrettyPrintVisitor visitor = new PrettyPrintVisitor();
+            System.out.println("\n------------- End Parsing Output ------------------");
+            System.out.println("-----------------------------------------------------");
+
+
+            //Static Checking
             utils.SymbolTable symbolTable = new SymbolTable();
             StaticCheckingVisitor staticCheckingVisitor = new StaticCheckingVisitor(symbolTable);
             try {
                 tree.accept(staticCheckingVisitor);
             } catch (TypeException e) {
-                System.out.println();
-                System.err.println("ERROR: Static Checking Failed - "+ e);
+                allGood = false;
+                System.err.println("\nFATAL ERROR: Static Checking Failed - " + e);
                 if (DEBUG) e.printStackTrace();
                 System.err.println("cat output.txt to see where the program failed\n\n");
                 if (!DEBUG) System.exit(-1);
-                allGood = false;
             }
+
+            //IR Generation
             IRGeneratorVisitor irGeneratorVisitor = new IRGeneratorVisitor(symbolTable);
+            //will be used as input for the backend compiling process
             Program3 ir3Tree = (Program3) tree.accept(irGeneratorVisitor);
 
-            if (allGood) System.out.println("\n\nSuccess!");
+            if (allGood) System.err.println("\nSuccess!");
         } catch (Exception e) {
-            e.printStackTrace();
+            if (DEBUG) e.printStackTrace();
+            else System.out.println("\nFATAL ERROR: Couldn't compile");
+
         }
     }
 }

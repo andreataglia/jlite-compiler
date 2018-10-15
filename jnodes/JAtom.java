@@ -40,6 +40,10 @@ public class JAtom extends JNode {
         this.atom = atom;
         this.expList = expList;
         print = atom + "(" + expList + ")";
+        System.err.println(">>>>>>>>>>> JAtom:New AtomFunctionCall");
+        for (Expr e : expList.getExprList()) {
+            System.err.println(">>>>" + e);
+        }
         concreteAtom = new AtomFunctionCall(atom.getConcreteNode(), expList.getExprList());
     }
 

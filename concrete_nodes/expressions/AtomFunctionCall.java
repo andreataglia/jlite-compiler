@@ -5,7 +5,7 @@ import utils.Visitor;
 
 import java.util.List;
 
-public class AtomFunctionCall extends Atom{
+public class AtomFunctionCall extends Atom {
     public Atom functionId;
     public List<Expr> paramsList;
 
@@ -21,9 +21,9 @@ public class AtomFunctionCall extends Atom{
     public String toString() {
         String s = functionId + "(";
         boolean firstParam = true;
-        if (!paramsList.isEmpty()){
-            for (Expr e: paramsList) {
-                if (!firstParam) s+= ", ";
+        if (!paramsList.isEmpty()) {
+            for (Expr e : paramsList) {
+                if (!firstParam) s += ", ";
                 s += e.toString();
                 firstParam = false;
             }

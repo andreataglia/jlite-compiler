@@ -3,7 +3,7 @@ package concrete_nodes.expressions;
 import utils.Visitor;
 
 public class BoolGrdExpr extends BoolExpr {
-    //!<Grd>
+    //!<BoolGrdExpr>
     public BoolGrdExpr grdExpr;
 
     //<true> <false>
