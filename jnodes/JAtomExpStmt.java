@@ -22,10 +22,6 @@ public class JAtomExpStmt extends JStmt {
 
     @Override
     Stmt getConcreteStmt() {
-        System.err.println(">>>>>>>>>>> New AtomFunctionCall");
-        for (Expr e : expList.getExprList()) {
-            System.err.println(">>>>" + e);
-        }
         return new FunctionCallStmt(new AtomFunctionCall(atom.getConcreteNode(), expList.getExprList()));
     }
 }

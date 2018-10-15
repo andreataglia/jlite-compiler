@@ -1,7 +1,7 @@
 package jnodes;
 
-// functionId ::= functionId DOT ident
-//       | functionId LPAREN expList RPAREN
+// functionId ::= atom DOT ident
+//       | atom LPAREN expList RPAREN
 //       | THIS
 //       | ident
 //       | NEW OBJECT LPAREN RPAREN
@@ -40,10 +40,6 @@ public class JAtom extends JNode {
         this.atom = atom;
         this.expList = expList;
         print = atom + "(" + expList + ")";
-        System.err.println(">>>>>>>>>>> JAtom:New AtomFunctionCall");
-        for (Expr e : expList.getExprList()) {
-            System.err.println(">>>>" + e);
-        }
         concreteAtom = new AtomFunctionCall(atom.getConcreteNode(), expList.getExprList());
     }
 
@@ -59,7 +55,7 @@ public class JAtom extends JNode {
         concreteAtom = new AtomGrd(id.toString());
     }
 
-    public JAtom(String s){
+    public JAtom(String s) {
         this.s = s;
         print = s;
         concreteAtom = new AtomGrd(s);
@@ -70,7 +66,7 @@ public class JAtom extends JNode {
         return print;
     }
 
-    public Atom getConcreteNode(){
+    public Atom getConcreteNode() {
         return concreteAtom;
     }
 }

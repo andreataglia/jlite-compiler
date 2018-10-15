@@ -32,7 +32,7 @@ class Point {
   Int y;
 
   String toString() {
-    return "Point (x = " + this.x + ", y = " + this.y + ")";
+    return "Point (x = \" \n \r + this.y + )";
   }
 }
 

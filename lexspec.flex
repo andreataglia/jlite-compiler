@@ -48,6 +48,7 @@ blank_line = ({eol}{space}*{eol})({eol}{space}*{eol})*
 start_comment = "/*"
 comment_content = ([^*]|\*[^/])
 end_comment = "*/"
+
    
 %%
 
@@ -57,8 +58,8 @@ end_comment = "*/"
 
     /* literals */    
     "0" | [1-9]{digit}*      { System.out.print(yytext()); return symbol(sym.INTEGER_LITERAL, new Integer(yytext())); }
-    "\"" .* "\""   { System.out.print(yytext()); return symbol(sym.STRING_LITERAL, yytext()); }
-    
+    "\""("\\".|[^"\\\""])*"\""   { System.out.print(yytext()); return symbol(sym.STRING_LITERAL, yytext()); }
+
     /* comments */
     "//"{not_eol}*{eol} { /* do nothing */ }
     {start_comment}{comment_content}*{end_comment} { /* do nothing */ }  

@@ -46,7 +46,7 @@ public class Main {
             if (allGood) System.err.println("\nSuccess!");
         } catch (Exception e) {
             if (DEBUG) e.printStackTrace();
-            else System.out.println("\nFATAL ERROR: Couldn't compile");
+            else System.err.println("\nFATAL ERROR: Couldn't compile");
 
         }
     }
