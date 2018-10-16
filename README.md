@@ -42,7 +42,7 @@ If you were to feed a bad program to the parser the makefile recipe will fail an
 ## Understanding the output
 The front end compiler gives one output per component if everything goes well during the compilation process:
 - <b>Parsing</b> produces the first section which is a mere pretty printing of the input program
-- <b>Static Checking</b> produces a first part in which the Class Descriptors are printed. That's the default environment for the whole program. Second part produces the type checking results for each class. Not that every component _Comp_ has been marked with the resulting Type in the following way: 
+- <b>Static Checking</b> produces a first part in which the Class Descriptors are printed (order of classes is random because of the HashMap structure which holds them). That's the default environment for the whole program. Second part produces the type checking results for each class. Not that every component _Comp_ has been marked with the resulting Type in the following way: 
 _[Comp -> Type]_
 - <b>Code Generator</b> produces a first part with the program Data as specified by the formal description and right below all the functions code.
 
