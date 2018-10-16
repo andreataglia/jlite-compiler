@@ -20,7 +20,7 @@ A first implementation of the Visitor interface is the PrettyPrintingVisitor whi
 
 A second implementation is the StaticCheckingVisitor, which checks for the Distinct-Name Checking at first, and then goes on subsequently applying the typing rules as formally specified in the document `assignment2_text.pdf`. During the exploration it fills the Symbol Table and adds all the required type information for the use of IR Generator right after. 
 
-A third implementation is the IRGenerator. It creates another, simpler tree which is the structure that will be given as input to the back-end compiler. It holds the required information for abstracting from the initial source code, so the back-end compiler doesn't need to know about the compiled language.
+A third implementation is the IRGenerator. It creates another, simpler tree which is the structure that will be given as input to the back-end compiler. It holds the required information for abstracting from the initial source code, so the back-end compiler doesn't need to know about the compiled language. The visitor generates an intermediate code representation which adhere to the IR3 specification which can be found in the file `assignment2_text.pdf`.
 
 
 ## Prerequisites
@@ -63,7 +63,7 @@ To have greater details about the error _DEBUG_ flag in Main class should be set
 
 ## Tests
 
-The parsers has been tested using the .j files in the folders test_ok and test_ko which in turn contain good syntax code and wrong written code.
+The parsers has been tested using the files in the folders test_ok/typecheck and test_ko/typecheck which in turn contain good syntax code and wrong written code.
 
 ## Notes
 
