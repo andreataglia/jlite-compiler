@@ -1,0 +1,7 @@
+class myclass {
+  Int a;
+
+  Void test() {
+    a.hello();
+  }
+}

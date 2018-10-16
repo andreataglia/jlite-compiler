@@ -31,7 +31,7 @@ public class VarsList {
             if (this.list.size() == element.list.size()) {
                 for (VarDecl var : list) {
                     for (VarDecl otherVar : element.list) {
-                        if (!var.equals(otherVar)) return false;
+                        if (!var.type.equals(otherVar.type)) return false;
                     }
                 }
                 return true;

@@ -5,12 +5,12 @@ class Main {
         while (a >= 0) {
             while (b>=0) {
                 if(a>=b) {
-                    if(b>=c) {
-                        return 0;
-                    } else { return 1;}
+                    if(b>=a) {
+                        return;
+                    } else { return;}
                 } else {
-                    while(c) {
-
+                    while(a < b) {
+                        
                     }
                 }
             }

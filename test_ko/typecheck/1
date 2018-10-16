@@ -1,0 +1,10 @@
+class Main {
+	Void main() {
+		Int x;
+		Int a;
+		Int y;
+		Bool b;
+		x = -a;
+		y = !b;
+	}
+}

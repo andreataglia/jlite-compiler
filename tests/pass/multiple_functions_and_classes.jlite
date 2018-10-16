@@ -1,0 +1,42 @@
+class Main {
+    Void main(Int a, Int b) {
+        Int c;
+        Me other;
+        c = a + b;
+        other.increment(c);
+        other.write(78);
+        println("Hey !");
+    }
+}
+
+class Me {
+    Int b;
+    Bool c;
+    String z;
+
+    Int write(Int a) {
+        b = a + 1;
+        //println(y);
+        duplicate();
+        this.c = false;
+        if(b >= 0 || b < -80) {
+            return a + b - -89;
+        } else {
+            return 80;
+        }
+    }
+
+    Me duplicate() {
+        Me other;
+        other = new Me();
+        other.b = b;
+        other.c = c;
+        other.z = z;
+        return other;
+    }
+
+    Int increment(Int c) {
+        b = b + c;
+        return 42;
+    }
+}

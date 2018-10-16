@@ -7,14 +7,15 @@ class Main {
     Int k;
     Bool bool1;
     Foo foo;
+    Int b;
     foo = new Foo();
-    while(foo != NULL && bool1 && foo.method1()) {
+    while(foo.intM(true) != b && bool1 && foo.method1()) {
       k = 1;
     }
     k = 2/1 + 4 * 5;
     bool1 = true || foo.method1();
     new Foo().bool = 4>=2 || true || 4<5 || false;
-    if(foo!=NULL && foo.method1() || !foo.bool) {
+    if(foo.method1() || !foo.bool) {
       k = 0;
     } else {
       k = 1;
@@ -26,11 +27,16 @@ class Main {
 }
 
 class Foo {
+  Int b;
   Bool bool;
+  Foo f;
   Bool method1() {
     return 1 > 2;
   }
   Void method2() {
     println("Hello!");
+  }
+  Int intM(Bool b){
+      return new Foo().f.f.b + this.b;
   }
 }

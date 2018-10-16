@@ -1,0 +1,15 @@
+class Main {
+    Void main(Int a) {
+        Test test;
+        println(test.toString(a));
+    }
+}
+
+class Test {
+    String toString(Int b) {
+        String a;
+        // This is weird, but allowed
+        a = "test\" + \"dddd";
+        return a;
+    }
+}

@@ -1,0 +1,7 @@
+class Main {
+    Void main(Int a, Void z) {
+        Int c;
+        String z;
+        Main m;
+    }
+}

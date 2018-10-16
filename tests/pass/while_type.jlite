@@ -1,0 +1,14 @@
+class Main {
+    Void main() {
+        Test a;
+        a.run();
+        return;
+    }
+}
+class Test {
+    Int run(){
+        while(1 + 1 == 3) {
+            run();
+        }
+    }
+}

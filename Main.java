@@ -6,7 +6,9 @@ import utils.StaticCheckingVisitor;
 import utils.SymbolTable;
 import utils.TypeException;
 
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 
 public class Main {
 
@@ -17,7 +19,13 @@ public class Main {
         try {
             //Parsing
             System.out.println("\n------------- Parsing Output ------------------");
-            parser p = new parser(new Lexer(new FileReader(argv[0])));
+            parser p = null;
+            try {
+                p = new parser(new Lexer(new FileReader(argv[0])));
+            } catch (FileNotFoundException e) {
+                System.err.println("\nFATAL ERROR: Input file not found");
+                System.exit(-1);
+            }
             JProgram ast = (JProgram) p.parse().value;
             Program tree = ast.genConcreteTree();
             //PrettyPrintVisitor visitor = new PrettyPrintVisitor();
@@ -47,7 +55,7 @@ public class Main {
         } catch (Exception e) {
             if (DEBUG) e.printStackTrace();
             else System.err.println("\nFATAL ERROR: Couldn't compile");
-
+            System.exit(-1);
         }
     }
 }

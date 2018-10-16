@@ -11,6 +11,6 @@ public class TypeException extends Exception {
     }
 
     public TypeException(String issue, String inClass, String inMethod) {
-        this(issue + " in Method:" + inMethod , inClass);
+        this(issue + " - in Method:" + inMethod , inClass);
     }
 }

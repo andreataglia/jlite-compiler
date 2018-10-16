@@ -5,6 +5,7 @@ import concrete_nodes.VarDecl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 public class SymbolTable {
     int indentLevel;
@@ -71,10 +72,15 @@ public class SymbolTable {
     }
 
     BasicType lookupVarType(String id) {
-        for (VarDecl var : methodLocalVars) {
+        ListIterator li = methodLocalVars.listIterator(methodLocalVars.size());
+        // Iterate in reverse to first catch the last declared var
+        while (li.hasPrevious()) {
+            VarDecl var = (VarDecl) li.previous();
             if (var.id.equals(id)) return var.type;
         }
-        for (VarDecl var : classLocalVars) {
+        li = classLocalVars.listIterator(classLocalVars.size());
+        while (li.hasPrevious()) {
+            VarDecl var = (VarDecl) li.previous();
             if (var.id.equals(id)) return var.type;
         }
         return null;

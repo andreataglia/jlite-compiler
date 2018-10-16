@@ -1,0 +1,8 @@
+class Main {
+    Void main() {
+        return;
+    }
+    Int test() {
+        return 3;
+    }
+}

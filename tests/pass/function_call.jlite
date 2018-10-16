@@ -1,0 +1,19 @@
+class Test {
+    Void main() {
+        Second c;
+        c.id();
+        return;
+    }
+}
+
+class Second {
+    Int id() {
+        println("Hello");
+
+        this.duplicate(4);
+    }
+
+    Int duplicate(Int a) {
+        return a * 9;
+    }
+}

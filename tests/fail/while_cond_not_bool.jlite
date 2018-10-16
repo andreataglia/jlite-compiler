@@ -1,0 +1,7 @@
+class Main {
+    Void main (Int a) {
+        while(a) {
+            return;
+        }
+    }
+}

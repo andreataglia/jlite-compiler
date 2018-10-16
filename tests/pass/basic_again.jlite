@@ -1,0 +1,23 @@
+class Hello {
+    Void main() {
+        Test a;
+        a.hello();
+    }
+}
+
+class Test {
+    Int a;
+    Int b;
+
+    Void hello() {
+        Int yolo;
+        Int test;
+        hiAgain();
+        return;
+    }
+
+    Int hiAgain() {
+        Void test;
+        return 4;
+    }
+}

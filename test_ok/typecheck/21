@@ -1,10 +1,11 @@
-class Someclazz {
-    Int f() {
-        return 1;
-    }
-
-    Int g() {
-        f(); // type of statement is Int
-    } // type of statement block is Int
-    // type of body of g() is Int, type-checks properly
+class Main {
+	Void main(Int x, Int b, Int a, Bool bool) {
+		x = a / b;
+		x = a * b;
+		x = a + -b;
+		bool = a <= b;
+		bool = a == b;
+		bool = a != b;
+		return;
+	}
 }

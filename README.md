@@ -16,9 +16,11 @@ The reference JLite grammar was not well formatted and threw a lot of shift/redu
 ### Static Checking & Intermediate Code Generation
 To better tackle this part the previous AST is taken as input and a whole new tree is built, that is the concrete tree structure. The nodes of these new tree are well separated from the previous tree and are placed in the package `concrete_nodes`. From this point onwards there has been implemented a Visitor pattern to conveniently explore the tree multiple times and with different options. The following code is implemented in classes placed inside `utils` package.
 
-A first implementation of the Visitor interface is the PrettyPrintingVisitor which just gives a nice and debugging usefull view of the tree.
-A second implementation is the StaticCheckingVisitor, which checks for the Distinct-Name Checking at first, and then goes on subsequently applying the typing rules as formally specified in the document `assignment2_text.pdf`. During the exploration it fills the Symbol Table and adds all the required type information for the later use of IR Generator 
-A third implementation is the IRGenerator
+A first implementation of the Visitor interface is the PrettyPrintingVisitor which just gives a nice and debugging useful view of the tree.
+
+A second implementation is the StaticCheckingVisitor, which checks for the Distinct-Name Checking at first, and then goes on subsequently applying the typing rules as formally specified in the document `assignment2_text.pdf`. During the exploration it fills the Symbol Table and adds all the required type information for the use of IR Generator right after. 
+
+A third implementation is the IRGenerator. It creates another, simpler tree which is the structure that will be given as input to the back-end compiler. It holds the required information for abstracting from the initial source code, so the back-end compiler doesn't need to know about the compiled language.
 
 
 ## Prerequisites
@@ -38,17 +40,18 @@ If everything goes fine you should simply not see any error messages.
 
 Run `make run in=filepath` to feed the input file to be parsed to the parser. You can try one of the test files, for example:
 
-    $ make run in=test_ok/e.j
+    $ make run in=test_ok/typecheck/1
 
 If everything goes fine you will see the following as last line:
 
-    Successfully parse! Look at output.txt for the outcome
+    Done executing. Look at output.txt for the outcome
 
 Indeed, you can look into the file `output.txt` for the parsed input.
 
-If you were to feed a bad program to the parser the makefile recipe will fail and you can look into `output.txt` to have more info about where the parser got stuck.
+If you were to feed a bad program to the parser the makefile recipe will fail and any typing error is clearly reported. You can look into `output.txt` to have more info about where the compiler halted the execution.
 
 ## Understanding the output
+
 The front end compiler gives one output per component if everything goes well during the compilation process:
 - <b>Parsing</b> produces the first section which is a mere pretty printing of the input program
 - <b>Static Checking</b> produces a first part in which the Class Descriptors are printed (order of classes is random because of the HashMap structure which holds them). That's the default environment for the whole program. Second part produces the type checking results for each class. Not that every component _Comp_ has been marked with the resulting Type in the following way: 
@@ -62,3 +65,8 @@ To have greater details about the error _DEBUG_ flag in Main class should be set
 
 The parsers has been tested using the .j files in the folders test_ok and test_ko which in turn contain good syntax code and wrong written code.
 
+## Notes
+
+- methods overloading has been implement, allowing more methods with the same name to be declared on the same class, as long as the signature differ. Informally, the method signature is composed of the Method name + List of Types of params. This has not great implication on the code, as it still searches for a signature match when checking a function call is correctly made, being the code very clean and generic enough. The actual implication is in the Name Checking part at the beginning of the TypeCheckingVisitor class, where instead of just making sure method names are different, we check their signature, so is just a matter of changing the implementation of the equals method of the MethodDecl class.
+- null type specification has not been formalised in details. I just treat it as a normal Type, but not assignable to a var or to anything else, it's not of great use really.
+- while statement with empty body behaves having "no type", it would then just get the previous statement type. A while stmt inside an if stmt defaults to a void type, considering its previous stmt to be the if stmt. This is a personal choice which reflects a not well defined formal specification in this case.

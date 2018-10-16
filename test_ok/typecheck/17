@@ -2,6 +2,11 @@
 class Main {
     // Fails type checking
     Void main() {
-        a = 13 || 12;
+        Int a;
+        a = 13 - 12;
     }
+}
+
+class Hey_hey{
+	
 }

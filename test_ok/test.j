@@ -1,29 +1,19 @@
 class MainC {
     Void main (){
-        Functional fo ;
-        Int i;
-        Int j ;
-        readln(i) ;
-
-        if (i > 0) {
-            fo = new Functional() ;
-            j = fo.f.getFun(true).f.f(i) ;
-            println(j) ;
-        } else {
-            println("Error") ;
-        }
-        return ;
+    	Int a;
+    	if(true){
+        	while (true){ a=3;}
+    	}else{
+    		a = 4;
+    	}
     }
 }
 
-class Functional {
-    Int a;
-    Functional f;
-    Int f(Int b){
-        f(a);
-        return 3;
-    }
-    Functional getFun(Bool boo){
-        return new Functional();
-    }
+class Ciao{
+	Int mbare(Int a){
+		return 2;
+	}
+	String mbare(Void a){
+		return "";
+	}
 }

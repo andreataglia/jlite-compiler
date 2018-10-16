@@ -1,0 +1,10 @@
+class Test {
+    Void main() {
+        A a;
+        a.a = 56;
+    }
+}
+
+class A {
+    Int a;
+}
