@@ -1,20 +1,29 @@
 # jLite Front-End Compiler 
 
 
-This is a Java front end compiler for jLite programs. The grammar of jlite can be found in the pdf file `assignment_text.pdf`.
-
+This is a Java front end compiler for jLite programs.
 The compiler aims at isolating in the best possible the way all the programming language details so as to isolate from the backend compiler work. This allows any backend compilers to be used as it can just take care of the machine code details.
+The project front end compiler is dived into two main parts:
 
-The project consists of two main parts: the Lexer and the Parser. The Lexer has been created using the jflex tool which creates java classes starting from a .lex specification file. The Parsers has been produced using Java Cup, which produces java classes out of a .cup specification file. The Main class starts the parsing process using the generated classes as described above taking an input file name from command line argument.  
+### Lexer & Parser
+The grammar of jlite can be found in the pdf file `assignment_text.pdf`.
+The Lexer has been created using the jflex tool which creates java classes starting from a .lex specification file. The Parsers has been produced using Java Cup, which produces java classes out of a .cup specification file. The Main class starts the parsing process using the generated classes as described above taking an input file name from command line argument.  
 
-Other than just parsing, the parser builds the whole AST. Although the AST is not of great use so far, it will be necessary for further compiler expansion. The AST nodes can be found at path `jnodes/` and the root node is `JProgram.java`. Every node has a unique toString() function which is forced to implement being the class extending the abstract JNode. The root toString() will just call in chain all the nodes toString() function to end up with a printed version of the AST. However, it has been preferred to just print out the parsed program from the lexer. The AST will be used later on as mentioned above.
-
+Other than just parsing, the parser builds the whole AST. Although the AST is not of great use so far, it will be necessary for the next compilation step. The AST nodes can be found at path `jnodes/` and the root node is `JProgram.java`. Every node has a unique toString() function which is forced to implement being the class extending the abstract JNode. The root toString() will just call in chain all the nodes toString() function to end up with a printed version of the AST. However, it has been preferred to just print out the parsed program from the lexer. The AST will be used later on as mentioned above.
 
 The reference JLite grammar was not well formatted and threw a lot of shift/reduce and reduce/reduce conflicts at first. All of them have been resolved by rearranging the grammar so as to avoid ambiguity. One exception has been seen on the production involving `ClassDecl` where java code has been inserted in the parser to force correct behaviour after have loosened the grammar rules.
 
+### Static Checking & Intermediate Code Generation
+To better tackle this part the previous AST is taken as input and a whole new tree is built, that is the concrete tree structure. The nodes of these new tree are well separated from the previous tree and are placed in the package `concrete_nodes`. From this point onwards there has been implemented a Visitor pattern to conveniently explore the tree multiple times and with different options. The following code is implemented in classes placed inside `utils` package.
+
+A first implementation of the Visitor interface is the PrettyPrintingVisitor which just gives a nice and debugging usefull view of the tree.
+A second implementation is the StaticCheckingVisitor, which checks for the Distinct-Name Checking at first, and then goes on subsequently applying the typing rules as formally specified in the document `assignment2_text.pdf`. During the exploration it fills the Symbol Table and adds all the required type information for the later use of IR Generator 
+A third implementation is the IRGenerator
+
+
 ## Prerequisites
 
-The only prerequisites is having Java installed in you machine.
+The only prerequisite is having Java installed in you machine.
 Jflex and Cup dependencies are embedded in the project folder.
 
 ## Building
