@@ -10,7 +10,7 @@ class Main {
                     } else { return;}
                 } else {
                     while(a < b) {
-                        
+                        return;
                     }
                 }
             }

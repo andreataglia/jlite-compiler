@@ -97,8 +97,6 @@ public class StaticCheckingVisitor implements Visitor {
         }
         enrichEnvironmentWithVars(methodDecl.varDeclList, true);
 
-        //reset local type to avoid while null body stmt returning something
-        localType = null;
         //check if the statements are correct
         for (Stmt s : methodDecl.stmtList) {
             localType = (BasicType) s.accept(this);
@@ -133,12 +131,7 @@ public class StaticCheckingVisitor implements Visitor {
             throwTypeException("If condition violated: not Bool: " + stmt.condition, 2);
         printObjType(stmt.condition);
         symbolTable.increaseIndentLevel();
-        boolean firstStmt = true;
         for (Stmt s : stmt.trueBranch) {
-            if (firstStmt && s instanceof WhileStmt) {
-                localType = new BasicType(BasicType.DataType.VOID);
-                firstStmt = false;
-            }
             localType = (BasicType) s.accept(this);
         }
         symbolTable.decreaseIndentLevel();
@@ -157,13 +150,12 @@ public class StaticCheckingVisitor implements Visitor {
 
     @Override
     public BasicType visit(WhileStmt stmt) throws Exception {
-        BasicType previousType = localType;
         newLine();
         System.out.print("WhileStmt ");
         if (!((BasicType) stmt.condition.accept(this)).equals(BasicType.DataType.BOOL))
             throwTypeException("While condition violated: not Bool: " + stmt.condition, 2);
         symbolTable.increaseIndentLevel();
-        localType = previousType;
+        if (stmt.body.isEmpty()) throwTypeException("While stmt body can't be empty", 2);
         for (Stmt s : stmt.body) {
             localType = (BasicType) s.accept(this);
         }

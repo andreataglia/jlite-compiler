@@ -10,7 +10,7 @@ class A{
 	Int f(){
 		Int b;
         if(3<= -4){
-        	while(true){}
+        	while(true){ return 3;}
         }else{
         	if(true){
         		b = -b;

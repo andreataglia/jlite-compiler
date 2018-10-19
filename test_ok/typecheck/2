@@ -5,7 +5,11 @@ class Main {
             b = 340 ;
             i = b ;
         }
-        while (true) {}
+        if(true){
+        	while (true) { i = 5 * i - 3; }
+        }else{
+        	while(i > d) { b = 340; }
+        }
         return;
         return;
 
