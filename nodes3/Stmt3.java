@@ -1,5 +1,7 @@
 package nodes3;
 
+import asm.ASMGeneratorVisitor;
+
 import java.util.List;
 
 //⟨Label3⟩ : | if ( ⟨RelExp3Impl⟩ ) goto ⟨Label3⟩ ; | goto ⟨Label3⟩ ;
@@ -120,5 +122,9 @@ public class Stmt3 extends Node3 {
 
     public boolean equals(Stmt3Type other) {
         return this.stmtType.name().equals(other.name());
+    }
+
+    public void accept(ASMGeneratorVisitor visitor){
+        visitor.visit(this);
     }
 }

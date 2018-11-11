@@ -1,3 +1,5 @@
+import asm.ASMCode;
+import asm.ASMGeneratorVisitor;
 import concrete_nodes.Program;
 import jnodes.JProgram;
 import nodes3.Program3;
@@ -6,9 +8,7 @@ import utils.StaticCheckingVisitor;
 import utils.SymbolTable;
 import utils.TypeException;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 
 public class Main {
 
@@ -50,6 +50,11 @@ public class Main {
             IRGeneratorVisitor irGeneratorVisitor = new IRGeneratorVisitor(symbolTable);
             //will be used as input for the backend compiling process
             Program3 ir3Tree = (Program3) tree.accept(irGeneratorVisitor);
+
+            //ASM Generation
+            ASMGeneratorVisitor asmGeneratorVisitor = new ASMGeneratorVisitor();
+            ir3Tree.accept(asmGeneratorVisitor);
+
 
             if (allGood) System.err.println("\nSuccess!");
         } catch (Exception e) {

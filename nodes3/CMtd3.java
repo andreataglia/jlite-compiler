@@ -1,8 +1,11 @@
 package nodes3;
 
+import asm.ASMGeneratorVisitor;
+
 import java.util.List;
 
 public class CMtd3 extends Node3 {
+    //method head/signature
     public Type3 returnType;
     public Id3 name;
     public List<VarDecl3> params;
@@ -38,6 +41,10 @@ public class CMtd3 extends Node3 {
         }
         System.out.println("}");
         return super.toString();
+    }
+
+    public void accept(ASMGeneratorVisitor visitor){
+        visitor.visit(this);
     }
 }
 

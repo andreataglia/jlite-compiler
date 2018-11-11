@@ -1,19 +1,16 @@
 class MainC {
     Void main (){
     	Int a;
-    	if(true){
-        	while (true){ a=3;}
-    	}else{
-    		a = 4;
-    	}
+        a = 4 + 3;
+        a = new Ciao().ciao(a);
+        println("\nHello, World!\n\n");
+        return;
     }
 }
 
 class Ciao{
-	Int mbare(Int a){
-		return 2;
-	}
-	String mbare(Void a){
-		return "";
-	}
+	 Int ciao(Int b){
+        b = b + b;
+        return b;
+    }
 }
