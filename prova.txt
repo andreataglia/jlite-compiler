@@ -55,7 +55,7 @@ Data3 MainC {
 
 Void main (MainC this){
     Int a;
-    println("\nHello, World!\n\n");
+    println(a);
     return;
 }
 

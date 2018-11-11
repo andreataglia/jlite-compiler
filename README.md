@@ -23,7 +23,20 @@ A second implementation is the StaticCheckingVisitor, which checks for the Disti
 A third implementation is the IRGenerator. It creates another, simpler tree which is the structure that will be given as input to the back-end compiler. It holds the required information for abstracting from the initial source code, so the back-end compiler doesn't need to know about the compiled language. The visitor generates an intermediate code representation which adhere to the IR3 specification which can be found in the file `assignment2_text.pdf`.
 
 ### ASM Generation
-println(NULL) : don't print anything
+- println(NULL) : don't print anything
+- Variable shadowing example:
+Int Mbare_ciao_0 (Mbare this, String v, Int b){
+    Int b;
+    Int _t1;
+    Int _t2;
+    b = 4;
+    println(v);
+    _t1 = ciao(this, "hey", b);
+    _t2 = b + _t1;
+    return _t2;
+}
+param b is overwritten by new local var b
+
 
 
 ## Prerequisites

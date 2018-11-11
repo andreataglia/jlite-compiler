@@ -21,6 +21,12 @@ run: Main.class
 	@$(JAVA) -cp .:java-cup-11b-runtime.jar Main $(in) > output.txt
 	@echo "Done executing. Look at output.txt for the outcome (cat output.txt)"
 
+testir:
+	@echo "compiling test.j..."
+	@$(JAVA) -cp .:java-cup-11b-runtime.jar Main test_ok/test.j > output.txt
+	@echo "Done executing. Look at output.txt for the outcome"
+	cat output.txt
+
 test: 
 	@echo "compiling test.j..."
 	@$(JAVA) -cp .:java-cup-11b-runtime.jar Main test_ok/test.j > output.txt

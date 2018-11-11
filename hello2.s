@@ -90,7 +90,7 @@ str a4,[fp,#-28]
 str a3,[fp,#-32]
 str a2,[fp,#-36]
 
-/*this section here is for Compute object*/
+/*this section here is for new Compute() object*/
 mov a1,#8
 bl malloc(PLT) 
 mov a4,a1
