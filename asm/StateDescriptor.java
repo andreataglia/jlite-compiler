@@ -8,9 +8,11 @@ import java.util.HashMap;
 public class StateDescriptor {
     AddressDescriptor ad;
     RegisterDescriptor rd;
+    ASMCode asmCode;
     int sp; //value is offset from fp
 
-    public StateDescriptor() {
+    public StateDescriptor(ASMCode asmCode) {
+        this.asmCode = asmCode;
         ad = new AddressDescriptor();
         rd = new RegisterDescriptor();
     }
@@ -20,10 +22,10 @@ public class StateDescriptor {
         if (ad.isInReg(var)) regnum = ad.getReg(var);
         else if (rd.thereIsAvailReg()) {
             regnum = rd.getFirstAvailReg();
-            genLoadReg(regnum, var);
+            emitLoadReg(regnum, var);
         } else {
             regnum = spillReg(var);
-            genLoadReg(regnum, var);
+            emitLoadReg(regnum, var);
         }
         return regnum;
     }
@@ -52,9 +54,20 @@ public class StateDescriptor {
         ad.newVarOnStack(var, sp + 4);
     }
 
-    private void genLoadReg(int destreg, Idc3 var) {
+    void emitLoadReg(int destreg, Idc3 var) {
         if (ad.isInReg(var)) {} //TODO gen: mov destreg, ad.accessVar(var)
         else if (ad.isInReg(var)) {} //TODO gen: ldr destreg, ad.accessVar(var)
+
+        newVarInReg(var, destreg);
+    }
+
+    /**
+     *
+     * @param destreg
+     * @param n if(isDataLabel) then it's the data label, otherwise is an int constant
+     * @param isDataLabel
+     */
+    void emitLoadReg(int destreg, int n, boolean isDataLabel) {
 
         newVarInReg(var, destreg);
     }

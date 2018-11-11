@@ -12,7 +12,7 @@ import java.io.*;
 
 public class Main {
 
-    private static boolean DEBUG = false;
+    private static boolean DEBUG = true;
 
     static public void main(String argv[]) {
         boolean allGood = true;

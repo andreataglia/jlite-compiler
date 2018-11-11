@@ -47,9 +47,6 @@ ClassDecl-Ciao
 
 ========== CData3 ==========
 
-Data3 Ciao {
-}
-
 Data3 MainC {
 }
 
@@ -58,21 +55,27 @@ Data3 MainC {
 
 Void main (MainC this){
     Int a;
-    Ciao _t1;
-    a = 4 + 3;
-    _t1 = new Ciao();
-    a = ciao(_t1, a);
     println("\nHello, World!\n\n");
     return;
 }
 
-Int ciao (Ciao this, Int b){
-    b = b + b;
-    return b;
-}
+========== end IR3 ==========
 
+.data
 
-=====fx== End of IR3 Program =======
+L1:
+.asciz "\n>>>>first asm yes!!!\n\n"
+
+.text
+.global main
 
 main:
-  
+  push {fp, lr, v1, v2, v3 ,v4, v5}
+  add fp, sp, #24
+  sub sp, fp, #4 /*space for local vars nvars*4 */
+
+  ldr a1,=L1
+  bl printf(PLT)
+
+  sub sp, fp, #24
+  pop {fp, pc, v1, v2, v3 ,v4, v5}

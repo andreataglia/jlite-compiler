@@ -25,17 +25,19 @@ test:
 	@echo "compiling test.j..."
 	@$(JAVA) -cp .:java-cup-11b-runtime.jar Main test_ok/test.j > output.txt
 	@echo "Done executing. Look at output.txt for the outcome"
-	cat output.txt
+	cat asmout.s
+	docker exec test-gem5 arm-linux-gnueabi-gcc-5 -o /mnt/asmout.bin /mnt/asmout.s -static
+	docker exec test-gem5 gem5.opt /usr/local/share/gem5/configs/example/se.py -c /mnt/asmout.bin
 
 runasm:
-	docker exec test-gem5 arm-linux-gnueabi-gcc-5 -o /mnt/hello.bin /mnt/hello.s -static
-	docker exec test-gem5 gem5.opt /usr/local/share/gem5/configs/example/se.py -c /mnt/hello.bin
+	docker exec test-gem5 arm-linux-gnueabi-gcc-5 -o /mnt/asmout.bin /mnt/asmout.s -static
+	docker exec test-gem5 gem5.opt /usr/local/share/gem5/configs/example/se.py -c /mnt/asmout.bin
 
 execbin:
-	docker exec test-gem5 gem5.opt /usr/local/share/gem5/configs/example/se.py -c /mnt/hello.bin	
+	docker exec test-gem5 gem5.opt /usr/local/share/gem5/configs/example/se.py -c /mnt/asmout.bin
 
 compileasm:
-	docker exec test-gem5 arm-linux-gnueabi-gcc-5 -o /mnt/hello.bin /mnt/hello.s -static
+	docker exec test-gem5 arm-linux-gnueabi-gcc-5 -o /mnt/asmout.bin /mnt/asmout.s -static
 
 dockerinit:
 	docker run --rm --name test-gem5 -v $(pwd):/mnt -td tpxp/cs4212 bash
@@ -45,7 +47,6 @@ dockerstop:
 
 compile:
     $(JAVAC) jnode/*.java
-
 
 clean:
 	rm -f parser.java Lexer.java sym.java output.txt *.class jnodes/*.class *~ utils/*.class concrete_nodes/*.class concrete_nodes/expressions/*.class nodes3/*.class asm/*.class

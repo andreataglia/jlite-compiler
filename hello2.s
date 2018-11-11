@@ -1,73 +1,136 @@
-	.arch armv5t
-	.fpu softvfp
-	.eabi_attribute 20, 1
-	.eabi_attribute 21, 1
-	.eabi_attribute 23, 3
-	.eabi_attribute 24, 1
-	.eabi_attribute 25, 1
-	.eabi_attribute 26, 2
-	.eabi_attribute 30, 6
-	.eabi_attribute 34, 0
-	.eabi_attribute 18, 4
-	.file	"hello.c"
-	
-	.text
-	.align	2
-	.global	ciao
-	.syntax unified
-	.arm
-	.type	ciao, %function
-ciao:
-	@ args = 0, pretend = 0, frame = 8
-	@ frame_needed = 1, uses_anonymous_args = 0
-	@ link register save eliminated.
-	push {fp, lr}
-	add	fp, sp, #4
-	str	r0, [fp, #-8]
-	ldr	r2, [fp, #-8]
-	ldr	r3, [fp, #-8]
-	add	r3, r2, r3
-	str	r3, [fp, #-8]
-	ldr	r3, [fp, #-8]
-	mov	r0, r3
-	sub	sp, fp, #0
-	@ sp needed
-	pop	{fp, pc}
-	.size	ciao, .-ciao
-	
-	.section	.rodata
-	.align	2
-.LC0:
-	.ascii	"\012Hello, World! %d \012\012\000"
-	
-	.text
-	.align	2
-	.global	main
-	.syntax unified
-	.arm
-	.type	main, %function
+.data
+
+L1:
+.asciz "\nSquare of d larger than sum of squares\n\n"
+
+L2:
+.asciz "\nSquare of d smaller than sum of squares\n\n"
+
+.text
+.global main
+
+
+Compute_1:
+stmfd sp!,{fp,lr,v1,v2,v3,v4,v5}
+add fp,sp,#24
+sub sp,fp,#28
+add v3,a2,a3
+mov a1,v3
+b .L4exit
+.L4exit:
+sub sp,fp,#24
+ldmfd sp!,{fp,pc,v1,v2,v3,v4,v5}
+
+
+Compute_2:
+stmfd sp!,{fp,lr,v1,v2,v3,v4,v5}
+add fp,sp,#24
+sub sp,fp,#48
+ldr a3,[a1,#4]
+cmp a3,#0
+beq .3
+ldr a1,[a1,#0]
+mov a1,a1
+b .L3exit
+b .4
+
+.3:
+mov v5,#1
+mov v5,v5
+str v5,[a1,#4]
+mov a1,a1
+mov a2,a2
+bl Compute_0(PLT)
+mov a3,a1
+str a3,[fp,#-44]
+mov a1,a1
+ldr a2,[fp,#-36]
+bl Compute_0(PLT)
+mov v5,a1
+mov a1,a1
+ldr a2,[fp,#-44]
+mov a3,v5
+bl Compute_1(PLT)
+mov a2,a1
+mov a1,a2
+b .L3exit
+
+.4:
+.L3exit:
+sub sp,fp,#24
+ldmfd sp!,{fp,pc,v1,v2,v3,v4,v5}
+
+
+Compute_0:
+stmfd sp!,{fp,lr,v1,v2,v3,v4,v5}
+add fp,sp,#24
+sub sp,fp,#28
+mul a4,a2,a2
+mov a1,a4
+b .L2exit
+
+.L2exit:
+sub sp,fp,#24
+ldmfd sp!,{fp,pc,v1,v2,v3,v4,v5}
+
+
 main:
-	@ args = 0, pretend = 0, frame = 8
-	@ frame_needed = 1, uses_anonymous_args = 0
-	push {fp, lr}
-	add	fp, sp, #4
-	sub	sp, sp, #4
-	mov	r3, #8
-	str	r3, [fp, #-8]
-	ldr	r0, [fp, #-8]
-	bl	ciao
-	str	r0, [fp, #-8]
-	ldr	r1, [fp, #-8]
-	ldr	r0, .L5
-	bl	printf
-	mov	r3, #0
-	mov	r0, r3
-	sub	sp, fp, #4
-	@ sp needed
-	pop	{fp, pc}
-.L6:
-	.align	2
-.L5:
-	.word	.LC0
-	.size	main, .-main
-	.section	.note.GNU-stack,"",%progbits
+stmfd sp!,{fp,lr,v1,v2,v3,v4,v5}
+add fp,sp,#24
+sub sp,fp,#68
+mov v5,#1
+mov a4,v5
+mov v5,#2
+mov a3,v5
+mov v5,#3
+mov a2,v5
+mov v5,#4
+mov v1,v5
+str a4,[fp,#-28]
+str a3,[fp,#-32]
+str a2,[fp,#-36]
+
+/*this section here is for Compute object*/
+mov a1,#8
+bl malloc(PLT) 
+mov a4,a1
+
+str a4,[fp,#-52]
+ldr a1,[fp,#-52]
+ldr a2,[fp,#-28]
+ldr a3,[fp,#-32]
+bl Compute_2(PLT)
+mov v5,a1
+
+ldr a1,[fp,#-52]
+ldr a2,[fp,#-36]
+bl Compute_0(PLT)
+mov a4,a1
+
+add a1,v5,a4
+str a1,[fp,#-44]
+ldr a1,[fp,#-52]
+
+mov a2,v1
+bl Compute_0(PLT)
+mov a3,a1
+ldr a4,[fp,#-44]
+cmp a3,a4
+movgt a1,#1
+movle a1,#0
+cmp a1,#0
+beq .1
+ldr a1,=L1
+bl printf(PLT)
+b .2
+
+.1:
+ldr a1,=L2
+bl printf(PLT)
+
+.2:
+.L1exit:
+mov a4,#0
+mov a1,a4
+sub sp,fp,#24
+ldmfd sp!,{fp,pc,v1,v2,v3,v4,v5}

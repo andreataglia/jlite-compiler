@@ -1,22 +1,34 @@
 package asm;
 
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ASMCode {
     private List<String> dataSection;
     private List<String> textSection;
 
-    void addToData(String s){
+    public ASMCode() {
+        dataSection = new ArrayList<>();
+        textSection = new ArrayList<>();
+    }
+
+    void addToData(String s) {
         dataSection.add(s);
     }
 
-    void addToText(String s){
+    void addStringData(String s, int label) {
+        addToData("L" + label + ":");
+        addToData(".asciz " + s);
+    }
+
+    void addToText(String s) {
         textSection.add(s);
     }
 
-    void printToFile(String filename){
-        System.out.println("mbareeeeeee");
+    void printToFile(String filename) {
         PrintWriter writer = null;
         try {
             writer = new PrintWriter(filename, "UTF-8");
@@ -24,12 +36,12 @@ public class ASMCode {
             e.printStackTrace();
         }
         writer.println(".data");
-        for (String s: dataSection) {
+        for (String s : dataSection) {
             writer.println(s);
         }
         writer.println("\n.text");
         writer.println(".global main");
-        for (String s: textSection) {
+        for (String s : textSection) {
             writer.println(s);
         }
         writer.close();

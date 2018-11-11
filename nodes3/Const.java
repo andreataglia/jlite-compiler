@@ -34,7 +34,7 @@ public class Const extends Idc3 {
     }
 
     public boolean isBooleanLiteral() {
-        return booleanLiteral;
+        return booleanLiteral != null;
     }
 
     public boolean isNullLiteral() {

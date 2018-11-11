@@ -4,20 +4,25 @@ import asm.ASMGeneratorVisitor;
 
 import java.util.List;
 
-//⟨Label3⟩ : | if ( ⟨RelExp3Impl⟩ ) goto ⟨Label3⟩ ; | goto ⟨Label3⟩ ;
-//| readln ( ⟨id3⟩ ) ; | println ( ⟨idc3⟩ ) ;
-//| ⟨Type3⟩ ⟨id3⟩ = ⟨Exp3Impl⟩ ; | ⟨id3⟩ = ⟨Exp3Impl⟩ ; | ⟨id3⟩.⟨id3⟩ = ⟨Exp3Impl⟩ ;
+//⟨Label3⟩ :
+//| if ( ⟨RelExp3Impl⟩ ) goto ⟨Label3⟩ ;
+//| goto ⟨Label3⟩ ;
+//| readln ( ⟨id3⟩ ) ;
+//| println ( ⟨idc3⟩ ) ;
+//| ⟨Type3⟩ ⟨id3⟩ = ⟨Exp3Impl⟩ ; i never produce this actually
+//| ⟨id3⟩ = ⟨Exp3Impl⟩ ;
+//| ⟨id3⟩.⟨id3⟩ = ⟨Exp3Impl⟩ ;
 //| ⟨id3⟩( ⟨VList3⟩ ) ;
 //| return ⟨id3⟩ ; | return ;
 public class Stmt3 extends Node3 {
     public Stmt3Type stmtType;
-    String string;
-    Id3 id3_1;
-    Id3 id3_2;
-    Exp3 exp3Impl;
-    Type3 vartype;
-    Idc3 idc3;
-    List<Idc3> params;
+    public String string;
+    public Id3 id3_1;
+    public Id3 id3_2;
+    public Exp3 exp3Impl;
+    public Type3 vartype;
+    public Idc3 idc3;
+    public List<Idc3> params;
 
     String print = "";
 
@@ -118,6 +123,9 @@ public class Stmt3 extends Node3 {
         RETURN,
         RETURN_VAR;
 
+        public boolean equals(Stmt3Type other){
+            return this.name().equals(other.name());
+        }
     }
 
     public boolean equals(Stmt3Type other) {

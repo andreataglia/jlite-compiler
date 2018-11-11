@@ -22,6 +22,9 @@ A second implementation is the StaticCheckingVisitor, which checks for the Disti
 
 A third implementation is the IRGenerator. It creates another, simpler tree which is the structure that will be given as input to the back-end compiler. It holds the required information for abstracting from the initial source code, so the back-end compiler doesn't need to know about the compiled language. The visitor generates an intermediate code representation which adhere to the IR3 specification which can be found in the file `assignment2_text.pdf`.
 
+### ASM Generation
+println(NULL) : don't print anything
+
 
 ## Prerequisites
 
