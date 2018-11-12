@@ -1,5 +1,7 @@
 package nodes3;
 
+import asm.ASMGeneratorVisitor;
+
 //true | false | INTEGER_LITERAL | STRING_LITERAL | NULL
 public class Const extends Idc3 {
     public Boolean booleanLiteral;
@@ -52,5 +54,8 @@ public class Const extends Idc3 {
     @Override
     public String toString() {
         return print;
+    }
+    public int accept(ASMGeneratorVisitor visitor){
+        return visitor.visit(this);
     }
 }

@@ -1,5 +1,7 @@
 package nodes3;
 
+import asm.ASMGeneratorVisitor;
+
 public class Id3 extends Idc3 {
     public String id;
 
@@ -11,5 +13,9 @@ public class Id3 extends Idc3 {
     @Override
     public String toString() {
         return id;
+    }
+
+    public int accept(ASMGeneratorVisitor visitor){
+        return visitor.visit(this);
     }
 }

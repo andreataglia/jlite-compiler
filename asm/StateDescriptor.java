@@ -30,7 +30,7 @@ class StateDescriptor {
         varN = 0;
     }
 
-    int getReg(Id3 var) {
+    int getReg(String var) {
         String varName = getVarName(var);
         int regnum;
         if (varTracker.isInReg(varName)) regnum = varTracker.getVarRegnum(varName);
@@ -46,7 +46,19 @@ class StateDescriptor {
         return regnum;
     }
 
-    void placeVarInReg(int destreg, Id3 var) {
+    //get Reg for any constant
+    int getReg(int var, boolean isDataLabel){
+        int regnum;
+        if (memoryMap.thereIsAvailReg()) {
+            regnum = memoryMap.getFirstAvailReg();
+        } else {
+            regnum = spillReg();
+        }
+        emitMov(regnum, var, isDataLabel);
+        return regnum;
+    }
+
+    void placeVarValueInReg(int destreg, String var) {
         String varName = getVarName(var);
         if (varTracker.isInReg(varName)) emitMov(destreg, varTracker.getVarRegnum(varName), true);
         else if (varTracker.isOnStack(varName)) {
@@ -58,8 +70,8 @@ class StateDescriptor {
     }
 
     // this gives the variable a unique name, needed as it is the identifier inside a function frame
-    private String getVarName(Id3 var) {
-        return var.id + varN;
+    private String getVarName(String var) {
+        return var + varN;
     }
 
     //returns register which is now free for use
@@ -74,7 +86,7 @@ class StateDescriptor {
     }
 
     void reserveStackWordForVar(String var) {
-        memoryMap.push(new Word(var));
+        memoryMap.push(new Word(getVarName(var)));
     }
 
     // push {fp, lr, v1, v2, v3, v4, v5}

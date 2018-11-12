@@ -9,7 +9,7 @@ import java.util.List;
 //| goto ⟨Label3⟩ ;
 //| readln ( ⟨id3⟩ ) ;
 //| println ( ⟨idc3⟩ ) ;
-//| ⟨Type3⟩ ⟨id3⟩ = ⟨Exp3Impl⟩ ; i never produce this actually
+//| ⟨Type3⟩ ⟨id3⟩ = ⟨Exp3Impl⟩ ; i never produce this actually. I only declare vars at the beginning
 //| ⟨id3⟩ = ⟨Exp3Impl⟩ ;
 //| ⟨id3⟩.⟨id3⟩ = ⟨Exp3Impl⟩ ;
 //| ⟨id3⟩( ⟨VList3⟩ ) ;
@@ -132,7 +132,7 @@ public class Stmt3 extends Node3 {
         return this.stmtType.name().equals(other.name());
     }
 
-    public void accept(ASMGeneratorVisitor visitor){
-        visitor.visit(this);
+    public int accept(ASMGeneratorVisitor visitor){
+        return visitor.visit(this);
     }
 }
