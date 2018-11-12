@@ -1,5 +1,5 @@
 ## JFlex 1.6.1 (March 21, 2015)
-- JFlex development, wiki, and issue tracker moved to https://github.com/jflex-de/
+- JFlex development, wiki, and issue varTracker moved to https://github.com/jflex-de/
 - Fixed issue #130, "in caseless mode, chars in regexps not accepted caselessly":
   Caseless option works again as intended.
 - Fixed issue #131, "re-enable scanning interactively or from a network byte stream":
