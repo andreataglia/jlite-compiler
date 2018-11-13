@@ -84,3 +84,26 @@ bl printf(PLT)
 mov a1, #0
 sub r13, r11, #24
 pop {r11, r15, r4, r5, r6, r7, r8}
+
+--------------------------------------------
+
+========== CData3 ==========
+
+Data3 MainC {
+}
+
+
+========== CMtd3 ==========
+
+Void main (MainC this){
+    Int a;
+    String b;
+    Bool i;
+    Int c;
+    c = 2;
+    b = "\nhey\n\n";
+    i = false;
+    println(i);
+    println(b);
+    return;
+}

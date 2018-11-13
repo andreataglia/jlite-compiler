@@ -18,14 +18,14 @@ public class ASMGeneratorVisitor {
         for (CMtd3 m : program.methods) {
             m.accept(this);
         }
+        stateDescriptor.printState();
         asmCode.printToFile("./asmout.s");
         return -1;
     }
 
     public int visit(CMtd3 method) {
         asmCode.addToText("\n" + method.name + ":");
-        stateDescriptor.emitPush(new int[]{StateDescriptor.FP, StateDescriptor.LR, StateDescriptor.V1, StateDescriptor.V2, StateDescriptor.V3, StateDescriptor.V4, StateDescriptor.V5});
-        stateDescriptor.emitAdd(StateDescriptor.FP, StateDescriptor.SP, 24, false);
+        stateDescriptor.funcPrologue();
         int spaceToReserve = 0;
         for (VarDecl3 varDecl : method.varDeclList) {
             spaceToReserve++;
@@ -36,9 +36,9 @@ public class ASMGeneratorVisitor {
         for (Stmt3 stmt : method.stmtList) {
             stmt.accept(this);
         }
+        stateDescriptor.printState();
         if (method.name.toString().equals("main")) stateDescriptor.emitMov(StateDescriptor.A1, 0, false);
-        stateDescriptor.emitSub(StateDescriptor.SP, StateDescriptor.FP, 24, false);
-        stateDescriptor.emitPop(new int[]{StateDescriptor.FP, StateDescriptor.PC, StateDescriptor.V1, StateDescriptor.V2, StateDescriptor.V3, StateDescriptor.V4, StateDescriptor.V5});
+        stateDescriptor.funcEpilogue();
         return -1;
     }
 
@@ -49,12 +49,10 @@ public class ASMGeneratorVisitor {
             if (stmt.idc3 instanceof Id3) {
                 if (stmt.idc3.type.type.equals(BasicType.DataType.STRING)) {
                     stateDescriptor.placeVarValueInReg(StateDescriptor.A1, ((Id3) stmt.idc3).id);
-                } else if (stmt.idc3.type.type.equals(BasicType.DataType.INT)) {
+                } else if (stmt.idc3.type.type.equals(BasicType.DataType.INT) || stmt.idc3.type.type.equals(BasicType.DataType.BOOL)) {
                     asmCode.addStringData("\"%i\"", dataCount);
                     stateDescriptor.emitLoadReg(StateDescriptor.A1, dataCount, true);
                     dataCount++;
-                    stateDescriptor.placeVarValueInReg(StateDescriptor.A2, ((Id3) stmt.idc3).id);
-                } else if (stmt.idc3.type.type.equals(BasicType.DataType.BOOL)) {
                     stateDescriptor.placeVarValueInReg(StateDescriptor.A2, ((Id3) stmt.idc3).id);
                 }
                 //println(5) or println("ciao")
@@ -81,14 +79,14 @@ public class ASMGeneratorVisitor {
             }
             asmCode.addToText("bl printf(PLT)");
         }
-        ////////////////////////////////// println //////////////////////////////////
+        ////////////////////////////////// <Id3> = <Exp3> //////////////////////////////////
         else if (stmt.stmtType.equals(Stmt3.Stmt3Type.ASS_VAR)) {
             stateDescriptor.emitMov(stateDescriptor.getReg(stmt.id3_1.id), forceVisit(stmt.exp3Impl), true);
         }
         return -1;
     }
 
-    private int forceVisit(Exp3 exp3){
+    private int forceVisit(Exp3 exp3) {
         if (exp3 instanceof Const) return ((Const) exp3).accept(this);
         return -1;
     }
@@ -102,7 +100,7 @@ public class ASMGeneratorVisitor {
     }
 
     //return the register in which the value is contained
-    public int visit(Const exp){
+    public int visit(Const exp) {
         int regnum = -1;
         if (exp.isIntegerLiteral()) {
             regnum = stateDescriptor.getReg(exp.integerLiteral, false);

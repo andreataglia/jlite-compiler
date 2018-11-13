@@ -5,7 +5,7 @@ CUP=$(JAVA) -cp .:java-cup-11b.jar java_cup.Main <
 
 all: Main.class
 
-Main.class: Main.java Lexer.java parser.java jnodes/*.java utils/*.java concrete_nodes/*.java concrete_nodes/expressions/*.java nodes3/*.java asm/*.java
+Main.class: Main.java Lexer.java parser.java asm/*.java jnodes/*.java utils/*.java concrete_nodes/*.java concrete_nodes/expressions/*.java nodes3/*.java
 
 %.class: %.java
 	@$(JAVAC) $^

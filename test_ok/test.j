@@ -1,8 +1,10 @@
 class MainC {
     Void main (){
-        Int a;
-        a = 5;
-        println("ciao mbare\n");
+        String b;
+        Bool c;
+        Int d;
+        d = 55;
+        println(d);
         return;
     }
 }
