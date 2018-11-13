@@ -191,7 +191,7 @@ final public class Macros {
       return definition;
 
     default:
-      throw new MacroException("unknown expression type "+definition.type+" in macro expansion"); //$NON-NLS-1$ //$NON-NLS-2$
+      throw new MacroException("unknown expression expType "+definition.type+" in macro expansion"); //$NON-NLS-1$ //$NON-NLS-2$
     }
   }
 }

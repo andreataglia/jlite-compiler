@@ -14,7 +14,7 @@ public class Program3 extends Node3 {
         this.methods = methods;
     }
 
-    public void accept(ASMGeneratorVisitor visitor){
+    public void accept(ASMGeneratorVisitor visitor) throws Exception {
         visitor.visit(this);
     }
 }

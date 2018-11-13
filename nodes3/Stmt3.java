@@ -132,7 +132,7 @@ public class Stmt3 extends Node3 {
         return this.stmtType.name().equals(other.name());
     }
 
-    public int accept(ASMGeneratorVisitor visitor){
+    public int accept(ASMGeneratorVisitor visitor) throws Exception {
         return visitor.visit(this);
     }
 }

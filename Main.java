@@ -1,4 +1,3 @@
-import asm.ASMCode;
 import asm.ASMGeneratorVisitor;
 import concrete_nodes.Program;
 import jnodes.JProgram;
@@ -8,7 +7,8 @@ import utils.StaticCheckingVisitor;
 import utils.SymbolTable;
 import utils.TypeException;
 
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 
 public class Main {
 
@@ -59,7 +59,7 @@ public class Main {
             if (allGood) System.err.println("\nSuccess!");
         } catch (Exception e) {
             if (DEBUG) e.printStackTrace();
-            else System.err.println("\nFATAL ERROR: Couldn't compile");
+            else System.err.println("\nFATAL ERROR: Couldn't compile: " + e);
             System.exit(-1);
         }
     }

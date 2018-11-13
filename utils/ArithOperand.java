@@ -26,4 +26,8 @@ public enum ArithOperand {
         }
         return null;
     }
+
+    public boolean equals(ArithOperand other){
+        return this.name().equals(other.name());
+    }
 }

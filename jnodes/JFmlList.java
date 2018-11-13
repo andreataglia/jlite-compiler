@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 
 //fmlList ::=
-//          | type ident fmlRestList
+//          | expType ident fmlRestList
 public class JFmlList extends JNode {
     //first param
     public JBasicType type;

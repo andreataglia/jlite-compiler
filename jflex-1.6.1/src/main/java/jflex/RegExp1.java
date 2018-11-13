@@ -55,10 +55,10 @@ public class RegExp1 extends RegExp {
    */
   public String print(String tab) {
     if (content instanceof RegExp) {
-      return tab+"type = "+type+Out.NL+tab+"content :"+Out.NL+((RegExp)content).print(tab+"  ");
+      return tab+"expType = "+type+Out.NL+tab+"content :"+Out.NL+((RegExp)content).print(tab+"  ");
     }
     else
-      return tab+"type = "+type+Out.NL+tab+"content :"+Out.NL+tab+"  "+content;
+      return tab+"expType = "+type+Out.NL+tab+"content :"+Out.NL+tab+"  "+content;
   }
 
   

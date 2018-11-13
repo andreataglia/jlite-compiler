@@ -364,7 +364,7 @@ DottedVersion =  [1-9][0-9]*(\.[0-9]+){0,2}
   "%class"{WSP}+{ClassT} {WSP}*     { className = yytext().substring(7).trim();  }
   "%ctorarg"{WSP}+{ArrType}{WSP}+   { yybegin(CTOR_ARG); ctorTypes.add(yytext().substring(8).trim()); }
   "%function"{WSP}+{Ident} {WSP}*   { functionName = yytext().substring(10).trim(); }
-  "%type"{WSP}+{ArrType} {WSP}*     { tokenType = yytext().substring(6).trim(); }
+  "%expType"{WSP}+{ArrType} {WSP}*     { tokenType = yytext().substring(6).trim(); }
   "%integer"|"%int"           { isInteger = true;  }
   "%intwrap"                  { isIntWrap = true;  }
   "%yyeof"                    { isYYEOF = true;  }

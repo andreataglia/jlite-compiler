@@ -297,7 +297,7 @@ JavaCode = ({JavaRest}|{StringLiteral}|{CharLiteral}|{JavaComment})+
          }
        }
   "%function"{WSP}+{Ident} {WSP}*   { functionName = yytext().substring(10).trim(); }
-  "%type"{WSP}+{ArrType} {WSP}*     { tokenType = yytext().substring(6).trim(); }
+  "%expType"{WSP}+{ArrType} {WSP}*     { tokenType = yytext().substring(6).trim(); }
   "%integer"|"%int"           { isInteger = true;  }
   "%intwrap"                  { isIntWrap = true;  }
   "%yyeof"                    { isYYEOF = true;  }

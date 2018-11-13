@@ -9,8 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 
 //classDeclBody ::=
-//                | type ident SEMICOLON classDeclBody
-//                | type ident LPAREN fmlList RPAREN mdBody classDeclBody
+//                | expType ident SEMICOLON classDeclBody
+//                | expType ident LPAREN fmlList RPAREN mdBody classDeclBody
 //                ;
 public class JClassDeclBody extends JNode {
 

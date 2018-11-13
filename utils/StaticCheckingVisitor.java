@@ -41,7 +41,7 @@ public class StaticCheckingVisitor implements Visitor {
         symbolTable.indentLevel--;
 
         newLine();
-        System.out.print("\n------------- Type Checking ------------------");
+        System.out.print("\n------------- ExpType Checking ------------------");
         //start exploring the tree
         program.mainClass.accept(this);
         for (ClassDecl c : program.classDeclList) {
@@ -77,7 +77,7 @@ public class StaticCheckingVisitor implements Visitor {
     private void typeCheckClass(ClassDecl classDecl) throws Exception {
         for (MethodDecl m : classDecl.methodDeclList) {
             if (!m.returnType.equals(m.accept(this))) {
-                throwTypeException("method " + m.name + " body type doesn't match return type. Expected " + m.returnType, 2);
+                throwTypeException("method " + m.name + " body expType doesn't match return expType. Expected " + m.returnType, 2);
             }
         }
     }
@@ -143,7 +143,7 @@ public class StaticCheckingVisitor implements Visitor {
             localType = (BasicType) s.accept(this);
         }
         symbolTable.decreaseIndentLevel();
-        if (!localType.equals(trueBranchType)) throwTypeException("IfStmt branches type mismatch", 2);
+        if (!localType.equals(trueBranchType)) throwTypeException("IfStmt branches expType mismatch", 2);
         printObjType("Stmt");
         return localType;
     }
@@ -199,7 +199,7 @@ public class StaticCheckingVisitor implements Visitor {
         System.out.print("AssignmentStmt ");
         BasicType rightSideType = (BasicType) stmt.rightSide.accept(this);
 
-        //differentiate calculation of left side type
+        //differentiate calculation of left side expType
         if (stmt.leftSideAtom != null) {
             //check leftSideAtom is a class
             localType = (BasicType) stmt.leftSideAtom.accept(this);
@@ -207,7 +207,7 @@ public class StaticCheckingVisitor implements Visitor {
             if (!(localType instanceof ClassNameType))
                 throwTypeException("FdAss violated: not a class", 2);
             System.out.print(".");
-            //check leftSideId is a field of a leftSideAtom class, and get its type
+            //check leftSideId is a field of a leftSideAtom class, and get its expType
             localType = symbolTable.lookupClassFieldType((ClassNameType) localType, stmt.leftSideId.id);
             if (localType == null) {
                 throwTypeException("FdAss violated: class " + stmt.leftSideAtom + " hasn't field " + stmt.leftSideId.id, 2);
@@ -218,7 +218,7 @@ public class StaticCheckingVisitor implements Visitor {
             localType = (BasicType) stmt.leftSideId.accept(this);
             printObjType(stmt.leftSideId);
             if (localType == null) {
-                throwTypeException("VarAss violated: left side type undefined", 2);
+                throwTypeException("VarAss violated: left side expType undefined", 2);
             }
         }
         if (!rightSideType.equals(localType)) {
@@ -251,7 +251,7 @@ public class StaticCheckingVisitor implements Visitor {
             printObjType(stmt.expr);
         }
         if (!symbolTable.currentMethod.returnType.equals(localType))
-            throwTypeException("ReturnStmt doesn't match return type. Expected " + symbolTable.currentMethod.returnType, 2);
+            throwTypeException("ReturnStmt doesn't match return expType. Expected " + symbolTable.currentMethod.returnType, 2);
         printObjType("Stmt");
         return localType;
     }
@@ -331,7 +331,7 @@ public class StaticCheckingVisitor implements Visitor {
         localType = (BasicType) atom.atom.accept(this);
         if (!(localType instanceof ClassNameType) && symbolTable.lookUpClass(localType.toString()) == null)
             throwTypeException("Field violated: there is no such class as " + atom.atom, 2);
-        //check id is a field or method of a leftSideAtom class, and get its type
+        //check id is a field or method of a leftSideAtom class, and get its expType
         localType = symbolTable.lookupClassFieldType((ClassNameType) localType, atom.field);
         if (localType == null) {
             throwTypeException("Field violated: class hasn't field " + atom.field, 2);
@@ -353,7 +353,7 @@ public class StaticCheckingVisitor implements Visitor {
             functionClass = (ClassNameType) localType;
         }
 
-        //atom.functionId must indeed be a function id. Get that function type
+        //atom.functionId must indeed be a function id. Get that function expType
         else if (atom.functionId instanceof AtomGrd) {
             //it's a local call
             functionId = ((AtomGrd) atom.functionId).id;
@@ -478,7 +478,7 @@ public class StaticCheckingVisitor implements Visitor {
             if (!m.params.allVarsHaveDifferentIds()) {
                 throwTypeException("Two params with same name in method " + m.name + " of Class " + classDescriptor.className.toString(), 0);
             }
-            //check return type is no fake Cname
+            //check return expType is no fake Cname
             if ((m.returnType instanceof ClassNameType) && symbolTable.lookUpClass(((ClassNameType) m.returnType).name) == null)
                 throwTypeException("Class " + m.returnType + " doesn't exist in Method:" + m.name + " of Class " + classDescriptor.className.toString(), 0);
 

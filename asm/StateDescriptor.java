@@ -27,71 +27,36 @@ class StateDescriptor {
         varN = 0;
     }
 
-    int getReg(String var) {
-        String varName = getVarName(var);
-        int regnum;
-        if (varTracker.isInReg(varName)) {
-            regnum = varTracker.getVarRegnum(varName);
-        }
-        //need to put that var in a reg
-        else if (memoryMap.thereIsAvailReg()) {
-            regnum = memoryMap.getFirstAvailReg();
-            //var must be on stack
-            emitLoadReg(regnum, FP, -memoryMap.calculateFPOffset(varName));
-        } else {
-            regnum = spillReg();
-            emitLoadReg(regnum, FP, -memoryMap.calculateFPOffset(varName));
-        }
-        return regnum;
-    }
-
-    //get Reg for any constant
-    int getReg(int var, boolean isDataLabel) {
-        int regnum;
-        if (memoryMap.thereIsAvailReg()) {
-            regnum = memoryMap.getFirstAvailReg();
-        } else {
-            regnum = spillReg();
-        }
-        if (isDataLabel) {
-            emitLoadReg(regnum, var, true);
-        } else {
-            emitMov(regnum, var, false);
-        }
-        return regnum;
-    }
-
-    void placeVarValueInReg(int destreg, String var) {
-        String varName = getVarName(var);
-        if (varTracker.isInReg(varName)) emitMov(destreg, varTracker.getVarRegnum(varName), true);
-        else if (varTracker.isOnStack(varName)) {
-            emitLoadReg(destreg, FP, -memoryMap.calculateFPOffset(varName));
-        } else {
-            //TODO it's on the heap? but double check otherwise error
-            ASMGeneratorVisitor.error("var " + varName + " is not placed anywhere");
-        }
+    int getReg() {
+        return spillReg();
     }
 
     // this gives the variable a unique name, needed as it is the identifier inside a function frame
-    private String getVarName(String var) {
-        return var + varN;
-    }
-
     //returns register which is now free for use
     private int spillReg() {
         //spill register from one of the v1-5 doing round robin
         if (roundRobinSpill == StateDescriptor.V5) roundRobinSpill = V1;
         else roundRobinSpill++;
 
-        //make reg safe to reuse
-        Word wordToSpill = memoryMap.getRegContent(roundRobinSpill);
-        if (wordToSpill.isVar() && varTracker.isOnStack(wordToSpill.varName)) {
-            emitStoreReg(roundRobinSpill, FP, -memoryMap.calculateFPOffset(wordToSpill.varName));
-        } else {
-            emitPush(new int[]{roundRobinSpill});
-        }
-
         return roundRobinSpill;
+    }
+
+    void placeVarValueInReg(int destreg, String var) {
+        String varName = getVarName(var);
+        if (varTracker.isOnStack(varName)) {
+            emitLoadReg(destreg, FP, -memoryMap.calculateFPOffset(varName), true);
+        } else {
+            //TODO it's on the heap? but double check otherwise error
+            ASMGeneratorVisitor.error("var " + varName + " is not placed anywhere");
+        }
+    }
+
+    void placeRegInVarStack(int sourcereg, String var) {
+        emitStoreReg(sourcereg, FP, -memoryMap.calculateFPOffset(getVarName(var)), true);
+    }
+
+    private String getVarName(String var) {
+        return var + varN;
     }
 
     void reserveStackWordForVar(String var) {
@@ -100,50 +65,53 @@ class StateDescriptor {
 
     // push {fp, lr, v1, v2, v3, v4, v5}
     void emitPush(int[] regs) {
-        Word w = memoryMap.getRegContent(regs[0]);
+        Word w = new Word(memoryMap.getRegContent(regs[0]));
         memoryMap.push(w);
-        memoryMap.getRegContent(StateDescriptor.SP).val -= 4 * regs.length;
         StringBuilder r = new StringBuilder("r" + regs[0]);
         for (int i = 1; i < regs.length; i++) {
-            memoryMap.push(memoryMap.getRegContent(regs[i]));
+            memoryMap.push(new Word(memoryMap.getRegContent(regs[i])));
             r.append(", r").append(regs[i]);
         }
+        memoryMap.updateRegValue(SP, memoryMap.getRegContent(SP) - 4 * regs.length);
         asmCode.addToText("push {" + r + "}");
     }
 
     void emitPop(int[] regs) {
         memoryMap.pop();
-        memoryMap.getRegContent(StateDescriptor.SP).val += 4 * regs.length;
         StringBuilder r = new StringBuilder("r" + regs[0]);
         for (int i = 1; i < regs.length; i++) {
             r.append(", r").append(regs[i]);
             memoryMap.pop();
         }
+        memoryMap.updateRegValue(SP, memoryMap.getRegContent(SP) + 4 * regs.length);
         asmCode.addToText("pop {" + r + "}");
     }
 
     // ldr r0, [sp, #offset]
-    void emitLoadReg(int destreg, int base_reg, int offset) {
-        Word wordBeingLoaded = memoryMap.getWordFromStack(memoryMap.getRegContent(base_reg).val + offset);
-        memoryMap.updateRegValue(destreg, wordBeingLoaded);
+    void emitLoadReg(int destreg, int base_reg, int offset, boolean loadFromStack) {
+        if (loadFromStack) {
+            Word wordBeingLoaded = memoryMap.getWordFromStack(memoryMap.getRegContent(base_reg) + offset);
+            memoryMap.updateRegValue(destreg, wordBeingLoaded.val);
+        } else {
+            //TODO load from heap
+        }
         asmCode.addToText("ldr r" + destreg + ", [r" + base_reg + ", #" + offset + "]");
     }
 
     //ldr r0, =L1
-    //ldr r0, #5
     //if(isDataLabel) then it's the data label, otherwise is an int constant
-    void emitLoadReg(int destreg, int n, boolean isDataLabel) {
-        memoryMap.updateRegValue(destreg, new Word(n));
-        if (isDataLabel) {
-            asmCode.addToText("ldr r" + destreg + ", =L" + n);
-        } else {
-            asmCode.addToText("ldr r" + destreg + ", #" + n);
-        }
+    void emitLoadReg(int destreg, int dataLabel) {
+        memoryMap.updateRegValue(destreg, dataLabel);
+        asmCode.addToText("ldr r" + destreg + ", =L" + dataLabel);
     }
 
     //str r0, [sp, #8]
-    void emitStoreReg(int sourcereg, int base_reg, int offset) {
-        memoryMap.updateStackWord(memoryMap.getRegContent(sourcereg), memoryMap.getRegContent(base_reg).val + offset);
+    void emitStoreReg(int sourcereg, int base_reg, int offset, boolean storeOnStack) {
+        if (storeOnStack) {
+            memoryMap.updateStackWordVal(memoryMap.getRegContent(sourcereg), memoryMap.getRegContent(base_reg) + offset);
+        } else {
+            //TODO if heap
+        }
         asmCode.addToText("str r" + sourcereg + ", [r" + base_reg + ", #" + offset + "]");
     }
 
@@ -154,8 +122,9 @@ class StateDescriptor {
             memoryMap.updateRegValue(destreg, memoryMap.getRegContent(sourcereg));
             asmCode.addToText("mov r" + destreg + ", r" + sourcereg);
         } else {
-            memoryMap.updateRegValue(destreg, new Word(sourcereg));
-            asmCode.addToText("mov r" + destreg + ", #" + sourcereg);
+            memoryMap.updateRegValue(destreg, sourcereg);
+            if (sourcereg > 255) asmCode.addToText("ldr r" + destreg + ", =#" + sourcereg);
+            else asmCode.addToText("mov r" + destreg + ", #" + sourcereg);
         }
     }
 
@@ -163,10 +132,10 @@ class StateDescriptor {
     //add r1, r4, r5
     void emitAdd(int destreg, int sourcereg, int op2, boolean isOp2Reg) {
         if (isOp2Reg) {
-            memoryMap.updateRegValue(destreg, new Word(memoryMap.getRegContent(sourcereg).val + memoryMap.getRegContent(op2).val));
+            memoryMap.updateRegValue(destreg, memoryMap.getRegContent(sourcereg) + memoryMap.getRegContent(op2));
             asmCode.addToText("add r" + destreg + ", r" + sourcereg + ", r" + op2);
         } else {
-            memoryMap.updateRegValue(destreg, new Word(memoryMap.getRegContent(sourcereg).val + op2));
+            memoryMap.updateRegValue(destreg, memoryMap.getRegContent(sourcereg) + op2);
             asmCode.addToText("add r" + destreg + ", r" + sourcereg + ", #" + op2);
         }
     }
@@ -175,12 +144,40 @@ class StateDescriptor {
     //sub r1, r4, r5
     void emitSub(int destreg, int sourcereg, int op2, boolean isOp2Reg) {
         if (isOp2Reg) {
-            memoryMap.updateRegValue(destreg, new Word(memoryMap.getRegContent(sourcereg).val - memoryMap.getRegContent(op2).val));
+            memoryMap.updateRegValue(destreg, memoryMap.getRegContent(sourcereg) - memoryMap.getRegContent(op2));
             asmCode.addToText("sub r" + destreg + ", r" + sourcereg + ", r" + op2);
         } else {
-            memoryMap.updateRegValue(destreg, new Word(memoryMap.getRegContent(sourcereg).val - op2));
+            memoryMap.updateRegValue(destreg, memoryMap.getRegContent(sourcereg) - op2);
             asmCode.addToText("sub r" + destreg + ", r" + sourcereg + ", #" + op2);
         }
+    }
+
+    //mul r1, r2
+    void emitMul(int destreg, int sourcereg) {
+        memoryMap.updateRegValue(destreg, memoryMap.getRegContent(destreg) * memoryMap.getRegContent(sourcereg));
+        asmCode.addToText("mul r" + destreg + ", r" + sourcereg);
+    }
+
+    void emitAnd(int destreg, int sourcereg) {
+        memoryMap.updateRegValue(destreg, destreg & sourcereg);
+        asmCode.addToText("and r" + destreg + ", r" + destreg);
+    }
+
+    void emitOrr(int destreg, int sourcereg) {
+        memoryMap.updateRegValue(destreg, destreg | sourcereg);
+        asmCode.addToText("orr r" + destreg + ", r" + destreg);
+    }
+
+    void calculateAnd(int reg1, int reg2) {
+        int res = 0;
+        if (memoryMap.getRegContent(reg1) + memoryMap.getRegContent(reg2) == 2) res = 1;
+        emitMov(reg1, res, false);
+    }
+
+    void calculateOr(int reg1, int reg2) {
+        int res = 1;
+        if (memoryMap.getRegContent(reg1) + memoryMap.getRegContent(reg2) == 0) res = 0;
+        emitMov(reg1, res, false);
     }
 
     //push {fp,lr,v1,v2,v3,v4,v5}
@@ -206,63 +203,56 @@ class StateDescriptor {
     void printState() {
         memoryMap.printState();
     }
+
+    void newObject(String varName, String name) {
+        varTracker.addObjectToStack(getVarName(varName), name);
+    }
+
+    String getVarObject(String var) {
+        return varTracker.getVarObject(getVarName(var));
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////////
 ////////////////////////// Memory Map ///////////////////////////////////////////
 
 class MemoryMap {
-    private Word[] registers;
+    private int[] registers;
     private Stack<Word> stack; //when accessing the stack, an address translation is needed
     private VarLocationTracker varTracker;
 
 
     MemoryMap(VarLocationTracker varTracker) {
         final int regs = 16;
-        registers = new Word[regs];
+        registers = new int[regs];
         for (int i = 0; i < regs; i++) {
-            registers[i] = new Word();
+            registers[i] = 0;
         }
-        registers[StateDescriptor.FP] = new Word(4);
-        registers[StateDescriptor.SP] = new Word(4);
+        registers[StateDescriptor.FP] = 4;
+        registers[StateDescriptor.SP] = 4;
         stack = new Stack<>();
         this.varTracker = varTracker;
     }
 
     ////////////////////////// Registers Operations /////////////////////////////
 
-    Word getRegContent(int regnum) {
+    int getRegContent(int regnum) {
         return registers[regnum];
     }
 
-    void updateRegValue(int regnum, Word newWord) {
-        //dereference previous
-        if (getRegContent(regnum).isVar()) varTracker.removeVarFromReg(getRegContent(regnum).varName);
-        //add new word
-        if (newWord.isVar()) {
-            varTracker.addVarToReg(newWord.varName, regnum);
-        }
-        registers[regnum] = newWord;
+    void updateRegValue(int regnum, int val) {
+        registers[regnum] = val;
         //make sure SP and stack are always in synch
-        //TODO not working
         if (regnum == StateDescriptor.SP) {
-            int diff = stack.size() - mapToVirtual(getRegContent(StateDescriptor.SP).val);
-            for (int i = 0; i < diff; i++) {
-                stack.pop();
+            int diff = stack.size() - mapToVirtual(getRegContent(StateDescriptor.SP)) - 1;
+            if (diff > 0) {
+                for (int i = 0; i < diff; i++) {
+                    Word pick = stack.peek();
+                    if (pick.isVar()) varTracker.removeVarFromStack(pick.varName);
+                    stack.pop();
+                }
             }
         }
-    }
-
-    boolean thereIsAvailReg() {
-        return getFirstAvailReg() >= 0;
-    }
-
-    int getFirstAvailReg() {
-        int usefulregs = 8;
-        for (int i = 0; i <= usefulregs; i++) {
-            if (registers[i].isEmpty()) return i;
-        }
-        return -1;
     }
 
     ////////////////// Stack Operations //////////////////
@@ -284,24 +274,18 @@ class MemoryMap {
 
     //returns positive distance from FP (multiple of 4)
     int calculateFPOffset(String var) {
-        return -(mapToPhysical(varTracker.getStackPosition(var)) + getRegContent(StateDescriptor.FP).val);
+        return -(mapToPhysical(varTracker.getStackPosition(var)) + getRegContent(StateDescriptor.FP));
     }
 
     //note that position will always be a multiple of 4
-    void updateStackWord(Word newWord, int stackPosition) {
-        //dereference previous
-        if (getWordFromStack(stackPosition).isVar()) varTracker.removeVarFromStack(newWord.varName);
-        //add new word
-        if (newWord.isVar()) {
-            varTracker.addVarToStack(newWord.varName, mapToVirtual(stackPosition));
-        }
-        stack.add(mapToVirtual(stackPosition), newWord);
+    void updateStackWordVal(int val, int stackPosition) {
+        stack.get(mapToVirtual(stackPosition)).val = val;
     }
 
     void printState() {
         System.out.println("-----------regs-------------");
         for (int i = 0; i < registers.length; i++) {
-            System.out.println("r" + i + " val: " + getRegContent(i).val + "; varName: " + getRegContent(i).varName);
+            System.out.println("r" + i + " val: " + getRegContent(i));
         }
         System.out.println("-----------stack-------------");
         int i = 0;
@@ -337,6 +321,11 @@ class Word {
     }
 
     Word(int val) {
+        this.val = val;
+    }
+
+    Word(String varName, int val) {
+        this.varName = varName;
         this.val = val;
     }
 

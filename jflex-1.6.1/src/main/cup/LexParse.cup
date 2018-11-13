@@ -1130,7 +1130,7 @@ classcontent  ::=  classcontent:list classcontentelem:elem
                        if (sym.CCLASS == regex.type) {
                          list.addAll(intervals);
                        }
-                       else { //  sym.CCLASSNOT == regex.type
+                       else { expType
                          IntCharSet absComp = new IntCharSet(new Interval(0, scanner.getUnicodeProperties().getMaximumCodePoint()));
                          absComp.sub(new IntCharSet(intervals));
                          list.addAll(absComp.getIntervals());

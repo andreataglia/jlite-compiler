@@ -244,7 +244,7 @@ final public class Action {
     case FINITE_CHOICE: return "FINITE_CHOICE";
     case FORWARD_ACTION: return "LOOK_FORWARD";
     case GENERAL_LOOK: return "LOOK_ACTION";
-    default: return "unknown lookahead type";
+    default: return "unknown lookahead expType";
     }
   }
 }

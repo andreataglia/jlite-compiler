@@ -21,7 +21,7 @@ public class Exp3Impl extends Exp3 {
 
     public Id3 id3_1;
     public Id3 id3_2;
-    public Type type;
+    public ExpType expType;
 
     public List<Idc3> params;
 
@@ -37,7 +37,7 @@ public class Exp3Impl extends Exp3 {
         this.bOp3 = bOp3;
 
         print = idc3_1 + " " + bOp3 + " " + idc3_2;
-        this.type = Type.BOOLEAN_EXP;
+        this.expType = ExpType.BOOLEAN_EXP;
     }
 
     //⟨idc3⟩ ⟨arithOp3⟩ ⟨idc3⟩
@@ -48,7 +48,7 @@ public class Exp3Impl extends Exp3 {
         this.arithOp3 = arithOp3;
 
         print = idc3_1 + " " + arithOp3 + " " + idc3_2;
-        this.type = Type.ARITH_EXP;
+        this.expType = ExpType.ARITH_EXP;
     }
 
     //⟨id3⟩.⟨id3⟩
@@ -58,7 +58,7 @@ public class Exp3Impl extends Exp3 {
         this.id3_2 = id3_2;
 
         print = id3_1 + "." + id3_2;
-        this.type = Type.FIEL_DACCESS;
+        this.expType = ExpType.FIELD_ACCESS;
     }
 
     //⟨Uop3⟩ ⟨idc3⟩
@@ -67,7 +67,7 @@ public class Exp3Impl extends Exp3 {
         this.uOp3 = uOp3;
         this.idc3_1 = idc3_1;
         print = uOp3 + idc3_1;
-        this.type = Type.UOP;
+        this.expType = ExpType.UOP;
     }
 
     //⟨id3⟩( ⟨VList3⟩ )  -- note that first param is the object on which the function call is executed
@@ -83,7 +83,7 @@ public class Exp3Impl extends Exp3 {
             firstParam = false;
         }
         print += ")";
-        this.type = Type.FUNCTIONCALL;
+        this.expType = ExpType.FUNCTIONCALL;
     }
 
     //new ⟨CName3⟩()
@@ -92,18 +92,18 @@ public class Exp3Impl extends Exp3 {
         this.cName3 = cName3;
 
         print = "new " + cName3 + "()";
-        this.type = Type.NEWOBJECT;
+        this.expType = ExpType.NEWOBJECT;
     }
 
-    public enum Type{
+    public enum ExpType {
         BOOLEAN_EXP,
         ARITH_EXP,
-        FIEL_DACCESS,
+        FIELD_ACCESS,
         UOP,
         FUNCTIONCALL,
         NEWOBJECT;
 
-        public boolean equals(Type other){
+        public boolean equals(ExpType other){
             return this.name().equals(other.name());
         }
     }
@@ -114,7 +114,7 @@ public class Exp3Impl extends Exp3 {
         return print;
     }
 
-    public int accept(ASMGeneratorVisitor visitor){
+    public int accept(ASMGeneratorVisitor visitor) throws Exception {
         return visitor.visit(this);
     }
 }

@@ -14,7 +14,7 @@ public class CMtd3 extends Node3 {
     public List<VarDecl3> varDeclList;
     public List<Stmt3> stmtList;
 
-    //TODO parama is allowed to be NULL, but in IR3 specs doesn't allow a type to be null
+    //TODO parama is allowed to be NULL, but in IR3 specs doesn't allow a expType to be null
     public CMtd3(Type3 returnType, Id3 name, List<VarDecl3> params, List<VarDecl3> varDeclList, List<Stmt3> stmtList) {
         this.returnType = returnType;
         this.name = name;
@@ -43,7 +43,7 @@ public class CMtd3 extends Node3 {
         return super.toString();
     }
 
-    public void accept(ASMGeneratorVisitor visitor){
+    public void accept(ASMGeneratorVisitor visitor) throws Exception {
         visitor.visit(this);
     }
 }

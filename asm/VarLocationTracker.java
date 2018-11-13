@@ -13,16 +13,9 @@ class VarLocationTracker {
 
 
     ////////////////////// GETTERS /////////////////////////
-    boolean isInReg(String var) {
-        return locations.get(var).isInReg();
-    }
 
     boolean isOnStack(String var) {
         return locations.get(var).isOnStack();
-    }
-
-    int getVarRegnum(String var) {
-        return locations.get(var).getRegnum();
     }
 
     //returns offset from fp
@@ -36,18 +29,17 @@ class VarLocationTracker {
         locations.get(var).noMoreOnStack();
     }
 
-    void removeVarFromReg(String var) {
-        locations.get(var).noMoreInReg();
-    }
-
     void addVarToStack(String var, int stackPosition) {
         if (locations.get(var) != null) locations.get(var).setStackaddress(stackPosition);
         else locations.put(var, new Location(stackPosition, true));
     }
 
-    void addVarToReg(String var, int regnum) {
-        if (locations.get(var) != null) locations.get(var).setRegnum(regnum);
-        else locations.put(var, new Location(regnum, false));
+    void addObjectToStack(String var, String cname){
+        locations.get(var).setClassName(cname);
+    }
+
+    String getVarObject(String var){
+        return locations.get(var).getClassName();
     }
 
     void printState() {
@@ -63,6 +55,7 @@ class VarLocationTracker {
 class Location {
     private int regnum = -1;
     private int stackaddress = -1; //absolute stack position (counting 1 each entry)
+    private String className;
 
     Location(int n, boolean onStack) {
         if (onStack) stackaddress = n;
@@ -91,6 +84,14 @@ class Location {
 
     void setStackaddress(int stackaddress) {
         this.stackaddress = stackaddress;
+    }
+
+    void setClassName(String className) {
+        this.className = className;
+    }
+
+    String getClassName(){
+        return className;
     }
 
     boolean isInReg() {

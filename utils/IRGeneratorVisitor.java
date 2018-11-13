@@ -48,7 +48,7 @@ public class IRGeneratorVisitor implements Visitor {
             params.add(new VarDecl3(new CName3(program.mainClass.className), new Id3(new CName3(program.mainClass.className), "this")));
             params.addAll(convertList(m.params));
             m.accept(this);
-            //TODO Id3 type is set to the return type of the function.
+            //TODO Id3 expType is set to the return expType of the function.
             methods.add(new CMtd3(new Type3(m.returnType), new Id3(new Type3(m.returnType), m.name), params, currentVars, currentStmts));
         }
         symbolTable.decreaseIndentLevel();
@@ -64,7 +64,7 @@ public class IRGeneratorVisitor implements Visitor {
                 params.add(new VarDecl3(new CName3(c.className), new Id3(new CName3(c.className), "this")));
                 params.addAll(convertList(m.params));
                 m.accept(this);
-                //TODO Id3 type is set to the return type of the function.
+                //TODO Id3 expType is set to the return expType of the function.
                 methods.add(new CMtd3(new Type3(m.returnType), new Id3(new Type3(m.returnType), c.className + "_" + m.name + "_" + count), params, currentVars, currentStmts));
                 count++;
             }
@@ -307,7 +307,7 @@ public class IRGeneratorVisitor implements Visitor {
     }
 
     //it just breaks the expr into:
-    //Type temp;
+    //ExpType temp;
     //temp = Exp3Impl;
     //return temp;
     private Id3 exprDownToId3(Exp3 expr) throws Exception {

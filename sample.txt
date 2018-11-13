@@ -87,23 +87,29 @@ pop {r11, r15, r4, r5, r6, r7, r8}
 
 --------------------------------------------
 
-========== CData3 ==========
-
-Data3 MainC {
+class MainC {
+    Void main (){
+        Mbare mbare;
+        Int n;
+        mbare = new Mbare();
+        
+        mbare.n = 909;
+        n = mbare.n;
+        println(n);
+        return;
+    }
 }
 
+class Mbare{
+    Int n;
+}
 
-========== CMtd3 ==========
+class Ciao{
+    Bool a;
+    Bool b;
+    String ciao;
+}
 
-Void main (MainC this){
-    Int a;
-    String b;
-    Bool i;
-    Int c;
-    c = 2;
-    b = "\nhey\n\n";
-    i = false;
-    println(i);
-    println(b);
-    return;
+class Hey{
+
 }

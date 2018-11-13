@@ -1,6 +1,6 @@
 package jnodes;
 
-//fmlRest ::= COMMA type ident
+//fmlRest ::= COMMA expType ident
 public class JFmlRest extends JNode{
     public JBasicType type;
     public JId id;

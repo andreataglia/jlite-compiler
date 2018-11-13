@@ -224,7 +224,7 @@ final public class NFA {
       }
       else {
         // should never happen
-        throw new Error("When inserting lookahead expression: unkown expression type "+lookAhead.type+" in "+lookAhead); //$NON-NLS-1$ //$NON-NLS-2$
+        throw new Error("When inserting lookahead expression: unkown expression expType "+lookAhead.type+" in "+lookAhead); //$NON-NLS-1$ //$NON-NLS-2$
       }
     }
   }
@@ -919,7 +919,7 @@ final public class NFA {
       return;
     }
     
-    throw new Error("Unknown expression type "+regExp.type+" in NFA construction");
+    throw new Error("Unknown expression expType "+regExp.type+" in NFA construction");
   }
 
 
@@ -1038,6 +1038,6 @@ final public class NFA {
       return insertNFA(macros.getDefinition((String) ((RegExp1) regExp).content));
     }
     
-    throw new Error("Unknown expression type "+regExp.type+" in NFA construction");
+    throw new Error("Unknown expression expType "+regExp.type+" in NFA construction");
   }
 }

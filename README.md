@@ -37,6 +37,9 @@ Int Mbare_ciao_0 (Mbare this, String v, Int b){
 }
 param b is overwritten by new local var b
 
+- The ARM Instruction is only able to load a limited range of immediate values with mov. The problem is that the value has to be encoded in the mov instruction itself. As all ARM Instructions are 32-bit wide, the original instruction-set up to ARMv5 only had a total of 8+4 bits to encode immediates. With the first 8-bit being able to load any 8-bit value int in the range of 0-255 and the 4 bit being a right rotate in steps of 2 between 0 and 30.
+This has been taken care of and, if the immediate value is outside the range 0-255, then the value is loaded from memory with ldr: ldr r7,=#val The assembler then will create a constant-pool and load the value from there via pc-relative addressing.
+
 
 
 ## Prerequisites
