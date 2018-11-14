@@ -56,7 +56,7 @@ class StateDescriptor {
     }
 
     private String getVarName(String var) {
-        return var + varN;
+        return var + "_" + varN + varN;
     }
 
     void reserveStackWordForVar(String var) {

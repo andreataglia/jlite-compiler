@@ -52,6 +52,7 @@ public class ASMGeneratorVisitor {
     public int visit(Stmt3 stmt) throws Exception {
         ////////////////////////////////// println //////////////////////////////////
         if (stmt.stmtType.equals(Stmt3.Stmt3Type.PRINTLN)) {
+            stateDescriptor.printState();
             //println(var)
             if (stmt.idc3 instanceof Id3) {
                 if (stmt.idc3.type.type.equals(BasicType.DataType.STRING)) {
@@ -218,7 +219,7 @@ public class ASMGeneratorVisitor {
             stateDescriptor.emitMov(regnum, val, false);
         } else if (exp.isStringLiteral()) {
             asmCode.addStringData(exp.stringLiteral, dataCount);
-            stateDescriptor.emitMov(regnum, dataCount, true);
+            stateDescriptor.emitLoadReg(regnum, dataCount);
             dataCount++;
         }
         return regnum;
@@ -239,7 +240,7 @@ public class ASMGeneratorVisitor {
         System.exit(-1);
     }
 
-    Type3 getFieldType(String cname, String field) {
+    private Type3 getFieldType(String cname, String field) {
         for (CName3 c : program3.classDescriptors.keySet()) {
             if (c.name.name.equals(cname)) {
                 for (VarDecl3 var : program3.classDescriptors.get(c)) {
