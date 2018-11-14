@@ -8,6 +8,8 @@ class StateDescriptor {
     private int varN; //must be updated every function call
     static final int A1 = 0;
     static final int A2 = 1;
+    static final int A3 = 2;
+    static final int A4 = 3;
     static final int LR = 14;
     static final int V1 = 4;
     static final int V2 = 5;
@@ -183,6 +185,7 @@ class StateDescriptor {
     //push {fp,lr,v1,v2,v3,v4,v5}
     //add fp, sp, #24
     void funcPrologue() {
+        varN++;
         int[] toPush = new int[]{StateDescriptor.FP, StateDescriptor.LR, StateDescriptor.V1, StateDescriptor.V2, StateDescriptor.V3, StateDescriptor.V4, StateDescriptor.V5};
         emitPush(toPush);
         emitAdd(StateDescriptor.FP, StateDescriptor.SP, 24, false);
@@ -194,10 +197,6 @@ class StateDescriptor {
         emitSub(StateDescriptor.SP, StateDescriptor.FP, 24, false);
         emitPop(new int[]{StateDescriptor.FP, StateDescriptor.PC, StateDescriptor.V1, StateDescriptor.V2, StateDescriptor.V3, StateDescriptor.V4, StateDescriptor.V5});
         varN--;
-    }
-
-    void emitBranch() {
-        varN++;
     }
 
     void printState() {

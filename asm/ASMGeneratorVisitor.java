@@ -32,8 +32,9 @@ public class ASMGeneratorVisitor {
         stateDescriptor.funcPrologue();
         int spaceToReserve = 0;
         for (VarDecl3 param : method.params) {
-            spaceToReserve++;
             stateDescriptor.reserveStackWordForVar(param.id.id);
+            stateDescriptor.placeRegInVarStack(spaceToReserve, param.id.id);
+            spaceToReserve++;
         }
         for (VarDecl3 varDecl : method.varDeclList) {
             spaceToReserve++;
@@ -50,9 +51,12 @@ public class ASMGeneratorVisitor {
     }
 
     public int visit(Stmt3 stmt) throws Exception {
+        ////////////////////////////////// return ; //////////////////////////////////
+        if (stmt.stmtType.equals(Stmt3.Stmt3Type.READLN)) {
+            throw new Exception("Readln not allowed");
+        }
         ////////////////////////////////// println //////////////////////////////////
-        if (stmt.stmtType.equals(Stmt3.Stmt3Type.PRINTLN)) {
-            stateDescriptor.printState();
+        else if (stmt.stmtType.equals(Stmt3.Stmt3Type.PRINTLN)) {
             //println(var)
             if (stmt.idc3 instanceof Id3) {
                 if (stmt.idc3.type.type.equals(BasicType.DataType.STRING)) {
@@ -89,7 +93,6 @@ public class ASMGeneratorVisitor {
         }
         ////////////////////////////////// ⟨id3⟩ = ⟨Exp3⟩ //////////////////////////////////
         else if (stmt.stmtType.equals(Stmt3.Stmt3Type.ASS_VAR)) {
-            System.err.println(stmt);
             int reg = stateDescriptor.getReg();
             final String varName = stmt.id3_1.id;
             final Exp3 exp3 = stmt.exp3Impl;
@@ -111,7 +114,6 @@ public class ASMGeneratorVisitor {
         }
         ////////////////////////////////// ⟨id3⟩.⟨id3⟩ = ⟨Exp3⟩ //////////////////////////////////
         else if (stmt.stmtType.equals(Stmt3.Stmt3Type.ASS_FIELD)) {
-            System.err.println(stmt);
             final String varName = stmt.id3_1.id;
             final String field = stmt.id3_2.id;
 
@@ -122,6 +124,14 @@ public class ASMGeneratorVisitor {
             stateDescriptor.emitMov(expRes, forceVisit(stmt.exp3Impl), true);
 
             stateDescriptor.emitStoreReg(expRes, heapAddress, calculateFieldOffset(stateDescriptor.getVarObject(varName), field) * 4, false);
+        }
+        ////////////////////////////////// return ⟨id3⟩ ; //////////////////////////////////
+        else if (stmt.stmtType.equals(Stmt3.Stmt3Type.RETURN_VAR)) {
+            stateDescriptor.placeVarValueInReg(StateDescriptor.A1, stmt.id3_1.id);
+        }
+        ////////////////////////////////// return ; //////////////////////////////////
+        else if (stmt.stmtType.equals(Stmt3.Stmt3Type.RETURN)) {
+            return 0; //nothing needs to be done
         }
         return -17;
     }
@@ -205,6 +215,18 @@ public class ASMGeneratorVisitor {
             regnum = stateDescriptor.getReg();
             stateDescriptor.placeVarValueInReg(regnum, baseVar);
             stateDescriptor.emitLoadReg(regnum, regnum, varOffset * 4, false);
+        } else if (exp.expType.equals(Exp3Impl.ExpType.FUNCTIONCALL)) {
+            final String functionName = exp.id3_1.id;
+            //first param is always the object
+            int reg = 0;
+            //TODO if more than 4 params put on stack
+            for (Idc3 p : exp.params) {
+                stateDescriptor.emitMov(reg, forceVisit(p), true);
+                reg++;
+            }
+            //TODO function name must be unique
+            asmCode.addToText("bl " + functionName + "(PLT)");
+            regnum = StateDescriptor.A1;
         }
         return regnum;
     }

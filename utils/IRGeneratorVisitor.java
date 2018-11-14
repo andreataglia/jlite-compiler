@@ -54,7 +54,6 @@ public class IRGeneratorVisitor implements Visitor {
         symbolTable.decreaseIndentLevel();
 
         for (ClassDecl c : program.classDeclList) {
-            int count = 0;
             symbolTable.increaseIndentLevel(c.className);
             for (MethodDecl m : c.methodDeclList) {
                 currentStmts = new ArrayList<>();
@@ -65,8 +64,7 @@ public class IRGeneratorVisitor implements Visitor {
                 params.addAll(convertList(m.params));
                 m.accept(this);
                 //TODO Id3 expType is set to the return expType of the function.
-                methods.add(new CMtd3(new Type3(m.returnType), new Id3(new Type3(m.returnType), c.className + "_" + m.name + "_" + count), params, currentVars, currentStmts));
-                count++;
+                methods.add(new CMtd3(new Type3(m.returnType), new Id3(new Type3(m.returnType), m.name), params, currentVars, currentStmts));
             }
             symbolTable.decreaseIndentLevel();
         }
@@ -347,6 +345,5 @@ public class IRGeneratorVisitor implements Visitor {
         }
         return list;
     }
-
 
 }
