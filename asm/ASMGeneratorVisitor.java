@@ -66,7 +66,7 @@ public class ASMGeneratorVisitor {
             } else if (stmt.idc3 instanceof Const) {
                 Const idc3const = (Const) stmt.idc3;
                 if (idc3const.isStringLiteral()) {
-                    asmCode.addStringData(((Const) stmt.idc3).stringLiteral + "\\n", dataCount);
+                    asmCode.addStringData(((Const) stmt.idc3).stringLiteral, dataCount);
                     stateDescriptor.emitLoadReg(StateDescriptor.A1, dataCount);
                     dataCount++;
                 } else if (idc3const.isBooleanLiteral()) {
@@ -88,17 +88,29 @@ public class ASMGeneratorVisitor {
         }
         ////////////////////////////////// ⟨id3⟩ = ⟨Exp3⟩ //////////////////////////////////
         else if (stmt.stmtType.equals(Stmt3.Stmt3Type.ASS_VAR)) {
+            System.err.println(stmt);
             int reg = stateDescriptor.getReg();
             final String varName = stmt.id3_1.id;
-            stateDescriptor.emitMov(reg, forceVisit(stmt.exp3Impl), true);
+            final Exp3 exp3 = stmt.exp3Impl;
+            stateDescriptor.emitMov(reg, forceVisit(exp3), true);
             stateDescriptor.placeRegInVarStack(reg, varName);
             if (trackObjectCreation) {
                 trackObjectCreation = false;
-                stateDescriptor.newObject(varName, ((Exp3Impl) stmt.exp3Impl).cName3.name.name);
+                if (((Exp3Impl) exp3).expType.equals(Exp3Impl.ExpType.NEWOBJECT)) {
+                    stateDescriptor.newObject(varName, ((Exp3Impl) exp3).cName3.name.name);
+                } else if (((Exp3Impl) exp3).expType.equals(Exp3Impl.ExpType.FIELD_ACCESS)) {
+                    String className = stateDescriptor.getVarObject(((Exp3Impl) exp3).id3_1.id);
+                    if (getFieldType(className, ((Exp3Impl) exp3).id3_2.id) instanceof CName3) {
+                        stateDescriptor.newObject(varName, className);
+                    }
+                } else {
+                    error("trackObjectCreation = true for an unknown case");
+                }
             }
         }
         ////////////////////////////////// ⟨id3⟩.⟨id3⟩ = ⟨Exp3⟩ //////////////////////////////////
         else if (stmt.stmtType.equals(Stmt3.Stmt3Type.ASS_FIELD)) {
+            System.err.println(stmt);
             final String varName = stmt.id3_1.id;
             final String field = stmt.id3_2.id;
 
@@ -205,7 +217,7 @@ public class ASMGeneratorVisitor {
             int val = ((exp.booleanLiteral) ? 1 : 0);
             stateDescriptor.emitMov(regnum, val, false);
         } else if (exp.isStringLiteral()) {
-            asmCode.addStringData(exp.stringLiteral + "\\n", dataCount);
+            asmCode.addStringData(exp.stringLiteral, dataCount);
             stateDescriptor.emitMov(regnum, dataCount, true);
             dataCount++;
         }
@@ -225,5 +237,16 @@ public class ASMGeneratorVisitor {
     static void error(String msg) {
         System.err.println(msg);
         System.exit(-1);
+    }
+
+    Type3 getFieldType(String cname, String field) {
+        for (CName3 c : program3.classDescriptors.keySet()) {
+            if (c.name.name.equals(cname)) {
+                for (VarDecl3 var : program3.classDescriptors.get(c)) {
+                    if (var.id.id.equals(field)) return var.type;
+                }
+            }
+        }
+        return null;
     }
 }
