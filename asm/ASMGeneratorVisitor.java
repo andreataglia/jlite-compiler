@@ -32,9 +32,15 @@ public class ASMGeneratorVisitor {
         asmCode.addToText("\n" + method.name + ":");
         stateDescriptor.funcPrologue();
         int spaceToReserve = 0;
+        stateDescriptor.printState();
         for (VarDecl3 param : method.params) {
             stateDescriptor.reserveStackWordForVar(param.id.id);
-            stateDescriptor.placeRegInVarStack(spaceToReserve, param.id.id);
+            if (spaceToReserve > 3) {
+                stateDescriptor.emitLoadReg(StateDescriptor.V1, StateDescriptor.FP, (spaceToReserve - 3) * 4, true);
+                stateDescriptor.placeRegInVarStack(StateDescriptor.V1, param.id.id);
+            } else {
+                stateDescriptor.placeRegInVarStack(spaceToReserve, param.id.id);
+            }
             spaceToReserve++;
         }
         for (VarDecl3 varDecl : method.varDeclList) {
@@ -152,7 +158,7 @@ public class ASMGeneratorVisitor {
         }
         ////////////////////////////////// return ⟨id3⟩ ; //////////////////////////////////
         else if (stmt.stmtType.equals(Stmt3.Stmt3Type.RETURN_VAR)) {
-            stateDescriptor.placeVarValueInReg(StateDescriptor.A1, stmt.id3_1.id);
+            stateDescriptor.emitMov(StateDescriptor.A1, forceVisit(stmt.id3_1), true);
         }
         ////////////////////////////////// return ; //////////////////////////////////
         else if (stmt.stmtType.equals(Stmt3.Stmt3Type.RETURN)) {
@@ -213,6 +219,7 @@ public class ASMGeneratorVisitor {
             int reg2 = forceVisit(exp.idc3_2);
             regnum = reg1;
             if (exp.bOp3.equals(BoolOperand.AND)) {
+                //TODO change
                 stateDescriptor.calculateAnd(reg1, reg2);
             } else stateDescriptor.calculateOr(reg1, reg2);
         } else if (exp.expType.equals(Exp3Impl.ExpType.UOP)) {
@@ -236,7 +243,7 @@ public class ASMGeneratorVisitor {
             asmCode.addToText("bl malloc(PLT)");
             trackObjectCreation = true;
         } else if (exp.expType.equals(Exp3Impl.ExpType.FIELD_ACCESS)) {
-            final String baseVar = exp.id3_1.id;
+            final String baseVar = exp.id3_1.id; //var which contains the pointer to the class in the heap
             final String field = exp.id3_2.id;
             int varOffset = calculateFieldOffset(stateDescriptor.getVarObject(baseVar), field);
             regnum = stateDescriptor.getReg();
@@ -246,9 +253,12 @@ public class ASMGeneratorVisitor {
             final String functionName = exp.id3_1.id;
             //first param is always the object
             int reg = 0;
-            //TODO if more than 4 params put on stack
             for (Idc3 p : exp.params) {
-                stateDescriptor.emitMov(reg, forceVisit(p), true);
+                if (reg > 3) {
+                    stateDescriptor.emitPush(new int[]{forceVisit(p)});
+                } else {
+                    stateDescriptor.emitMov(reg, forceVisit(p), true);
+                }
                 reg++;
             }
             //TODO function name must be unique

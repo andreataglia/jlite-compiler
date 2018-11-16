@@ -74,7 +74,7 @@ class StateDescriptor {
             memoryMap.push(new Word(memoryMap.getRegContent(regs[i])));
             r.append(", r").append(regs[i]);
         }
-        memoryMap.updateRegValue(SP, memoryMap.getRegContent(SP) - 4 * regs.length);
+        //memoryMap.updateRegValue(SP, memoryMap.getRegContent(SP) - 4 * regs.length);
         asmCode.addToText("push {" + r + "}");
     }
 
@@ -85,15 +85,15 @@ class StateDescriptor {
             r.append(", r").append(regs[i]);
             memoryMap.pop();
         }
-        memoryMap.updateRegValue(SP, memoryMap.getRegContent(SP) + 4 * regs.length);
+        //memoryMap.updateRegValue(SP, memoryMap.getRegContent(SP) + 4 * regs.length);
         asmCode.addToText("pop {" + r + "}");
     }
 
     // ldr r0, [sp, #offset]
     void emitLoadReg(int destreg, int base_reg, int offset, boolean loadFromStack) {
         if (loadFromStack) {
-            Word wordBeingLoaded = memoryMap.getWordFromStack(memoryMap.getRegContent(base_reg) + offset);
-            memoryMap.updateRegValue(destreg, wordBeingLoaded.val);
+            //Word wordBeingLoaded = memoryMap.getWordFromStack(memoryMap.getRegContent(base_reg) + offset);
+            ////memoryMap.updateRegValue(destreg, wordBeingLoaded.val);
         } else {
             //TODO load from heap
         }
@@ -103,7 +103,7 @@ class StateDescriptor {
     //ldr r0, =L1
     //if(isDataLabel) then it's the data label, otherwise is an int constant
     void emitLoadReg(int destreg, int dataLabel) {
-        memoryMap.updateRegValue(destreg, dataLabel);
+        //memoryMap.updateRegValue(destreg, dataLabel);
         asmCode.addToText("ldr r" + destreg + ", =L" + dataLabel);
     }
 
@@ -121,10 +121,10 @@ class StateDescriptor {
     //mov r0, #5
     void emitMov(int destreg, int sourcereg, boolean isOp2Reg) {
         if (isOp2Reg) {
-            memoryMap.updateRegValue(destreg, memoryMap.getRegContent(sourcereg));
+            //memoryMap.updateRegValue(destreg, memoryMap.getRegContent(sourcereg));
             asmCode.addToText("mov r" + destreg + ", r" + sourcereg);
         } else {
-            memoryMap.updateRegValue(destreg, sourcereg);
+            //memoryMap.updateRegValue(destreg, sourcereg);
             if (sourcereg > 255) asmCode.addToText("ldr r" + destreg + ", =#" + sourcereg);
             else asmCode.addToText("mov r" + destreg + ", #" + sourcereg);
         }
@@ -134,10 +134,10 @@ class StateDescriptor {
     //add r1, r4, r5
     void emitAdd(int destreg, int sourcereg, int op2, boolean isOp2Reg) {
         if (isOp2Reg) {
-            memoryMap.updateRegValue(destreg, memoryMap.getRegContent(sourcereg) + memoryMap.getRegContent(op2));
+            ////memoryMap.updateRegValue(destreg, memoryMap.getRegContent(sourcereg) + memoryMap.getRegContent(op2));
             asmCode.addToText("add r" + destreg + ", r" + sourcereg + ", r" + op2);
         } else {
-            memoryMap.updateRegValue(destreg, memoryMap.getRegContent(sourcereg) + op2);
+            ////memoryMap.updateRegValue(destreg, memoryMap.getRegContent(sourcereg) + op2);
             asmCode.addToText("add r" + destreg + ", r" + sourcereg + ", #" + op2);
         }
     }
@@ -146,27 +146,27 @@ class StateDescriptor {
     //sub r1, r4, r5
     void emitSub(int destreg, int sourcereg, int op2, boolean isOp2Reg) {
         if (isOp2Reg) {
-            memoryMap.updateRegValue(destreg, memoryMap.getRegContent(sourcereg) - memoryMap.getRegContent(op2));
+            ////memoryMap.updateRegValue(destreg, memoryMap.getRegContent(sourcereg) - memoryMap.getRegContent(op2));
             asmCode.addToText("sub r" + destreg + ", r" + sourcereg + ", r" + op2);
         } else {
-            memoryMap.updateRegValue(destreg, memoryMap.getRegContent(sourcereg) - op2);
+            ////memoryMap.updateRegValue(destreg, memoryMap.getRegContent(sourcereg) - op2);
             asmCode.addToText("sub r" + destreg + ", r" + sourcereg + ", #" + op2);
         }
     }
 
     //mul r1, r2
     void emitMul(int destreg, int sourcereg) {
-        memoryMap.updateRegValue(destreg, memoryMap.getRegContent(destreg) * memoryMap.getRegContent(sourcereg));
+        ////memoryMap.updateRegValue(destreg, memoryMap.getRegContent(destreg) * memoryMap.getRegContent(sourcereg));
         asmCode.addToText("mul r" + destreg + ", r" + sourcereg);
     }
 
     void emitAnd(int destreg, int sourcereg) {
-        memoryMap.updateRegValue(destreg, destreg & sourcereg);
+        ////memoryMap.updateRegValue(destreg, destreg & sourcereg);
         asmCode.addToText("and r" + destreg + ", r" + destreg);
     }
 
     void emitOrr(int destreg, int sourcereg) {
-        memoryMap.updateRegValue(destreg, destreg | sourcereg);
+        ////memoryMap.updateRegValue(destreg, destreg | sourcereg);
         asmCode.addToText("orr r" + destreg + ", r" + destreg);
     }
 
@@ -282,7 +282,7 @@ class MemoryMap {
     }
 
     void printState() {
-        System.out.println("-----------regs-------------");
+        System.out.println("\n----------^ print ^----------------\n-----------regs-------------");
         for (int i = 0; i < registers.length; i++) {
             System.out.println("r" + i + " val: " + getRegContent(i));
         }
