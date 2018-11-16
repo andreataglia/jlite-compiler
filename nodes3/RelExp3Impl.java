@@ -1,5 +1,6 @@
 package nodes3;
 
+import asm.ASMGeneratorVisitor;
 import utils.RelBoolOperand;
 
 //⟨idc3⟩ ⟨Relop3⟩ ⟨idc3⟩ | ⟨idc3⟩
@@ -18,5 +19,9 @@ public class RelExp3Impl extends Exp3 {
     @Override
     public String toString() {
         return leftSide + " " + relOp3 + " " + rightSide;
+    }
+
+    public int accept(ASMGeneratorVisitor visitor) throws Exception {
+        return visitor.visit(this);
     }
 }

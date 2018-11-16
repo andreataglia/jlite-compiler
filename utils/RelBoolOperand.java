@@ -30,4 +30,8 @@ public enum RelBoolOperand {
     public String toString() {
         return symbol;
     }
+
+    public boolean equals(RelBoolOperand other){
+        return this.name().equals(other.name());
+    }
 }

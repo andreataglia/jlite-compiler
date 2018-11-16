@@ -4,6 +4,7 @@ import nodes3.*;
 import utils.ArithOperand;
 import utils.BasicType;
 import utils.BoolOperand;
+import utils.RelBoolOperand;
 
 public class ASMGeneratorVisitor {
     private StateDescriptor stateDescriptor;
@@ -51,11 +52,27 @@ public class ASMGeneratorVisitor {
     }
 
     public int visit(Stmt3 stmt) throws Exception {
-        ////////////////////////////////// return ; //////////////////////////////////
-        if (stmt.stmtType.equals(Stmt3.Stmt3Type.READLN)) {
+        ////////////////////////////////// ⟨Label3⟩ : //////////////////////////////////
+        if (stmt.stmtType.equals(Stmt3.Stmt3Type.LABEL)) {
+            asmCode.addToText("\n." + stmt.string + ":");
+        }
+        ///////////////////// if ( ⟨RelExp3⟩ ) goto ⟨Label3⟩ ; ///////////////////////////
+        else if (stmt.stmtType.equals(Stmt3.Stmt3Type.IF)) {
+            //evaluate RelExp3 and put 1 or 0 in register
+            int conditionResult = forceVisit(stmt.exp3Impl);
+            asmCode.addToText("cmp r" + conditionResult + ", #1");
+            asmCode.addToText("beq ." + stmt.string);
+
+        }
+        /////////////////////////// goto ⟨Label3⟩ ; //////////////////////////////////
+        else if (stmt.stmtType.equals(Stmt3.Stmt3Type.GOTO)) {
+            asmCode.addToText("b ." + stmt.string);
+        }
+        /////////////////////////////// readln ( ⟨id3⟩ ) ; //////////////////////////////////
+        else if (stmt.stmtType.equals(Stmt3.Stmt3Type.READLN)) {
             throw new Exception("Readln not allowed");
         }
-        ////////////////////////////////// println //////////////////////////////////
+        ////////////////////////// println ( ⟨idc3⟩ ) ; //////////////////////////////////
         else if (stmt.stmtType.equals(Stmt3.Stmt3Type.PRINTLN)) {
             //println(var)
             if (stmt.idc3 instanceof Id3) {
@@ -112,6 +129,10 @@ public class ASMGeneratorVisitor {
                 }
             }
         }
+        ////////////////////////////  ⟨Type3⟩ ⟨id3⟩ = ⟨Exp3⟩ ; //////////////////////////////////
+        else if (stmt.stmtType.equals(Stmt3.Stmt3Type.ASS_VARDECL)) {
+            error("This type of assignment is never produced");
+        }
         ////////////////////////////////// ⟨id3⟩.⟨id3⟩ = ⟨Exp3⟩ //////////////////////////////////
         else if (stmt.stmtType.equals(Stmt3.Stmt3Type.ASS_FIELD)) {
             final String varName = stmt.id3_1.id;
@@ -124,6 +145,10 @@ public class ASMGeneratorVisitor {
             stateDescriptor.emitMov(expRes, forceVisit(stmt.exp3Impl), true);
 
             stateDescriptor.emitStoreReg(expRes, heapAddress, calculateFieldOffset(stateDescriptor.getVarObject(varName), field) * 4, false);
+        }
+        ////////////////////////////  ⟨id3⟩( ⟨VList3⟩ ) ; //////////////////////////////////
+        else if (stmt.stmtType.equals(Stmt3.Stmt3Type.FUNCTION)) {
+            forceVisit(stmt.exp3Impl);
         }
         ////////////////////////////////// return ⟨id3⟩ ; //////////////////////////////////
         else if (stmt.stmtType.equals(Stmt3.Stmt3Type.RETURN_VAR)) {
@@ -154,19 +179,21 @@ public class ASMGeneratorVisitor {
         if (exp3 instanceof Const) return ((Const) exp3).accept(this);
         else if (exp3 instanceof Id3) return ((Id3) exp3).accept(this);
         else if (exp3 instanceof Exp3Impl) return ((Exp3Impl) exp3).accept(this);
-        else error("this Exp3 subclass has not been implemented yet");
-        return -17;
+        else if (exp3 instanceof RelExp3Impl) return ((RelExp3Impl) exp3).accept(this);
+        else error("this Exp3 should never reach here");
+        return -18;
     }
 
     private int forceVisit(Idc3 idc3) {
         if (idc3 instanceof Id3) return ((Id3) idc3).accept(this);
         else if (idc3 instanceof Const) return ((Const) idc3).accept(this);
-        else error("idc3 forceVisit shoudl never be here");
+        else error("idc3 forceVisit should never be here");
         return -17;
     }
 
     //return the register in which the value is contained
     public int visit(Exp3Impl exp) throws Exception {
+        //TODO check it's all the possible types
         int regnum = stateDescriptor.getReg();
         if (exp.expType.equals(Exp3Impl.ExpType.ARITH_EXP)) {
             int reg1 = forceVisit(exp.idc3_1);
@@ -227,6 +254,27 @@ public class ASMGeneratorVisitor {
             //TODO function name must be unique
             asmCode.addToText("bl " + functionName + "(PLT)");
             regnum = StateDescriptor.A1;
+        }
+        return regnum;
+    }
+
+    public int visit(RelExp3Impl exp) throws Exception {
+        int regnum = stateDescriptor.getReg();
+        //default is false. change reg value to 1 if condition is true
+        stateDescriptor.emitMov(regnum, 0, false);
+        asmCode.addToText("cmp r" + forceVisit(exp.leftSide) + ", r" + forceVisit(exp.rightSide));
+        if (exp.relOp3.equals(RelBoolOperand.EQUAL)) {
+            asmCode.addToText("moveq r" + regnum + ", #1");
+        } else if (exp.relOp3.equals(RelBoolOperand.NOT_EQUAL)) {
+            asmCode.addToText("movne r" + regnum + ", #1");
+        } else if (exp.relOp3.equals(RelBoolOperand.GET)) {
+            asmCode.addToText("movge r" + regnum + ", #1");
+        } else if (exp.relOp3.equals(RelBoolOperand.LET)) {
+            asmCode.addToText("movle r" + regnum + ", #1");
+        } else if (exp.relOp3.equals(RelBoolOperand.GT)) {
+            asmCode.addToText("movgt r" + regnum + ", #1");
+        } else if (exp.relOp3.equals(RelBoolOperand.LT)) {
+            asmCode.addToText("movlt r" + regnum + ", #1");
         }
         return regnum;
     }
