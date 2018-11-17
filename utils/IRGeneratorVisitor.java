@@ -39,6 +39,7 @@ public class IRGeneratorVisitor implements Visitor {
         //generate code for each method
         System.out.println("\n\n========== CMtd3 ==========");
         List<CMtd3> methods = new ArrayList<>();
+        CMtd3 newM;
         symbolTable.increaseIndentLevel(program.mainClass.className);
         for (MethodDecl m : program.mainClass.methodDeclList) {
             currentStmts = new ArrayList<>();
@@ -50,7 +51,9 @@ public class IRGeneratorVisitor implements Visitor {
             m.accept(this);
             //TODO Id3 expType is set to the return expType of the function.
             String name = (m.name.equals("main") ? "main" : program.mainClass.className.name + "_" + m.name);
-            methods.add(new CMtd3(new Type3(m.returnType), new Id3(new Type3(m.returnType), name), params, currentVars, currentStmts));
+            newM = new CMtd3(new Type3(m.returnType), new Id3(new Type3(m.returnType), name), params, currentVars, currentStmts);
+            newM.className = program.mainClass.className.name;
+            methods.add(newM);
         }
         symbolTable.decreaseIndentLevel();
 
@@ -65,7 +68,9 @@ public class IRGeneratorVisitor implements Visitor {
                 params.addAll(convertList(m.params));
                 m.accept(this);
                 //TODO Id3 expType is set to the return expType of the function.
-                methods.add(new CMtd3(new Type3(m.returnType), new Id3(new Type3(m.returnType), c.className.name + "_" + m.name), params, currentVars, currentStmts));
+                newM = new CMtd3(new Type3(m.returnType), new Id3(new Type3(m.returnType), c.className.name + "_" + m.name), params, currentVars, currentStmts);
+                newM.className = c.className.name;
+                methods.add(newM);
             }
             symbolTable.decreaseIndentLevel();
         }

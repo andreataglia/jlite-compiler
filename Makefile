@@ -19,7 +19,10 @@ parser.java: cupsepc.cup
 run: Main.class
 	@echo "compiling $(in)..."
 	@$(JAVA) -cp .:java-cup-11b-runtime.jar Main $(in) > output.txt
-	@echo "Done executing. Look at output.txt for the outcome (cat output.txt)"
+	@echo "Done compiling into IR3. Look at output.txt for the outcome (cat output.txt)"
+	@docker exec test-gem5 arm-linux-gnueabi-gcc-5 -o /mnt/asmout.bin /mnt/asmout.s -static
+	@docker exec test-gem5 gem5.opt /usr/local/share/gem5/configs/example/se.py -c /mnt/asmout.bin
+	@echo "Done running the generated executable"
 
 testir:
 	@echo "compiling test.j..."

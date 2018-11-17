@@ -1,0 +1,43 @@
+/*
+Test for Atoms
+Source Wenqi test4
+*/
+
+class Test4 {
+    Void main(Void a, Int j) {
+        return;
+    }
+}
+
+class Array{
+    Ship z;
+}
+
+class Ship {
+    Int fuel;
+    Int cap;
+    Int load;
+    Array ppl;
+    Int state;
+
+    Void create(Int f, Int c, Int l) {
+        this.fuel = f;
+        this.cap = c;
+        this.load = l;
+        state = 1;
+    }
+
+    Void add(Ship p) {
+        ppl.z.add(p);
+    }
+
+    Void refuel(Int x) {
+        fuel = fuel + x;
+    }
+
+    Void launch(String code) {
+        readln(code);
+        println("Launched");
+        state = 2;
+    }
+}

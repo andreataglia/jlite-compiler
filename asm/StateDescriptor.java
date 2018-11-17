@@ -48,13 +48,11 @@ class StateDescriptor {
         if (varTracker.isOnStack(varName)) {
             emitLoadReg(destreg, FP, -memoryMap.calculateFPOffset(varName), true);
         } else {
-            //TODO it's on the heap? but double check otherwise error
             ASMGeneratorVisitor.error("var " + varName + " is not placed anywhere");
         }
     }
 
     void placeFieldValueInReg(int regnum, String baseVar, int varOffset){
-        System.err.println(">>>>>>>><"+getVarName(baseVar));
         placeVarValueInReg(regnum, baseVar);
         emitLoadReg(regnum, regnum, varOffset * 4, false);
     }
@@ -63,8 +61,14 @@ class StateDescriptor {
         emitStoreReg(sourcereg, FP, -memoryMap.calculateFPOffset(getVarName(var)), true);
     }
 
+    void placeRegOnHeap(int sourcereg, String varName, int varOffset){
+        int heapAddress = getReg();
+        placeVarValueInReg(heapAddress, varName);
+        emitStoreReg(sourcereg, heapAddress, varOffset, false);
+    }
+
     private String getVarName(String var) {
-        return var + "_" + varN + varN;
+        return var;
     }
 
     void reserveStackWordForVar(String var) {
@@ -162,38 +166,22 @@ class StateDescriptor {
 
     void emitAnd(int destreg, int sourcereg) {
         memoryMap.updateRegValue(destreg, destreg & sourcereg);
-        asmCode.addToText("and r" + destreg + ", r" + destreg);
+        asmCode.addToText("and r" + destreg + ", r" + destreg + ", r" + sourcereg);
     }
 
     void emitOrr(int destreg, int sourcereg) {
         memoryMap.updateRegValue(destreg, destreg | sourcereg);
-        asmCode.addToText("orr r" + destreg + ", r" + destreg);
+        asmCode.addToText("orr r" + destreg + ", r" + destreg + ", r" + sourcereg);
     }
 
     void emitBranch(String functionName){
-        //varN++;
         asmCode.addToText("bl " + functionName + "(PLT)");
-    }
-
-    void exitFromFunction(){
-        varN--;
-    }
-
-    void calculateAnd(int reg1, int reg2) {
-        int res = 0;
-        if (memoryMap.getRegContent(reg1) + memoryMap.getRegContent(reg2) == 2) res = 1;
-        emitMov(reg1, res, false);
-    }
-
-    void calculateOr(int reg1, int reg2) {
-        int res = 1;
-        if (memoryMap.getRegContent(reg1) + memoryMap.getRegContent(reg2) == 0) res = 0;
-        emitMov(reg1, res, false);
     }
 
     //push {fp,lr,v1,v2,v3,v4,v5}
     //add fp, sp, #24
     void funcPrologue() {
+        varTracker.reset();
         int[] toPush = new int[]{StateDescriptor.FP, StateDescriptor.LR, StateDescriptor.V1, StateDescriptor.V2, StateDescriptor.V3, StateDescriptor.V4, StateDescriptor.V5};
         emitPush(toPush);
         emitAdd(StateDescriptor.FP, StateDescriptor.SP, 24, false);
@@ -277,11 +265,6 @@ class MemoryMap {
         stack.pop();
     }
 
-    //note that position will always be a multiple of 4
-    Word getWordFromStack(int position) {
-        return stack.get(mapToVirtual(position));
-    }
-
     //returns positive distance from FP (multiple of 4)
     int calculateFPOffset(String var) {
         return -(mapToPhysical(varTracker.getStackPosition(var)) + getRegContent(StateDescriptor.FP));
@@ -293,10 +276,9 @@ class MemoryMap {
     }
 
     void printState() {
-        System.out.println("\n----------^ print ^----------------\n-----------regs-------------");
-        for (int i = 0; i < registers.length; i++) {
-            System.out.println("r" + i + " val: " + getRegContent(i));
-        }
+        //for (int i = 0; i < registers.length; i++) {
+          //  System.out.println("r" + i + " val: " + getRegContent(i));
+        //}
         System.out.println("-----------stack-------------");
         int i = 0;
         for (Word w : stack) {

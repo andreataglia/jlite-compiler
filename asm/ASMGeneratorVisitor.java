@@ -35,11 +35,6 @@ public class ASMGeneratorVisitor {
         int spaceToReserve = 0;
         for (VarDecl3 param : method.params) {
             stateDescriptor.reserveStackWordForVar(param.id.id);
-            //first param is always this
-            if (spaceToReserve == 0) {
-                stateDescriptor.newObject("this", method.className);
-            }
-
             if (spaceToReserve > 3) {
                 stateDescriptor.emitLoadReg(StateDescriptor.V1, StateDescriptor.FP, (method.params.size() - 3 - (spaceToReserve - 3)) * 4, true);
                 stateDescriptor.placeRegInVarStack(StateDescriptor.V1, param.id.id);
@@ -55,14 +50,17 @@ public class ASMGeneratorVisitor {
         if (spaceToReserve > 0)
             stateDescriptor.emitSub(StateDescriptor.SP, StateDescriptor.SP, spaceToReserve * 4, false);
         //end Prologue. Start visiting statements
+        System.out.println("\n>>>>>>>> " + method.name);
 
+        //first param is always this
+        stateDescriptor.newObject("this", method.className);
+
+        stateDescriptor.printState();
         for (Stmt3 stmt : method.stmtList) {
             stmt.accept(this);
         }
-        stateDescriptor.printState();
 
         //epilogue
-
         if (method.name.toString().equals("main")) stateDescriptor.emitMov(StateDescriptor.A1, 0, false);
         stateDescriptor.funcEpilogue();
         return -1;
@@ -94,12 +92,12 @@ public class ASMGeneratorVisitor {
             //println(var)
             if (stmt.idc3 instanceof Id3) {
                 if (stmt.idc3.type.type.equals(BasicType.DataType.STRING)) {
-                    stateDescriptor.placeVarValueInReg(StateDescriptor.A1, ((Id3) stmt.idc3).id);
+                    stateDescriptor.emitMov(StateDescriptor.A1, forceVisit(stmt.idc3), true);
                 } else if (stmt.idc3.type.type.equals(BasicType.DataType.INT) || stmt.idc3.type.type.equals(BasicType.DataType.BOOL)) {
                     asmCode.addStringData("\"%i\\n\"", dataCount);
                     stateDescriptor.emitLoadReg(StateDescriptor.A1, dataCount);
                     dataCount++;
-                    stateDescriptor.placeVarValueInReg(StateDescriptor.A2, ((Id3) stmt.idc3).id);
+                    stateDescriptor.emitMov(StateDescriptor.A2, forceVisit(stmt.idc3), true);
                 }
                 //println(5) or println("ciao")
             } else if (stmt.idc3 instanceof Const) {
@@ -130,8 +128,14 @@ public class ASMGeneratorVisitor {
             int reg = stateDescriptor.getReg();
             final String varName = stmt.id3_1.id;
             final Exp3 exp3 = stmt.exp3Impl;
-            stateDescriptor.emitMov(reg, forceVisit(exp3), true);
-            stateDescriptor.placeRegInVarStack(reg, varName);
+            if (stateDescriptor.isField(varName)) {
+                int varOffset = calculateFieldOffset(stateDescriptor.getVarObject("this"), varName);
+                stateDescriptor.placeFieldValueInReg(reg, "this", varOffset);
+            } else {
+                stateDescriptor.emitMov(reg, forceVisit(exp3), true);
+                stateDescriptor.placeRegInVarStack(reg, varName);
+            }
+
             if (trackObjectCreation) {
                 trackObjectCreation = false;
                 if (((Exp3Impl) exp3).expType.equals(Exp3Impl.ExpType.NEWOBJECT)) {
@@ -154,14 +158,9 @@ public class ASMGeneratorVisitor {
         else if (stmt.stmtType.equals(Stmt3.Stmt3Type.ASS_FIELD)) {
             final String varName = stmt.id3_1.id;
             final String field = stmt.id3_2.id;
-
-            int heapAddress = stateDescriptor.getReg();
-            stateDescriptor.placeVarValueInReg(heapAddress, varName);
-
             int expRes = stateDescriptor.getReg();
             stateDescriptor.emitMov(expRes, forceVisit(stmt.exp3Impl), true);
-
-            stateDescriptor.emitStoreReg(expRes, heapAddress, calculateFieldOffset(stateDescriptor.getVarObject(varName), field) * 4, false);
+            stateDescriptor.placeRegOnHeap(expRes, varName, calculateFieldOffset(stateDescriptor.getVarObject(varName), field) * 4);
         }
         ////////////////////////////  ⟨id3⟩( ⟨VList3⟩ ) ; //////////////////////////////////
         else if (stmt.stmtType.equals(Stmt3.Stmt3Type.FUNCTION)) {
@@ -215,9 +214,8 @@ public class ASMGeneratorVisitor {
             int reg2 = forceVisit(exp.idc3_2);
             regnum = reg1;
             if (exp.bOp3.equals(BoolOperand.AND)) {
-                //TODO change
-                stateDescriptor.calculateAnd(reg1, reg2);
-            } else stateDescriptor.calculateOr(reg1, reg2);
+                stateDescriptor.emitAnd(reg1, reg2);
+            } else stateDescriptor.emitOrr(reg1, reg2);
         } else if (exp.expType.equals(Exp3Impl.ExpType.UOP)) {
             regnum = forceVisit(exp.idc3_1);
             int reg1 = stateDescriptor.getReg();
@@ -243,8 +241,8 @@ public class ASMGeneratorVisitor {
             final String baseVar = exp.id3_1.id; //var which contains the pointer to the class in the heap
             final String field = exp.id3_2.id; //field
             int varOffset = calculateFieldOffset(stateDescriptor.getVarObject(baseVar), field);
-
             stateDescriptor.placeFieldValueInReg(regnum, baseVar, varOffset);
+
         } else if (exp.expType.equals(Exp3Impl.ExpType.FUNCTIONCALL)) {
             final String functionName = exp.id3_1.id;
             //first param is always the object
@@ -257,7 +255,6 @@ public class ASMGeneratorVisitor {
                 }
                 reg++;
             }
-            //TODO function name must be unique
             stateDescriptor.emitBranch(functionName);
             regnum = StateDescriptor.A1;
         }
@@ -344,6 +341,7 @@ public class ASMGeneratorVisitor {
                 }
             }
         }
+        if (varOffset < 0) error("couldn't find field " + field);
         return varOffset;
     }
 }

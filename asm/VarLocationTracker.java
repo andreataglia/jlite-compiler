@@ -15,7 +15,7 @@ class VarLocationTracker {
     ////////////////////// GETTERS /////////////////////////
 
     boolean isOnStack(String var) {
-        return locations.get(var).isOnStack();
+        return locations.get(var) != null;
     }
 
     //returns offset from fp
@@ -34,21 +34,24 @@ class VarLocationTracker {
         else locations.put(var, new Location(stackPosition, true));
     }
 
-    void addObjectToStack(String var, String cname){
+    void addObjectToStack(String var, String cname) {
         locations.get(var).setClassName(cname);
     }
 
-    String getVarObject(String var){
+    String getVarObject(String var) {
         return locations.get(var).getClassName();
     }
 
     void printState() {
         System.out.println("-----------var tracker-------------");
         for (Map.Entry<String, Location> entry : locations.entrySet()) {
-            System.out.println(entry.getKey() + ": " + (entry.getValue().isOnStack() ? " stackPosition:" + entry.getValue().getStackaddress() : ""));
+            System.out.println(entry.getKey() + ": " + " stackPosition:" + entry.getValue().getStackaddress() + (entry.getValue().isObjectAddress() ? " ClassReference:" + entry.getValue().getClassName() : ""));
         }
     }
 
+    void reset() {
+        locations = new HashMap<>();
+    }
 
 }
 
@@ -76,11 +79,15 @@ class Location {
         this.className = className;
     }
 
-    String getClassName(){
+    String getClassName() {
         return className;
     }
 
     boolean isOnStack() {
         return stackaddress >= 0;
+    }
+
+    boolean isObjectAddress() {
+        return className != null;
     }
 }
