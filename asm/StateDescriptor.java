@@ -53,6 +53,12 @@ class StateDescriptor {
         }
     }
 
+    void placeFieldValueInReg(int regnum, String baseVar, int varOffset){
+        System.err.println(">>>>>>>><"+getVarName(baseVar));
+        placeVarValueInReg(regnum, baseVar);
+        emitLoadReg(regnum, regnum, varOffset * 4, false);
+    }
+
     void placeRegInVarStack(int sourcereg, String var) {
         emitStoreReg(sourcereg, FP, -memoryMap.calculateFPOffset(getVarName(var)), true);
     }
@@ -91,12 +97,6 @@ class StateDescriptor {
 
     // ldr r0, [sp, #offset]
     void emitLoadReg(int destreg, int base_reg, int offset, boolean loadFromStack) {
-        if (loadFromStack) {
-            //Word wordBeingLoaded = memoryMap.getWordFromStack(memoryMap.getRegContent(base_reg) + offset);
-            //memoryMap.updateRegValue(destreg, wordBeingLoaded.val);
-        } else {
-            //TODO load from heap
-        }
         asmCode.addToText("ldr r" + destreg + ", [r" + base_reg + ", #" + offset + "]");
     }
 
@@ -170,6 +170,15 @@ class StateDescriptor {
         asmCode.addToText("orr r" + destreg + ", r" + destreg);
     }
 
+    void emitBranch(String functionName){
+        //varN++;
+        asmCode.addToText("bl " + functionName + "(PLT)");
+    }
+
+    void exitFromFunction(){
+        varN--;
+    }
+
     void calculateAnd(int reg1, int reg2) {
         int res = 0;
         if (memoryMap.getRegContent(reg1) + memoryMap.getRegContent(reg2) == 2) res = 1;
@@ -185,7 +194,6 @@ class StateDescriptor {
     //push {fp,lr,v1,v2,v3,v4,v5}
     //add fp, sp, #24
     void funcPrologue() {
-        varN++;
         int[] toPush = new int[]{StateDescriptor.FP, StateDescriptor.LR, StateDescriptor.V1, StateDescriptor.V2, StateDescriptor.V3, StateDescriptor.V4, StateDescriptor.V5};
         emitPush(toPush);
         emitAdd(StateDescriptor.FP, StateDescriptor.SP, 24, false);
@@ -196,19 +204,22 @@ class StateDescriptor {
     void funcEpilogue() {
         emitSub(StateDescriptor.SP, StateDescriptor.FP, 24, false);
         emitPop(new int[]{StateDescriptor.FP, StateDescriptor.PC, StateDescriptor.V1, StateDescriptor.V2, StateDescriptor.V3, StateDescriptor.V4, StateDescriptor.V5});
-        varN--;
     }
 
     void printState() {
         memoryMap.printState();
     }
 
-    void newObject(String varName, String name) {
-        varTracker.addObjectToStack(getVarName(varName), name);
+    void newObject(String varName, String className) {
+        varTracker.addObjectToStack(getVarName(varName), className);
     }
 
     String getVarObject(String var) {
         return varTracker.getVarObject(getVarName(var));
+    }
+
+    boolean isField(String var){
+        return !varTracker.isOnStack(getVarName(var));
     }
 }
 
@@ -313,7 +324,6 @@ class Word {
     //reg content can be a variable or an int constant or an int datalabel
     String varName; //word content referenced by a variable
     int val = 0; //word int content (can also be pointer, an int constant, or a data section label id)
-    boolean isEmpty = false;
 
     Word(String varName) {
         this.varName = varName;
@@ -323,20 +333,7 @@ class Word {
         this.val = val;
     }
 
-    Word(String varName, int val) {
-        this.varName = varName;
-        this.val = val;
-    }
-
-    Word() {
-        isEmpty = true;
-    }
-
     boolean isVar() {
         return varName != null;
-    }
-
-    boolean isEmpty() {
-        return isEmpty;
     }
 }

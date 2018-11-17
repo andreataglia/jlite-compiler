@@ -17,6 +17,9 @@ public class MethodDecl extends Node {
     public VarsList varDeclList;
     public List<Stmt> stmtList;
 
+    public String className;
+    public int count;
+
     public MethodDecl(String name, VarsList params, BasicType returnType, VarsList varDeclList, List<Stmt> stmtList) {
         this.name = name;
         this.params = params;

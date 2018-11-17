@@ -9,6 +9,7 @@ public class CMtd3 extends Node3 {
     public Type3 returnType;
     public Id3 name;
     public List<VarDecl3> params;
+    public String className;
 
     //body
     public List<VarDecl3> varDeclList;

@@ -32,4 +32,5 @@ public class FunctionType extends DataType {
         }
         return true;
     }
+
 }

@@ -1,52 +1,40 @@
 class Main {
     Void main(){
-        Bool bool;
-        Int a;
-        Int b;
+        Compute compute;
+        Mbare mbare;
         Int i;
-        Int d;
-        Compute help2;
-        Int t1;
-        Int t2;
-        Compute help;
-        a = 1;
-        b = 2;
-        i = 3;
-        d = 4;
-        bool = false;
-        help2 = new Compute();
-        help2.cachedValue = 17;
-        help = new Compute();
-        t1 = help.addSquares(a,b,1,2,3,help2.cachedValue,5,6);
-        t2 = help.square(d);
-        d = help2.cachedValue;
-        if(t1 != t2){
-            println(t1);
-        }
-        else{
-            println("Square of d smaller than sum of squares\n\n");
-        }
+        i = 5;
+        compute = new Compute();
+        compute.printField();
+        println(i);
+
     }
 }
 class Compute {
     Bool computedSquares;
     Int cachedValue;
+    Int i;
+
     Int square(Int a){
         return a*a;
     }
     Int add(Int a, Int b){
         return a+b;
     }
-    //, Int a1, Int a2, Int a3, Int a4, Int a5, Int a6
-    Int addSquares(Int a, Int b, Int a1, Int a2, Int a3, Int a4, Int a5, Int a6){
-           println(a3);
-           println(a4);
-            //if(computedSquares){
-            //return cachedValue;
-            //}
-            //else{
-            //computedSquares = true;
-        return a5;
-            //}
+    Void printField(){
+        Int i;
+        i = 4;
+        println(i);
+
+    }
+}
+
+class Mbare{
+    Compute compute;
+    Int number;
+
+    Void printField2(){
+       println(this.number);
+       return;
     }
 }

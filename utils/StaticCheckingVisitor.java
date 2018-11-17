@@ -373,7 +373,9 @@ public class StaticCheckingVisitor implements Visitor {
         }
         FunctionType matchingFunction = null;
         for (FunctionType f : matchingFunctions) {
-            if (f.paramsMatch(params)) matchingFunction = f;
+            if (f.paramsMatch(params)) {
+                matchingFunction = f;
+            }
         }
         if (matchingFunction == null)
             throwTypeException("FunctionCall violated: params mismatch in function call " + atom.functionId, 2);
@@ -449,7 +451,11 @@ public class StaticCheckingVisitor implements Visitor {
             }
         }
         if (!classDecl.methodDeclList.isEmpty()) {
+            int count = 0;
             for (MethodDecl m : classDecl.methodDeclList) {
+                m.className = classDecl.className.name;
+                m.count = count;
+                count++;
                 classMethodsSignatures.add(MethodSignature.fromMethodDecl(m));
                 newLine();
                 System.out.print("method:[" + m.name + "->" + m.returnType + " [");

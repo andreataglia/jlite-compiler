@@ -45,7 +45,7 @@ class VarLocationTracker {
     void printState() {
         System.out.println("-----------var tracker-------------");
         for (Map.Entry<String, Location> entry : locations.entrySet()) {
-            System.out.println(entry.getKey() + ": " + (entry.getValue().isInReg() ? "reg:" + entry.getValue().getRegnum() : "") + (entry.getValue().isOnStack() ? " stackPosition:" + entry.getValue().getStackaddress() : ""));
+            System.out.println(entry.getKey() + ": " + (entry.getValue().isOnStack() ? " stackPosition:" + entry.getValue().getStackaddress() : ""));
         }
     }
 
@@ -53,33 +53,19 @@ class VarLocationTracker {
 }
 
 class Location {
-    private int regnum = -1;
     private int stackaddress = -1; //absolute stack position (counting 1 each entry)
     private String className;
 
     Location(int n, boolean onStack) {
         if (onStack) stackaddress = n;
-        else regnum = n;
-    }
-
-    int getRegnum() {
-        return regnum;
     }
 
     int getStackaddress() {
         return stackaddress;
     }
 
-    void noMoreInReg() {
-        regnum = -1;
-    }
-
     void noMoreOnStack() {
         stackaddress = -1;
-    }
-
-    void setRegnum(int regnum) {
-        this.regnum = regnum;
     }
 
     void setStackaddress(int stackaddress) {
@@ -92,10 +78,6 @@ class Location {
 
     String getClassName(){
         return className;
-    }
-
-    boolean isInReg() {
-        return regnum >= 0;
     }
 
     boolean isOnStack() {

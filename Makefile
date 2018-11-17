@@ -30,8 +30,7 @@ testir:
 test: 
 	@echo "compiling test.j..."
 	@$(JAVA) -cp .:java-cup-11b-runtime.jar Main test_ok/test.j > output.txt
-	@echo "Done executing. Look at output.txt for the outcome"
-	cat asmout.s
+	@echo "Done executing. Look at output.txt for the code until IR3, and asmout.s for the assembly"
 	docker exec test-gem5 arm-linux-gnueabi-gcc-5 -o /mnt/asmout.bin /mnt/asmout.s -static
 	docker exec test-gem5 gem5.opt /usr/local/share/gem5/configs/example/se.py -c /mnt/asmout.bin
 
