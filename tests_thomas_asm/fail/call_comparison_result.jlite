@@ -1,0 +1,6 @@
+class Main {
+    Void main(Int argc) {
+        (argc == 4)(4);
+        return;
+    }
+}

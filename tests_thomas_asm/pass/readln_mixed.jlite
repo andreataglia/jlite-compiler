@@ -1,0 +1,25 @@
+class MainClass89 {
+    Void main(){
+        Int z;
+        Int a;
+        Bool c;
+        String s;
+        Void v;
+        // Calling readln on void should discard the next line
+        readln(v);
+        readln(z);
+        readln(a);
+        println(z+a);
+        readln(c);
+        if(c) {
+            println("Yes");
+        } else {
+            return;
+        }
+        readln(v);
+        readln(s);
+        println(v);
+        println(s);
+        println(z);
+    }
+}

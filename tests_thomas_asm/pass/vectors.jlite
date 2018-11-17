@@ -1,0 +1,84 @@
+class Main {
+  Void main(Int argc, String argv){
+    /*
+     Main function
+     Performs some calculations
+    */
+    String currentChar; // Unused
+    Point p1;
+    Point p2;
+    Int buffer;
+    Vector v;
+
+    v = new Vector();
+    v.p1 = new Point();
+    p2 = new Point();
+    // v.v = v;
+    v.p1.x = 999;
+
+    v.v = v.getPoint();
+    v.v.getPoint().v.getPoint().v.v.v.v.v.v.p1.x = 90;
+
+    v.v.getPoint().v.getPoint().v.v.v.v.v.v.getPoint().getPoint().p2 = p2;
+
+    v.p1.y = 89;
+    println("Hello !");
+    println(v.v.v.getPoint().getPoint().getPoint().v.v.v.getPoint().getPoint().p1.x);
+    println("Hey!");
+
+    p2.x = 43 + 78 * 9 - 7;
+
+    readln(buffer);
+    p2.y = buffer;
+
+    println(v.norm() * 7 + 45 * 9);
+
+    return;
+  }
+}
+
+class Point {
+  Int x;
+  Int y;
+
+  String toString() {
+    return "Point instance";
+  }
+}
+
+class Vector {
+  Point p1;
+  Point p2;
+  Vector v;
+
+  Int norm() {
+    Int res;
+    println(p1.x);
+    println(p1.y);
+    println(p2.x);
+    println(p2.y);
+    res = this.square(p1.x - p2.x) + (p2.y - p1.y) * (p2.y - p1.y);
+    println(res * 5 / 210000);
+    res = sqrt(res);
+    return res + 67 - 67;
+  }
+
+  Int square(Int value_to_multiply){
+    return value_to_multiply * value_to_multiply;
+  }
+
+  Vector getPoint() {
+    return this;
+  }
+
+  Int sqrt(Int a) {
+    Int r;
+     r= 0;
+    while(r * r < --a)
+   {
+
+   r = r+1;
+   }
+   return r - 1;
+  }
+}

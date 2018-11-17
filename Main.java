@@ -12,10 +12,9 @@ import java.io.FileReader;
 
 public class Main {
 
-    private static boolean DEBUG = true;
-
     static public void main(String argv[]) {
         boolean allGood = true;
+        final boolean DEBUG = false;
         try {
             //Parsing
             System.out.println("\n------------- Parsing Output ------------------");

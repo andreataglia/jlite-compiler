@@ -1,0 +1,9 @@
+class Main {
+    Void main(){
+        String z;
+        println("Type a word");
+        readln(z);
+        println("You typed");
+        println(z);
+    }
+}

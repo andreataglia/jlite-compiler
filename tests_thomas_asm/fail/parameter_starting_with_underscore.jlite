@@ -1,0 +1,5 @@
+class MainClassTest783 {
+    Void main(Int _argc) {
+        return;
+    }
+}

@@ -1,0 +1,12 @@
+class Main {
+    Void main(Int a) {
+        Hello h;
+        h.greet(a,4);
+    }
+}
+class Hello {
+    Void greet(Int z) {
+        println("Hello !");
+        println(z);
+    }
+}

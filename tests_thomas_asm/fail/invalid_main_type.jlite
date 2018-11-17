@@ -1,0 +1,6 @@
+class Main {
+// Main can only be of type Void
+    Int main(){
+        hello();
+    }
+    }

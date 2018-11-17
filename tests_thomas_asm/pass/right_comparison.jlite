@@ -1,0 +1,13 @@
+// This tests comparisons with the constant on the right
+class MainClass {
+    Void main (Int c) {
+        c = 6;
+        if( 0 > c) {
+            return;
+        } else {
+            // That's stupid, but it's allowed
+            c = --------c;
+        }
+        println(c);
+    }
+}

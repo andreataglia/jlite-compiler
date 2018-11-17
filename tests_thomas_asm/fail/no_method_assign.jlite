@@ -1,0 +1,14 @@
+class A {
+    Void main(Bool a) {
+        Testent z;
+        z = new Testent();
+        z.a = true;
+    }
+}
+
+class Testent {
+    Bool b;
+    Bool a() {
+        return false;
+    }
+}

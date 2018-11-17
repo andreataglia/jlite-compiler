@@ -1,0 +1,6 @@
+This line is discarded
+If a line is input as an integer, it's value is zero
+68373399
+78
+This line will be discarded as well since readln(void) is called
+Yes, this test passed!

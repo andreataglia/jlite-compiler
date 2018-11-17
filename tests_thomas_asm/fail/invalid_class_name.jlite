@@ -1,0 +1,11 @@
+class Main {
+    Void main(){
+        return;
+    }
+}
+// This class name does not begin with a caps !
+class test {
+    Void test() {
+        return;
+    }
+}

@@ -1,0 +1,9 @@
+class MainC {
+    Void main(Int a) {
+        if(a > 0)
+            a = 0;
+        else {
+            return;
+        }
+    }
+}

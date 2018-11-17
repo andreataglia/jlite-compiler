@@ -1,0 +1,9 @@
+class AdditionsSubstractionsOrderTest {
+    Void main() {
+        // Operations must be interpreted from left to right
+        println(1 + 2 - 3 + 7 - 6);
+        println(89 * 2);
+        // Multiplications and divisions have priority over additions and substractions
+        println(383 - 6 - 2 * 3 + 4 * 3 - 333);
+    }
+}

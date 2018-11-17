@@ -1,0 +1,10 @@
+class Main {
+    Void main(Int z) {
+        Abc a;
+        a.b();
+    }
+}
+
+class Abc {
+    Void b;
+}

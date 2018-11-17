@@ -1,0 +1,12 @@
+class Main {
+    Void main(Int a){
+        Int b;
+        b = 10 / 3;
+        println(b); // 3
+        println(81/9); // 9
+        b = 63 / -9;
+        println(b); // -7
+        println(64 / -8); // -8
+        println(-900 / -10); // 90
+    }
+}

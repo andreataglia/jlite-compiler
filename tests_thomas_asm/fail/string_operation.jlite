@@ -1,0 +1,7 @@
+// String operations are not supported
+class Main {
+    Void main(Int argc) {
+        String a;
+        a = ("aaa") + ("bb");
+    }
+}

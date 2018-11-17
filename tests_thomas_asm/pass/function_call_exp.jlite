@@ -1,0 +1,17 @@
+class Main {
+    Void main(Int a, Void v, String s) {
+        Greet z;
+        a = -6;
+        z.sayhi(v, "Hello, this is function_call_exp...", s, a + 32, a < 89, null);
+    }
+}
+
+class Greet {
+    Void sayhi(Void z, String s, String b, Int a, Bool p, Void v1) {
+        if(p) {
+            println(s);
+        } else {
+            println(b);
+        }
+    }
+}

@@ -1,0 +1,11 @@
+// This test makes sure that big constants are handled properly by the program
+class BigNumbers790Test {
+    Void main() {
+        Int z;
+        Int x;
+        z = -8083;
+        x = 20292;
+        println(-255 + 255 + 256 - 256);
+        println(5 + 3 * 2);
+    }
+}

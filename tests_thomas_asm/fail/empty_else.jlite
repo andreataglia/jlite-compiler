@@ -1,0 +1,8 @@
+class Main {
+    Void main(Int a) {
+        if(a == 0) {
+            return;
+        } else {
+        }
+    }
+}

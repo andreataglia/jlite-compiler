@@ -1,0 +1,8 @@
+class Main {
+    Void main(Int a) {
+        a = 4;
+        println(a == 2);
+        a = 2;
+        println(a == 2);
+    }
+}

@@ -1,0 +1,8 @@
+class Test {
+  Int a;
+  Void main() {
+    a.b().c();
+  }
+
+  Int b;
+}

@@ -1,0 +1,14 @@
+class Test {
+    Void main() {
+        A a;
+        a = new A();
+        a.a = 56;
+        println(a.a);
+        a.a = a.a * -1;
+        println(a.a + 8);
+    }
+}
+
+class A {
+    Int a;
+}

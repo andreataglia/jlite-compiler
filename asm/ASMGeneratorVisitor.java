@@ -50,12 +50,10 @@ public class ASMGeneratorVisitor {
         if (spaceToReserve > 0)
             stateDescriptor.emitSub(StateDescriptor.SP, StateDescriptor.SP, spaceToReserve * 4, false);
         //end Prologue. Start visiting statements
-        System.out.println("\n>>>>>>>> " + method.name);
 
         //first param is always this
         stateDescriptor.newObject("this", method.className);
 
-        stateDescriptor.printState();
         for (Stmt3 stmt : method.stmtList) {
             stmt.accept(this);
         }

@@ -1,0 +1,27 @@
+class Hello {
+    Void main() {
+        Test a;
+        println(a.hello());
+    }
+}
+
+class Test {
+    Int a;
+    Int b;
+
+    Void hello() {
+        Int yolo;
+        Int test;
+        /* Enables us to make sure this function is called
+         * Since void leads to the same println("NULL\n"), some lazy compiler
+         * Might not call us, doh !
+         */
+        println(hiAgain());
+        return;
+    }
+
+    Int hiAgain() {
+        Void test;
+        return 4;
+    }
+}

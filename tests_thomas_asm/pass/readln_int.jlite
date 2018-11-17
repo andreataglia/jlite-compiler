@@ -1,0 +1,9 @@
+class Main {
+    Void main(){
+        Int g;
+        println("Please type an integer");
+        readln(g);
+        println("The double of your number is:");
+        println(g * 2);
+    }
+}

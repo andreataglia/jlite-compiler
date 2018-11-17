@@ -1,0 +1,57 @@
+class Main {
+    Void main(Int a, Int b) {
+        Int c;
+        Me other;
+        other = new Me();
+        other.b = 6;
+        c = 8 + 9;
+        other.increment(c);
+        println(other.b);
+        println(other.write(78));
+        println("Done !");
+    }
+}
+
+class Me {
+    Int b;
+    Bool c;
+    String z;
+
+    Int write(Int a) {
+        Me other;
+        b = a + 1;
+        println(b);
+        //println(y);
+        c = true;
+        other = duplicate();
+        other.increment(89);
+        duplicate().increment(7);
+        increment(4);
+        this.increment(12);
+        println(c);
+        this.c = false;
+        println(this.c);
+        println(other.c);
+        if(b >= 0 || b < -80) {
+            return a + b - -89;
+        } else {
+            return 80;
+        }
+    }
+
+    Me duplicate() {
+        Me other;
+        other = new Me();
+        other.b = b;
+        other.c = c;
+        other.z = z;
+        return other;
+    }
+
+    Int increment(Int c) {
+        println(b);
+        b = b + c;
+        println(b);
+        return 42;
+    }
+}

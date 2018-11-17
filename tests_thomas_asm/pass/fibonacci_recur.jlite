@@ -1,0 +1,34 @@
+class Fibonaccci42TestClass {
+    Void main() {
+        Fibonacci f;
+        f = f.init();
+        println("Fibonacci number 20 is:");
+        println(f.compute(20));
+        println("Number of iterations to find it:");
+        println(f.funcCallCount);
+    }
+}
+
+class Fibonacci {
+    Int funcCallCount;
+
+    Fibonacci init() {
+        Fibonacci f;
+        f = new Fibonacci();
+        f.funcCallCount = 0;
+        return f;
+    }
+
+    Int compute(Int n) {
+        funcCallCount = this.funcCallCount + 1;
+        if(n <= 0) {
+            return 0;
+        } else {
+            if(n == 1){
+                return 1;
+            } else {
+                return compute(n - 1) + this.compute(n-2);
+            }
+        }
+    }
+}

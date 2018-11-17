@@ -1,0 +1,25 @@
+class Main {
+    Void main(Int a) {
+        a = 62;
+        println(a);
+        if (a > 0) {
+            println(a);
+            a = -a;
+            if (a < 0) {
+                println(a);
+                while(true) {
+                    println(a);
+                    if(a > 2000) {
+                        return;
+                    } else {
+                        a = a * -2;
+                    }
+                }
+            } else {
+                return;
+            }
+        } else {
+            return;
+        }
+    }
+}

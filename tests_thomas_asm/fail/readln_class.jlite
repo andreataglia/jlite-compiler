@@ -1,0 +1,14 @@
+class Hello {
+    Void main(Int argc) {
+        Test z;
+        z = new Test();
+        z.a = 0;
+        z.b = 7;
+        readln(z);
+    }
+}
+
+class Test {
+    Int a;
+    Int b;
+}

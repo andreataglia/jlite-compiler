@@ -1,0 +1,6 @@
+class MainC {
+    Void main(Int a) {
+        while(a > 0)
+            return null;
+    }
+}

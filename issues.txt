@@ -1,0 +1,2 @@
+1.
+expressions * adoesn't care about priority. but if you put parenthesis it's fine. maybe specify it?

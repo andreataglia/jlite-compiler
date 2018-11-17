@@ -1,0 +1,7 @@
+class Hello {
+    Void main(Int argc) {
+        argc = 4;
+        (argc == 4) = 2;
+        return;
+    }
+}

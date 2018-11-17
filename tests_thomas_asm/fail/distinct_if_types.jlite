@@ -1,0 +1,19 @@
+// As per the [Cond] type checking rule
+class Main {
+    Void main(Int a, Void b) {
+        Test z;
+        z.hi();
+        return;
+    }
+}
+
+class Test {
+    Int hi() {
+        Main m;
+        if(true) {
+            hi();
+        } else {
+            m.main(2, null);
+        }
+    }
+}

@@ -1,0 +1,7 @@
+class Myclass {
+  Int a;
+
+  Void test() {
+    return;
+  }
+}

@@ -1,0 +1,5 @@
+class MainTe{
+    Void main(Int arg, MainTe this) {
+        return;
+    }
+}

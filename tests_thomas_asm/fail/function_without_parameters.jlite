@@ -1,0 +1,14 @@
+class MainClass {
+    Void main () {
+        Box b;
+        b = new Box();
+
+        b.call();
+    }
+}
+
+class Box {
+    Void call {
+        return;
+    }
+}

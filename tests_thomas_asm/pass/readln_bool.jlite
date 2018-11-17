@@ -1,0 +1,17 @@
+class Main{
+    Void main() {
+        Int a;
+        Bool z;
+        a = 0;
+        while(a < 6) {
+            // Don't forget to increase the loop counter...
+            a = a+1;
+            readln(z);
+            if(z) {
+                println("You typed a true value");
+            } else {
+                println("You typed a false value");
+            }
+        }
+    }
+}

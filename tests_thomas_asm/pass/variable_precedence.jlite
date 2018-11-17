@@ -1,0 +1,33 @@
+class Main {
+    Void main(){
+        Test a;
+        a = new Test();
+        a.a = "This is not an error";
+        println(a.a);
+        a.run(42);
+        a.print();
+        a.resetErr();
+        a.print();
+        println(a.a);
+    }
+}
+class Test {
+    String a;
+    Void f(Int a){
+        Void a;
+        return a;
+    }
+
+    Void run(Int a){
+        println(a);
+        a = 52;
+        println(52);
+    }
+    Void resetErr(){
+        a = "OK";
+        print();
+    }
+    Void print(){
+        println(a);
+    }
+}

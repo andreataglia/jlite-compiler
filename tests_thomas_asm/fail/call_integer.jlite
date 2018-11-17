@@ -1,0 +1,6 @@
+class Main {
+    Void main(Int a){
+        a();
+        return;
+    }
+}

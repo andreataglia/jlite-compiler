@@ -1,0 +1,5 @@
+class Main {
+    Void main(Int a, Void z) {
+        println("Hello");
+    }
+}

@@ -1,0 +1,19 @@
+class TestCLass89B {
+    Void main() {
+    SecondDUVJ130dsdk c7983AZz;
+        println(c7983AZz.id8292AAAdsd());
+        return;
+    }
+}
+
+class SecondDUVJ130dsdk {
+    Int id8292AAAdsd() {
+        println("Hello");
+
+        this.duplicate(4);
+    }
+
+    Int duplicate(Int a) {
+        return a * 9;
+    }
+}
