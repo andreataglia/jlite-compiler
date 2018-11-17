@@ -36,7 +36,7 @@ public class ASMGeneratorVisitor {
         for (VarDecl3 param : method.params) {
             stateDescriptor.reserveStackWordForVar(param.id.id);
             if (spaceToReserve > 3) {
-                stateDescriptor.emitLoadReg(StateDescriptor.V1, StateDescriptor.FP, (spaceToReserve - 3) * 4, true);
+                stateDescriptor.emitLoadReg(StateDescriptor.V1, StateDescriptor.FP, (method.params.size() - 3 - (spaceToReserve - 3)) * 4, true);
                 stateDescriptor.placeRegInVarStack(StateDescriptor.V1, param.id.id);
             } else {
                 stateDescriptor.placeRegInVarStack(spaceToReserve, param.id.id);
