@@ -1,46 +1,9 @@
 # jLite Front-End Compiler 
 
 
-This is a Java front end compiler for jLite programs.
-The compiler aims at isolating in the best possible the way all the programming language details so as to isolate from the backend compiler work. This allows any backend compilers to be used as it can just take care of the machine code details.
-The project front end compiler is dived into two main parts:
+This is a compiler for Jlite programs. It is fully written in Java and includes both a frontend and a backend.
 
-### Lexer & Parser
-The grammar of jlite can be found in the pdf file `assignment_text.pdf`.
-The Lexer has been created using the jflex tool which creates java classes starting from a .lex specification file. The Parsers has been produced using Java Cup, which produces java classes out of a .cup specification file. The Main class starts the parsing process using the generated classes as described above taking an input file name from command line argument.  
-
-Other than just parsing, the parser builds the whole AST. Although the AST is not of great use so far, it will be necessary for the next compilation step. The AST nodes can be found at path `jnodes/` and the root node is `JProgram.java`. Every node has a unique toString() function which is forced to implement being the class extending the abstract JNode. The root toString() will just call in chain all the nodes toString() function to end up with a printed version of the AST. However, it has been preferred to just print out the parsed program from the lexer. The AST will be used later on as mentioned above.
-
-The reference JLite grammar was not well formatted and threw a lot of shift/reduce and reduce/reduce conflicts at first. All of them have been resolved by rearranging the grammar so as to avoid ambiguity. One exception has been seen on the production involving `ClassDecl` where java code has been inserted in the parser to force correct behaviour after have loosened the grammar rules.
-
-### Static Checking & Intermediate Code Generation
-To better tackle this part the previous AST is taken as input and a whole new tree is built, that is the concrete tree structure. The nodes of these new tree are well separated from the previous tree and are placed in the package `concrete_nodes`. From this point onwards there has been implemented a Visitor pattern to conveniently explore the tree multiple times and with different options. The following code is implemented in classes placed inside `utils` package.
-
-A first implementation of the Visitor interface is the PrettyPrintingVisitor which just gives a nice and debugging useful view of the tree.
-
-A second implementation is the StaticCheckingVisitor, which checks for the Distinct-Name Checking at first, and then goes on subsequently applying the typing rules as formally specified in the document `assignment2_text.pdf`. During the exploration it fills the Symbol Table and adds all the required type information for the use of IR Generator right after. 
-
-A third implementation is the IRGenerator. It creates another, simpler tree which is the structure that will be given as input to the back-end compiler. It holds the required information for abstracting from the initial source code, so the back-end compiler doesn't need to know about the compiled language. The visitor generates an intermediate code representation which adhere to the IR3 specification which can be found in the file `assignment2_text.pdf`.
-
-### ASM Generation
-- println(NULL) : don't print anything
-- Variable shadowing example:
-Int Mbare_ciao_0 (Mbare this, String v, Int b){
-    Int b;
-    Int _t1;
-    Int _t2;
-    b = 4;
-    println(v);
-    _t1 = ciao(this, "hey", b);
-    _t2 = b + _t1;
-    return _t2;
-}
-param b is overwritten by new local var b
-
-- The ARM Instruction is only able to load a limited range of immediate values with mov. The problem is that the value has to be encoded in the mov instruction itself. As all ARM Instructions are 32-bit wide, the original instruction-set up to ARMv5 only had a total of 8+4 bits to encode immediates. With the first 8-bit being able to load any 8-bit value int in the range of 0-255 and the 4 bit being a right rotate in steps of 2 between 0 and 30.
-This has been taken care of and, if the immediate value is outside the range 0-255, then the value is loaded from memory with ldr: ldr r7,=#val The assembler then will create a constant-pool and load the value from there via pc-relative addressing.
-
-
+The compiler frontedn aims at isolating in the best possible the way all the programming language details so as to isolate from the backend compiler work. This allows any backend compilers to be used as it can just take care of the machine code details. This way other backend or frontend compilers can be plugged in instead of the one being currently used.
 
 ## Prerequisites
 
@@ -57,19 +20,20 @@ If everything goes fine you should simply not see any error messages.
 
 ## Running
 
-Run `make run in=filepath` to feed the input file to be parsed to the parser. You can try one of the test files, for example:
+Run `make run_asm in=filepath` to feed the input file to be compiled. You can try one of the test files, for example:
 
-    $ make run in=test_ok/typecheck/1
+    $ make run_asm in=testcaes/test_ok/asm/1.j
 
-If everything goes fine you will see the following as last line:
+If everything goes fine you will something like this:
 
-    Done executing. Look at output.txt for the outcome
+    Done compiling into assembly code.
 
-Indeed, you can look into the file `output.txt` for the parsed input.
+The output assembly code will be inside `asmout.s`.
+You can look into the file `output.txt` to see the output of the frontend process (up to the IR3 code).
 
 If you were to feed a bad program to the parser the makefile recipe will fail and any typing error is clearly reported. You can look into `output.txt` to have more info about where the compiler halted the execution.
 
-## Understanding the output
+## Understanding the frontend output
 
 The front end compiler gives one output per component if everything goes well during the compilation process:
 - <b>Parsing</b> produces the first section which is a mere pretty printing of the input program
@@ -82,10 +46,6 @@ To have greater details about the error _DEBUG_ flag in Main class should be set
 
 ## Tests
 
-The parsers has been tested using the files in the folders test_ok/typecheck and test_ko/typecheck which in turn contain good syntax code and wrong written code.
+The compiler has been tested using the files in the folders `testcases/test_ok/asm` and `testcases/test_ko/typecheck` which in turn contain good syntax code and wrong written code.
 
-## Notes
-
-- methods overloading has been implement, allowing more methods with the same name to be declared on the same class, as long as the signature differ. Informally, the method signature is composed of the Method name + List of Types of params. This has not great implication on the code, as it still searches for a signature match when checking a function call is correctly made, being the code very clean and generic enough. The actual implication is in the Name Checking part at the beginning of the TypeCheckingVisitor class, where instead of just making sure method names are different, we check their signature, so is just a matter of changing the implementation of the equals method of the MethodDecl class.
-- null type specification has not been formalised in details. I just treat it as a normal Type, but not assignable to a var or to anything else, it's not of great use really.
-- while statement ambiguity has been patched by throwing a type error in case the while has no statement in its body.
+The folder `testcases/test_ok/asm` contains 5 samples which have been used for testing the backend part of the compiler. The expected output for each file is in `testcases/test_ok/asm/<test_id>_out.txt` where `<test_id>` can be a number between 1 and 5.  

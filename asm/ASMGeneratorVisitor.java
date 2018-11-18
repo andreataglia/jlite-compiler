@@ -9,6 +9,7 @@ public class ASMGeneratorVisitor {
     private int dataCount;
     private Program3 program3;
     private boolean trackObjectCreation = false;
+    private boolean returnFound = false;
 
     public ASMGeneratorVisitor() {
         asmCode = new ASMCode();
@@ -50,8 +51,11 @@ public class ASMGeneratorVisitor {
             stateDescriptor.emitSub(StateDescriptor.SP, StateDescriptor.SP, spaceToReserve * 4, false);
         //end Prologue. Start visiting statements
 
+        returnFound = false;
         for (Stmt3 stmt : method.stmtList) {
-            stmt.accept(this);
+            if (!returnFound){
+                stmt.accept(this);
+            }
         }
 
         //epilogue
@@ -168,10 +172,11 @@ public class ASMGeneratorVisitor {
         ////////////////////////////////// return ⟨id3⟩ ; //////////////////////////////////
         else if (stmt.stmtType.equals(Stmt3.Stmt3Type.RETURN_VAR)) {
             stateDescriptor.emitMov(StateDescriptor.A1, forceVisit(stmt.id3_1), true);
+            returnFound = true;
         }
         ////////////////////////////////// return ; //////////////////////////////////
         else if (stmt.stmtType.equals(Stmt3.Stmt3Type.RETURN)) {
-            return 0; //nothing needs to be done
+            returnFound = true;
         }
         return -17;
     }

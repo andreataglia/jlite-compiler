@@ -24,11 +24,10 @@ run: Main.class
 	@docker exec test-gem5 gem5.opt /usr/local/share/gem5/configs/example/se.py -c /mnt/asmout.bin
 	@echo "Done running the generated executable"
 
-testir:
-	@echo "compiling test.j..."
-	@$(JAVA) -cp .:java-cup-11b-runtime.jar Main test_ok/test.j > output.txt
-	@echo "Done executing. Look at output.txt for the outcome"
-	cat output.txt
+run_asm:
+	@echo "compiling $(in)..."
+    @$(JAVA) -cp .:java-cup-11b-runtime.jar Main $(in) > output.txt
+    @echo "Done compiling into assembly code. The output code is located in file asmout.s. Look at output.txt for the outcome of the previous steps."
 
 test: 
 	@echo "compiling test.j..."
