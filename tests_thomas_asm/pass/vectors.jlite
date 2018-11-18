@@ -17,13 +17,13 @@ class Main {
     v.p1.x = 999;
 
     v.v = v.getPoint();
-    v.v.getPoint().v.getPoint().v.v.v.v.v.v.p1.x = 90;
+    v.v.getPoint().v.getPoint().p1.x = 90;
 
-    v.v.getPoint().v.getPoint().v.v.v.v.v.v.getPoint().getPoint().p2 = p2;
+    //v.v.getPoint().v.getPoint().getPoint().getPoint().p2 = p2;
 
     v.p1.y = 89;
     println("Hello !");
-    println(v.v.v.getPoint().getPoint().getPoint().v.v.v.getPoint().getPoint().p1.x);
+    println(v.v.v.getPoint().getPoint().getPoint().getPoint().getPoint().p1.x);
     println("Hey!");
 
     p2.x = 43 + 78 * 9 - 7;

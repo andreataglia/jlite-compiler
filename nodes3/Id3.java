@@ -15,7 +15,7 @@ public class Id3 extends Idc3 {
         return id;
     }
 
-    public int accept(ASMGeneratorVisitor visitor){
+    public int accept(ASMGeneratorVisitor visitor) throws Exception {
         return visitor.visit(this);
     }
 }

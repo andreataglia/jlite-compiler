@@ -1,0 +1,12 @@
+// source: Yijiang fail3.pl
+class Main {
+    // Fails type checking
+    Void main() {
+        Int a;
+        a = 13 - 12;
+    }
+}
+
+class Hey_hey{
+	
+}

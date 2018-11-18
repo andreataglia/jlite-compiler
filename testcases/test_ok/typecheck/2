@@ -1,0 +1,38 @@
+// source: Elain Fang Li
+class Main {
+    Void main(Int i, Int a, Int b,Int d){
+        while(true){
+            b = 340 ;
+            i = b ;
+        }
+        if(true){
+        	while (true) { i = 5 * i - 3; }
+        }else{
+        	while(i > d) { b = 340; }
+        }
+        return;
+        return;
+
+    }
+}
+
+class Empty {
+	String convolutedelse() {
+	 if (1 > 2 * 3) {
+	 		return "";
+	 	} else { 
+	 		if (2 == 3) {return "Oh gargoyles"; }
+	 		else {return "Gargoyles"; }
+	 }
+	}
+
+}
+
+class Dummy {
+Dummy j;
+Int dummy() {
+Bool i;
+Int j;
+return j;
+}
+}

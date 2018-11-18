@@ -1,0 +1,23 @@
+//testing weird while behaviour
+
+class Main {
+    Void main(){
+        return;
+    }
+}
+
+class A{
+	Int f(){
+		Int b;
+        if(3<= -4){
+        	while(true){ return 3;}
+        }else{
+        	if(true){
+        		b = -b;
+        	}else{
+        		b = ------b;
+        	}
+        }
+        return 3;
+    }
+}

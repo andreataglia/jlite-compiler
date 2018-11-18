@@ -1,0 +1,3 @@
+Square of d larger than sum of squares
+@@@@@@@@@@@@@@@
+0

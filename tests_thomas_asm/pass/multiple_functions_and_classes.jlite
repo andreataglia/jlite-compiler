@@ -21,7 +21,6 @@ class Me {
         Me other;
         b = a + 1;
         println(b);
-        //println(y);
         c = true;
         other = duplicate();
         other.increment(89);

@@ -1,10 +1,7 @@
 package asm;
 
 import nodes3.*;
-import utils.ArithOperand;
-import utils.BasicType;
-import utils.BoolOperand;
-import utils.RelBoolOperand;
+import utils.*;
 
 public class ASMGeneratorVisitor {
     private StateDescriptor stateDescriptor;
@@ -12,7 +9,6 @@ public class ASMGeneratorVisitor {
     private int dataCount;
     private Program3 program3;
     private boolean trackObjectCreation = false;
-    private boolean mainMethod = true;
 
     public ASMGeneratorVisitor() {
         asmCode = new ASMCode();
@@ -35,6 +31,9 @@ public class ASMGeneratorVisitor {
         int spaceToReserve = 0;
         for (VarDecl3 param : method.params) {
             stateDescriptor.reserveStackWordForVar(param.id.id);
+            if (param.type.type.dataType.name().equalsIgnoreCase("object")) {
+                stateDescriptor.newObject(param.id.id, param.type.toString());
+            }
             if (spaceToReserve > 3) {
                 stateDescriptor.emitLoadReg(StateDescriptor.V1, StateDescriptor.FP, (method.params.size() - 3 - (spaceToReserve - 3)) * 4, true);
                 stateDescriptor.placeRegInVarStack(StateDescriptor.V1, param.id.id);
@@ -50,9 +49,6 @@ public class ASMGeneratorVisitor {
         if (spaceToReserve > 0)
             stateDescriptor.emitSub(StateDescriptor.SP, StateDescriptor.SP, spaceToReserve * 4, false);
         //end Prologue. Start visiting statements
-
-        //first param is always this
-        stateDescriptor.newObject("this", method.className);
 
         for (Stmt3 stmt : method.stmtList) {
             stmt.accept(this);
@@ -101,7 +97,7 @@ public class ASMGeneratorVisitor {
             } else if (stmt.idc3 instanceof Const) {
                 Const idc3const = (Const) stmt.idc3;
                 if (idc3const.isStringLiteral()) {
-                    asmCode.addStringData(((Const) stmt.idc3).stringLiteral, dataCount);
+                    asmCode.addStringData(addLineBreak(((Const) stmt.idc3).stringLiteral), dataCount);
                     stateDescriptor.emitLoadReg(StateDescriptor.A1, dataCount);
                     dataCount++;
                 } else if (idc3const.isBooleanLiteral()) {
@@ -123,12 +119,14 @@ public class ASMGeneratorVisitor {
         }
         ////////////////////////////////// ⟨id3⟩ = ⟨Exp3⟩ //////////////////////////////////
         else if (stmt.stmtType.equals(Stmt3.Stmt3Type.ASS_VAR)) {
+            System.err.println("@@@@@@@" + stmt);
             int reg = stateDescriptor.getReg();
             final String varName = stmt.id3_1.id;
             final Exp3 exp3 = stmt.exp3Impl;
             if (stateDescriptor.isField(varName)) {
                 int varOffset = calculateFieldOffset(stateDescriptor.getVarObject("this"), varName);
-                stateDescriptor.placeFieldValueInReg(reg, "this", varOffset);
+                stateDescriptor.emitMov(reg, forceVisit(exp3), true);
+                stateDescriptor.placeRegOnHeap(reg, "this", varOffset);
             } else {
                 stateDescriptor.emitMov(reg, forceVisit(exp3), true);
                 stateDescriptor.placeRegInVarStack(reg, varName);
@@ -140,9 +138,13 @@ public class ASMGeneratorVisitor {
                     stateDescriptor.newObject(varName, ((Exp3Impl) exp3).cName3.name.name);
                 } else if (((Exp3Impl) exp3).expType.equals(Exp3Impl.ExpType.FIELD_ACCESS)) {
                     String className = stateDescriptor.getVarObject(((Exp3Impl) exp3).id3_1.id);
-                    if (getFieldType(className, ((Exp3Impl) exp3).id3_2.id) instanceof CName3) {
-                        stateDescriptor.newObject(varName, className);
+                    Type3 fieldClass = getFieldType(className, ((Exp3Impl) exp3).id3_2.id);
+                    if (fieldClass != null && fieldClass.type.dataType.name().equalsIgnoreCase("object")) {
+                        stateDescriptor.newObject(varName, fieldClass.toString());
                     }
+                } else if (((Exp3Impl) exp3).expType.equals(Exp3Impl.ExpType.FUNCTIONCALL)) {
+                    String className = exp3.type.toString();
+                    stateDescriptor.newObject(varName, className);
                 } else {
                     error("trackObjectCreation = true for an unknown case");
                 }
@@ -158,7 +160,7 @@ public class ASMGeneratorVisitor {
             final String field = stmt.id3_2.id;
             int expRes = stateDescriptor.getReg();
             stateDescriptor.emitMov(expRes, forceVisit(stmt.exp3Impl), true);
-            stateDescriptor.placeRegOnHeap(expRes, varName, calculateFieldOffset(stateDescriptor.getVarObject(varName), field) * 4);
+            stateDescriptor.placeRegOnHeap(expRes, varName, calculateFieldOffset(stateDescriptor.getVarObject(varName), field));
         }
         ////////////////////////////  ⟨id3⟩( ⟨VList3⟩ ) ; //////////////////////////////////
         else if (stmt.stmtType.equals(Stmt3.Stmt3Type.FUNCTION)) {
@@ -184,7 +186,7 @@ public class ASMGeneratorVisitor {
         return -18;
     }
 
-    private int forceVisit(Idc3 idc3) {
+    private int forceVisit(Idc3 idc3) throws Exception {
         if (idc3 instanceof Id3) return ((Id3) idc3).accept(this);
         else if (idc3 instanceof Const) return ((Const) idc3).accept(this);
         else error("idc3 forceVisit should never be here");
@@ -238,11 +240,23 @@ public class ASMGeneratorVisitor {
             regnum = stateDescriptor.getReg();
             final String baseVar = exp.id3_1.id; //var which contains the pointer to the class in the heap
             final String field = exp.id3_2.id; //field
-            int varOffset = calculateFieldOffset(stateDescriptor.getVarObject(baseVar), field);
-            stateDescriptor.placeFieldValueInReg(regnum, baseVar, varOffset);
+            if (stateDescriptor.isField(baseVar)) {
+                String varObject = stateDescriptor.getVarObject("this");
+                int varOffset = calculateFieldOffset(varObject, baseVar);
+                stateDescriptor.placeFieldValueInReg(regnum, "this", varOffset);
 
+                varObject = getFieldType(varObject, baseVar).toString();
+                varOffset = calculateFieldOffset(varObject, field);
+                stateDescriptor.emitLoadReg(regnum, regnum, varOffset, false);
+            } else {
+                String varObject = stateDescriptor.getVarObject(baseVar);
+                int varOffset = calculateFieldOffset(varObject, field);
+                stateDescriptor.placeFieldValueInReg(regnum, baseVar, varOffset);
+                trackObjectCreation = true;
+            }
         } else if (exp.expType.equals(Exp3Impl.ExpType.FUNCTIONCALL)) {
             final String functionName = exp.id3_1.id;
+            if (exp.type.type.dataType.name().equalsIgnoreCase("object")) trackObjectCreation = true;
             //first param is always the object
             int reg = 0;
             for (Idc3 p : exp.params) {
@@ -289,7 +303,7 @@ public class ASMGeneratorVisitor {
             int val = ((exp.booleanLiteral) ? 1 : 0);
             stateDescriptor.emitMov(regnum, val, false);
         } else if (exp.isStringLiteral()) {
-            asmCode.addStringData(exp.stringLiteral, dataCount);
+            asmCode.addStringData(addLineBreak(exp.stringLiteral), dataCount);
             stateDescriptor.emitLoadReg(regnum, dataCount);
             dataCount++;
         }
@@ -297,10 +311,12 @@ public class ASMGeneratorVisitor {
     }
 
     //return the register in which the value is contained
-    public int visit(Id3 exp) {
+    public int visit(Id3 exp) throws Exception {
         int regnum = stateDescriptor.getReg();
         final String var = exp.id;
-        if (stateDescriptor.isField(exp.id)) {
+        if (var.equals("this")) {
+            stateDescriptor.placeVarValueInReg(regnum, var);
+        } else if (stateDescriptor.isField(var)) {
             int varOffset = calculateFieldOffset(stateDescriptor.getVarObject("this"), var);
             stateDescriptor.placeFieldValueInReg(regnum, "this", varOffset);
         } else {
@@ -318,6 +334,7 @@ public class ASMGeneratorVisitor {
     }
 
     private Type3 getFieldType(String cname, String field) {
+        System.err.println("@@@>>>>>"+cname + " - field: " +field);
         for (CName3 c : program3.classDescriptors.keySet()) {
             if (c.name.name.equals(cname)) {
                 for (VarDecl3 var : program3.classDescriptors.get(c)) {
@@ -325,10 +342,11 @@ public class ASMGeneratorVisitor {
                 }
             }
         }
+        error("Field not found!!!");
         return null;
     }
 
-    private int calculateFieldOffset(String cname, String field) {
+    private int calculateFieldOffset(String cname, String field) throws Exception {
         int varOffset = -1;
         boolean notFound = true;
         for (CName3 c : program3.classDescriptors.keySet()) {
@@ -339,7 +357,15 @@ public class ASMGeneratorVisitor {
                 }
             }
         }
-        if (varOffset < 0) error("couldn't find field " + field);
-        return varOffset;
+        if (varOffset < 0) {
+            throw new Exception("Object hasn't been initialized!!");
+        }
+        return varOffset * 4;
+    }
+
+    private String addLineBreak(String s) {
+        s = s.substring(0, s.length() - 1);
+        s += "\\n\"";
+        return s;
     }
 }

@@ -1,0 +1,19 @@
+// source test2.plx Tamer
+class Main {
+Void main(){
+    Int x;
+    x = 5;
+    while ( x > 0 ){
+        println(x);
+        x = x - 1;
+    }
+}
+}
+class Dummy {
+    Dummy j;
+    Int i;
+    Int foo( Int x){
+        i = x * x;
+        return i;
+    }
+}

@@ -13,7 +13,6 @@ class Test {
         if(true) {
             hey();
         } else {
-            m.main(2, null);
             hi();
         }
     }

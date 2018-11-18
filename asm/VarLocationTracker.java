@@ -35,11 +35,16 @@ class VarLocationTracker {
     }
 
     void addObjectToStack(String var, String cname) {
-        locations.get(var).setClassName(cname);
+        if (isOnStack(var)){
+            locations.get(var).setClassName(cname);
+        }
     }
 
     String getVarObject(String var) {
-        return locations.get(var).getClassName();
+        if (locations.get(var) != null){
+            return locations.get(var).getClassName();
+        }
+        return "";
     }
 
     void printState() {

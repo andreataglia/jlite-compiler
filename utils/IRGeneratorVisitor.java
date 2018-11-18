@@ -148,9 +148,9 @@ public class IRGeneratorVisitor implements Visitor {
         String bodyLabel = newLabel();
         String exitLabel = newLabel();
 
+        currentStmts.add(new Stmt3(Stmt3.Stmt3Type.LABEL, beginLabel));
         Exp3 condition = (Exp3) stmt.condition.accept(this);
         if (!(condition instanceof RelExp3Impl)) condition = exprDownToIdc3(condition);
-        currentStmts.add(new Stmt3(Stmt3.Stmt3Type.LABEL, beginLabel));
         currentStmts.add(new Stmt3(Stmt3.Stmt3Type.IF, bodyLabel, condition));
         currentStmts.add(new Stmt3(Stmt3.Stmt3Type.GOTO, exitLabel));
         currentStmts.add(new Stmt3(Stmt3.Stmt3Type.LABEL, bodyLabel));

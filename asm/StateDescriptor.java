@@ -54,7 +54,7 @@ class StateDescriptor {
 
     void placeFieldValueInReg(int regnum, String baseVar, int varOffset){
         placeVarValueInReg(regnum, baseVar);
-        emitLoadReg(regnum, regnum, varOffset * 4, false);
+        emitLoadReg(regnum, regnum, varOffset, false);
     }
 
     void placeRegInVarStack(int sourcereg, String var) {
