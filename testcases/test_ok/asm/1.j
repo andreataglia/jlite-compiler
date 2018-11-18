@@ -1,64 +1,103 @@
-// Source: Hsiang
+//testing overloading
 
-/* Mainly test multiple class (defined later but referenced first),
-Variable shadowing in Dummy class,
-chained field access expressions,
-e.g. this.getCompute().square(-3);
-Test combination of "if .. else .." "return" and "while"
-*/
 class Main {
-  Void main(Int i, Bool a, Int d){
-    Int t1;
-    Int t2;
-    Compute help;
-    Bool b;
-    String c;
-    b = true;
-    c = "GJMI if \n\t(else)";
-    help = new Compute();
-    t2 = help.square(d);
-    if(t2>t1){
-      println("Square of d larger than sum of squares");
-    }
-    else{
-      println("Square of d larger than sum of squares");
-    }
-    println("@@@@@@@@@@@@@@@");
-      while(b){
-        b = false;
-        println(b);
-      }
+    Void main(){
+        Pizza pizza;
+        Shop shop;
         
+        PizzaType sub1;
+        PizzaType sub2;
+        PizzaType sub3;
+
+        pizza = new Pizza();
+        shop = new Shop();
+        
+        shop.orderPizza(new Shop().randomPizza(), "Andrea \"Taglia\"");
+        
+        pizza = shop.randomPizza();
+        pizza.print();
+
+        
+        sub1 = new PizzaType();
+        sub2 = new PizzaType();
+        sub1.name = "sub1";
+        sub2.name = "sub2";
+        sub3 = new PizzaType();
+        sub3.name = "sub3";
+
+        pizza.type.subType = sub1;
+        pizza.type.subType.addSubType(sub2);
+        pizza.type.subType.subType.addSubType(sub3);
+
+        pizza.type.subType.subType.subType.printName();
+
+        return;
     }
-}
-class Dummy {
-  Compute c;
-  Int i;
-  Dummy j;
-  Int dummy() {
-    Bool i;
-    Bool j;
-    if (i || j) {
-      return 1;
-    } else {
-      while(i) {
-        i = !i;
-        println(i);
-      }
-      this.i = this.getCompute().square(0);
-      return this.i;
-    }
-    return this.getCompute().square(-3);
-    return 2;
-  }
-  Compute getCompute() {
-    // c = new Compute();
-    return c;
-  }
 }
 
-class Compute{
-	Int square(Int a){
-		return a * a;
-	}
+class Shop {
+    //return true if order is fine
+    Bool orderPizza(Pizza pizza, String name){
+        if (!pizza.isPizzaAvailable()){
+            println("i'm \"sorry\"");
+            return false;
+        }else{
+            println("cool!");
+            return true;
+        }
+        return true;
+    }
+
+    Pizza randomPizza(){
+        Pizza p;
+        p = new Pizza().pizza();
+        p.type = new PizzaType();
+        p.avail = false;
+        p.type.price = 11;
+        p.type.name = "Siciliana";
+        p.type.size = 2;
+        return p;
+    }
 }
+
+class Pizza{
+    PizzaType type;
+    Bool avail;
+
+    Pizza pizza(){
+        return new Pizza();
+    }
+
+    Void print(){
+        type.print();
+    }
+
+    Bool isPizzaAvailable(){
+        return avail;
+    }
+
+}
+
+class PizzaType{
+    Int price;
+    Int size;
+    String name;
+    PizzaType subType;
+
+    Void print(){
+        println("Printing Pizza: ");
+        println(name);
+        println(this.size);
+        println(price);
+    }
+
+    Void printName(){
+        println("Printing Pizza Name: ");
+        println(name);
+    }
+
+    Void addSubType(PizzaType subType){
+        this.subType = subType;
+    }
+}
+

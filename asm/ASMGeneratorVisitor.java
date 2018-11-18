@@ -119,7 +119,6 @@ public class ASMGeneratorVisitor {
         }
         ////////////////////////////////// ⟨id3⟩ = ⟨Exp3⟩ //////////////////////////////////
         else if (stmt.stmtType.equals(Stmt3.Stmt3Type.ASS_VAR)) {
-            System.err.println("@@@@@@@" + stmt);
             int reg = stateDescriptor.getReg();
             final String varName = stmt.id3_1.id;
             final Exp3 exp3 = stmt.exp3Impl;
@@ -334,7 +333,6 @@ public class ASMGeneratorVisitor {
     }
 
     private Type3 getFieldType(String cname, String field) {
-        System.err.println("@@@>>>>>"+cname + " - field: " +field);
         for (CName3 c : program3.classDescriptors.keySet()) {
             if (c.name.name.equals(cname)) {
                 for (VarDecl3 var : program3.classDescriptors.get(c)) {
