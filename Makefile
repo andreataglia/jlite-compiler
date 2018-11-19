@@ -26,8 +26,8 @@ run: Main.class
 
 run_asm:
 	@echo "compiling $(in)..."
-    @$(JAVA) -cp .:java-cup-11b-runtime.jar Main $(in) > output.txt
-    @echo "Done compiling into assembly code. The output code is located in file asmout.s. Look at output.txt for the outcome of the previous steps."
+	@$(JAVA) -cp .:java-cup-11b-runtime.jar Main $(in) > output.txt
+	@echo "Done compiling into assembly code. The output code is located in file asmout.s. Look at output.txt for the outcome of the previous steps."
 
 test: 
 	@echo "compiling test.j..."
@@ -56,4 +56,4 @@ compile:
     $(JAVAC) jnode/*.java
 
 clean:
-	rm -f parser.java Lexer.java sym.java output.txt *.class jnodes/*.class *~ utils/*.class concrete_nodes/*.class concrete_nodes/expressions/*.class nodes3/*.class asm/*.class
+	rm -f parser.java Lexer.java sym.java output.txt *.class jnodes/*.class *~ utils/*.class concrete_nodes/*.class concrete_nodes/expressions/*.class nodes3/*.class asm/*.class asmout.bin asmout.s output.txt

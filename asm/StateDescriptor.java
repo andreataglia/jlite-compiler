@@ -115,8 +115,6 @@ class StateDescriptor {
     void emitStoreReg(int sourcereg, int base_reg, int offset, boolean storeOnStack) {
         if (storeOnStack) {
             memoryMap.updateStackWordVal(memoryMap.getRegContent(sourcereg), memoryMap.getRegContent(base_reg) + offset);
-        } else {
-            //TODO if heap
         }
         asmCode.addToText("str r" + sourcereg + ", [r" + base_reg + ", #" + offset + "]");
     }

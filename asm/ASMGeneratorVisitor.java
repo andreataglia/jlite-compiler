@@ -9,7 +9,7 @@ public class ASMGeneratorVisitor {
     private int dataCount;
     private Program3 program3;
     private boolean trackObjectCreation = false;
-    private boolean returnFound = false;
+    private int retCount = 0;
 
     public ASMGeneratorVisitor() {
         asmCode = new ASMCode();
@@ -51,14 +51,13 @@ public class ASMGeneratorVisitor {
             stateDescriptor.emitSub(StateDescriptor.SP, StateDescriptor.SP, spaceToReserve * 4, false);
         //end Prologue. Start visiting statements
 
-        returnFound = false;
         for (Stmt3 stmt : method.stmtList) {
-            if (!returnFound){
-                stmt.accept(this);
-            }
+            stmt.accept(this);
         }
 
         //epilogue
+        asmCode.addToText("\n.L" + retCount + "exit:");
+        retCount++;
         if (method.name.toString().equals("main")) stateDescriptor.emitMov(StateDescriptor.A1, 0, false);
         stateDescriptor.funcEpilogue();
         return -1;
@@ -172,11 +171,11 @@ public class ASMGeneratorVisitor {
         ////////////////////////////////// return ⟨id3⟩ ; //////////////////////////////////
         else if (stmt.stmtType.equals(Stmt3.Stmt3Type.RETURN_VAR)) {
             stateDescriptor.emitMov(StateDescriptor.A1, forceVisit(stmt.id3_1), true);
-            returnFound = true;
+            asmCode.addToText("b .L" + retCount + "exit");
         }
         ////////////////////////////////// return ; //////////////////////////////////
         else if (stmt.stmtType.equals(Stmt3.Stmt3Type.RETURN)) {
-            returnFound = true;
+            asmCode.addToText("b .L" + retCount + "exit");
         }
         return -17;
     }

@@ -6,7 +6,7 @@ class Main {
             b = b + 1 ;
             println(b);
         }
-        println(new Empty().convolutedelse());
+        println(new Empty().convolutedelse(-1));
         return;
         return;
 
@@ -14,8 +14,8 @@ class Main {
 }
 
 class Empty {
-	String convolutedelse() {
-	 if (1 > 2 * 3) {
+	String convolutedelse(Int n) {
+	 if (1 < (2 * n)) {
 	 		return "";
 	 	} else { 
 	 		if (2 == 3) {return "Oh gargoyles"; }

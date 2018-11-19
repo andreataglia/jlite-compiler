@@ -22,7 +22,7 @@ If everything goes fine you should simply not see any error messages.
 
 Run `make run_asm in=filepath` to feed the input file to be compiled. You can try one of the test files, for example:
 
-    $ make run_asm in=testcaes/test_ok/asm/1.j
+    $ make run_asm in=testcases/test_ok/asm/1.j
 
 If everything goes fine you will something like this:
 
@@ -48,4 +48,4 @@ To have greater details about the error _DEBUG_ flag in Main class should be set
 
 The compiler has been tested using the files in the folders `testcases/test_ok/asm` and `testcases/test_ko/typecheck` which in turn contain good syntax code and wrong written code.
 
-The folder `testcases/test_ok/asm` contains 5 samples which have been used for testing the backend part of the compiler. The expected output for each file is in `testcases/test_ok/asm/<test_id>_out.txt` where `<test_id>` can be a number between 1 and 5.  
+The folder `testcases/test_ok/asm` contains 5 samples which have been used for testing the backend part of the compiler. The expected output (once the assembly has been assembled and  the executable is being run) for each file is in `testcases/test_ok/asm/<test_id>_out.txt` where `<test_id>` can be a number between 1 and 5.  
